@@ -1,0 +1,102 @@
+---
+title: "package ggiraphExtra"
+author: "Keon-Woong Moon"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{package ggiraphExtra}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Package ggiraphExtra contains many useful functions for exploratoty plots. These functions are made by both 'ggplot2' and 'ggiraph' packages. You can make a static ggplot or an interactive ggplot by setting the parameter interactive=TRUE.
+
+## Package installation
+
+You can install package ggiraphExtra with the following command.
+
+```{r,warning=FALSE,message=FALSE,eval=FALSE}
+#install.packages("devtools")
+devtools::install_github("cardiomoon/ggiraphExtra")
+```
+
+## ggPoints() for interactive scatterplot with regression equation
+
+You can make interactive ggplot easily. You can hover the points, see the regression equations and zoom-in zoom-out with the mouse wheel.  
+
+```{r,warning=FALSE,message=FALSE}
+require(ggplot2)
+require(ggiraph)
+require(ggiraphExtra)
+
+ggPoints(aes(x=wt,y=mpg,color=am),data=mtcars,method="lm",interactive=TRUE)
+```
+
+You can draw scatter plot for binary dependent variable. The `GBSG2` data contains data of 686 observations from the German Breast Cancer Study Group 2(GBSG2) study. You can get logistic regression line with a jittered scatterplot by setting the parameter `method` `glm`.
+
+```{r,message=FALSE,warning=FALSE}
+require(TH.data)
+data(GBSG2)
+ggPoints(aes(x=pnodes,y=cens),data=GBSG2,method="glm",interactive=TRUE)
+```
+
+Please check the vignette for "ggPoints" at http://rpubs.com/cardiomoon/231822
+
+## ggRadar() for interactive radar chart
+
+You can explore a data.frame with ggRadar() or ggBoxplot().
+
+```{r,warning=FALSE,message=FALSE}
+ggRadar(data=iris,aes(color=Species),interactive=TRUE)
+ggRadar(data=mtcars,aes(colour=am),interactive=TRUE)
+```
+
+## ggSpine() for an interactive spinogram
+
+ggSpine() is a interactive ggplot version of spineplot(). Spine plots are a special cases of mosaic plots, and can be seen as a generalization of stacked (or highlighted) bar plots. Analogously, spinograms are an extension of histograms. You can add labels by setting the parameter addlabel=TRUE.
+```{r,warning=FALSE,message=FALSE}
+require(moonBook)
+ggSpine(data=acs,aes(x=age,fill=smoking),interactive=TRUE)
+ggSpine(data=acs,aes(x=Dx,fill=smoking),addlabel=TRUE,interactive=TRUE)
+```
+## ggBar() for an interactive barplot 
+
+ggBar() draws interactive barplot. You can add labels, draw horizontal barplots or polar plots. You can draw histogram with ggBar()
+
+```{r,warning=FALSE,message=FALSE}
+ggBar(acs,aes(x=Dx,fill=smoking),addlabel=TRUE,horizontal=TRUE,width=0.5,interactive=TRUE)
+ggBar(rose,aes(x=Month,fill=group,y=value),stat="identity",polar=TRUE,palette="Reds",width=1,
+       color="black",size=0.1,interactive=TRUE)
+ggBar(acs,aes(x=age,fill=smoking),addlabel=TRUE,horizontal=TRUE,width=0.5,interactive=TRUE)
+```
+
+
+## ggPair() for an interactive scatter plot with line plot
+
+```{r,warning=FALSE,message=FALSE}
+ggPair(iris[3:5],interactive=TRUE)
+ggPair(iris,aes(color=Species),horizontal=TRUE,interactive=TRUE)
+```
+
+## ggPieDonut() for a pie and donut plot
+
+You can draw a pie and donut plot with ggPieDonut().
+
+```{r,warning=FALSE,message=FALSE}
+ggPieDonut(acs,aes(pies=Dx,donuts=smoking),interactive=TRUE)
+ggPieDonut(browsers,aes(pies=browser,donuts=version,count=share),interactive=TRUE)
+ggDonut(browsers,aes(donuts=version,count=share),interactive=TRUE)
+```
+
+## ggCLE() for a cleveland dot plot
+
+```{r,warning=FALSE,message=FALSE}
+require(gcookbook)
+mtcars$name=rownames(mtcars)
+ggCLE(data=mtcars,aes(x=mpg,y=name,color=am,facet=am),interactive=TRUE)
+ggCLE(data=tophitters2001,aes(x=avg,y=name,color=lg,facet=lg),no=20,interactive=TRUE)
+```
+
+## Full version of this vignette
+
+You can find the full version of this vignette at http://rpubs.com/cardiomoon/231820
