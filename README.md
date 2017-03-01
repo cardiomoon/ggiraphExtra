@@ -160,3 +160,14 @@ Full version of this vignette
 -----------------------------
 
 You can find the full version of this vignette at <http://rpubs.com/cardiomoon/231820>
+
+Shiny app for interactive plot
+------------------------------
+
+You can find the shiny app for interactive plot using the ggiraphExtra package at:
+
+<http://web-r.org:3838/explore>
+
+<http://r-ggplot2.com:3838/explore>
+
+<http://web-r.club:3838/explore>

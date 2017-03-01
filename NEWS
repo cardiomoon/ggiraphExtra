@@ -1,3 +1,11 @@
+# ggiraphExtra 0.1.6
+====================
+(2017-3-1)
+
+* bug fixed
+
+* ggCor can show partial and semi-partial correlation
+
 # ggiraphExtra 0.1.5
 =====================
 (2017-2-1)

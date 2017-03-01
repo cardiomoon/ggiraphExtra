@@ -5,7 +5,7 @@
 \title{Draw a heatmap of correlation test}
 \usage{
 ggCor(data, what = 1, label = 0, colors = NULL, title = TRUE,
-  mode = 1, digits = 2, interactive = FALSE, yreverse = TRUE,
+  mode = 2, digits = 2, interactive = FALSE, yreverse = TRUE,
   angle = 45, ...)
 }
 \arguments{
@@ -38,7 +38,9 @@ Draw a heatmap of correlation test
 require(mycor)
 require(ggplot2)
 require(ggiraph)
+require(ppcor)
 ggCor(iris,digits=3,label=3)
+ggCor(iris,what=3,digits=3,label=3)
 ggCor(iris,label=3,interactive=TRUE)
 ggCor(mtcars,interactive=TRUE)
 ggCor(mtcars,mode=2,interactive=TRUE)
