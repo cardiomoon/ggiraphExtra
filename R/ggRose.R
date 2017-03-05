@@ -13,11 +13,11 @@
 #'require(ggplot2)
 #'require(ggiraph)
 #'require(plyr)
-#'ggRose(rose,aes(x=Month,fill=group,y=value),interactive=TRUE)
+#'ggRose(rose,aes(x=Month,fill=group,y=value),stat="identity",reverse=TRUE,interactive=TRUE)
 #'ggRose(acs,aes(x=Dx,fill=smoking),interactive=TRUE)
 ggRose=function(data,mapping,palette="Reds",color="black",size=0.1,...){
 
-     p<-ggBar(data,mapping,stat="identity",width=1,color=color,size=size,
+     p<-ggBar(data,mapping,width=1,color=color,size=size,
              palette=palette,polar=TRUE,...)
     p
 }

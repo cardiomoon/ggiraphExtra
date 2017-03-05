@@ -47,11 +47,14 @@ num2cut=function(x){
 #'@param polar A logical value. If TRUE, coord_polar() function will be added
 #'@param reverse If true, reverse palette colors
 #'@param width Bar width
+#'@param maxylev integer indicating threshold of unique value to be treated as a categorical variable
 #'@param digits integer indicating the number of decimal places
 #'@param colour Bar colour
 #'@param size Bar size
 #'@param addlabel A logical value. If TRUE, label will be added to the plot
 #'@param hide.legend A logical value. If TRUE, the legend is removed and y labels are recreated
+#'@param xangle  angle of axis label
+#'@param yangle angle of axis label
 #'@param ... other arguments passed on to geom_rect_interactive.
 #'@importFrom ggplot2 coord_polar scale_y_continuous guide_legend
 #'@importFrom ggiraph geom_rect_interactive
@@ -66,17 +69,10 @@ num2cut=function(x){
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge",addlabel=TRUE,interactive=TRUE)
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE,interactive=TRUE)
 ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "Blues",
-                  interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,
-                  digits = 1, colour = "black", size = 0.2, addlabel = FALSE, hide.legend=FALSE,
-                  ...)
+                  interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,maxylev=6,
+                  digits = 1, colour = "black", size = 0.2, addlabel = FALSE, hide.legend=TRUE,
+                  xangle=0,yangle=0,...)
 {
-        # data=subset(final,DES_NO>0);mapping=aes(x=rank2,fill=DES_NO)
-
-        # data=acs;mapping=aes(x=Dx,fill=smoking)
-        # stat = "identity"; position = "fill"; palette = "Blues"
-        # interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;
-        # digits = 1; colour = "black"; size = 0.2; addlabel = FALSE
-
         xvar <- fillvar <- facetvar <- yvar <- NULL
         if ("x" %in% names(mapping))
                 xvar <- paste(mapping[["x"]])
@@ -87,7 +83,8 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         if ("facet" %in% names(mapping))
                 facetvar <- paste(mapping[["facet"]])
         contmode = 0
-        if (is.numeric(data[[xvar]])) {
+
+        if (is.numeric(data[[xvar]])&(length(unique(data[[xvar]]))>maxylev)) {
                 if (is.null(width)) width = 1
                 width
                 result = num2cut(data[[xvar]])
@@ -113,7 +110,10 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                 a = as.matrix(a)
                 a
         } else {
+                data = data[c(xvar, fillvar, yvar)]
+                data=na.omit(data)
                 df = plyr::ddply(data, c(xvar, fillvar), "nrow",.drop=FALSE)
+
                 a = table(data[[fillvar]], data[[xvar]])
         }
         df
@@ -144,13 +144,13 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         df$xmax = rep(xmax,each=nrow(a))
         df$x = rep(x,each=nrow(a))
         df$width = rep(width,each=nrow(a))
-        count = max(df$xno)
+        count = max(df$xno,na.rm=TRUE)
         df
         if (position == "dodge") {
                 df$ymax = df$nrow
                 df$ymin = 0
                 df$y = (df$ymax + df$ymin)/2
-                ycount = max(df$yno)
+                ycount = max(df$yno,na.rm=TRUE)
                 df$xmin2 = df$xmin + (df$yno - 1) * (df$width/ycount)
                 df$xmax2 = df$xmin2 + (df$width/ycount)
                 df$xmin = df$xmin2
@@ -208,6 +208,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                 p <- p + scale_x_continuous(breaks = xmax, labels = xlabels,
                                             limits = c(0, total))
         }else {
+                #if(length(x)!=length(xlabels)) xlabels=c(xlabels,NA)
                 p <- p + scale_x_continuous(breaks = x, labels = xlabels,
                                             limits = c(0, total))
         }
@@ -223,12 +224,14 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                 p <- p + ylab("count")+guides(fill=guide_legend(reverse=TRUE))
 
                 p <- p + scale_fill_brewer(palette = palette,
-                                   direction = direction)
+                                           direction = direction)
         }
         if (addlabel)
                 p = p + geom_text(aes(x = x, y = y, label = df2$label))
-        p <- p + theme_bw() + theme(axis.text.y = element_text(angle = 90),
-                                    axis.ticks.y = element_blank())
+        if(yangle!=0) p<-p+theme(axis.text.y=element_text(angle=yangle,hjust = 0.5))
+        if(xangle!=0) p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
+        p <- p  + theme(axis.text.y = element_text(angle = 90),
+                        axis.ticks.y = element_blank())
         if (polar == TRUE)
                 p <- p + coord_polar()
         tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"

@@ -5,8 +5,8 @@
 \title{Draw an interactive barplot}
 \usage{
 ggBar(data, mapping, stat = "count", position = "stack", palette = NULL,
-  width = NULL, digits = 1, horizontal = FALSE, yangle = 0,
-  addlabel = FALSE, polar = FALSE, interactive = FALSE, reverse = FALSE,
+  horizontal = FALSE, yangle = 0, xangle = 0, maxylev = 6,
+  addlabel = FALSE, polar = FALSE, reverse = FALSE, interactive = FALSE,
   ...)
 }
 \arguments{
@@ -21,21 +21,21 @@ c("count","identity")}
 
 \item{palette}{A character string indicating the color palette}
 
-\item{width}{Bar width}
-
-\item{digits}{integer indicating the number of decimal places}
-
 \item{horizontal}{A logical value. If TRUE,a horizontal bar plot will be returned}
 
 \item{yangle}{An integer. The value will be used adjust the angle of axis.text.y}
+
+\item{xangle}{An integer. The value will be used adjust the angle of axis.text.x}
+
+\item{maxylev}{integer indicating threshold of unique value to be treated as a categorical variable}
 
 \item{addlabel}{A logical value. If TRUE, label will be added to the plot}
 
 \item{polar}{A logical value. If TRUE, coord_polar() function will be added}
 
-\item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
-
 \item{reverse}{If true, reverse palette colors}
+
+\item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
 
 \item{...}{other arguments passed on to geom_bar_interactive.}
 }
@@ -52,8 +52,8 @@ require(ggiraph)
 require(plyr)
 ggBar(acs,aes(x=Dx,fill=smoking),interactive=TRUE,width=1,colour="white",size=0.2,polar=TRUE)
 ggBar(acs,aes(x=Dx,fill=smoking),position="fill",addlabel=TRUE,horizontal=TRUE,width=0.5)
-ggBar(acs,aes(x=Dx,fill=smoking),position="dodge",interactive=TRUE)
+ggBar(acs,aes(x=Dx,fill=smoking),position="dodge",interactive=TRUE,addlabel=TRUE)
 ggBar(rose,aes(x=Month,fill=group,y=value),stat="identity",polar=TRUE,palette="Reds",width=1,
-      color="black",size=0.1,interactive=TRUE)
+      color="black",size=0.1,reverse=TRUE,interactive=TRUE)
 }
 

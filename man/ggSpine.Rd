@@ -6,8 +6,9 @@
 \usage{
 ggSpine(data, mapping, stat = "count", position = "fill",
   palette = "Blues", interactive = FALSE, polar = FALSE,
-  reverse = FALSE, width = NULL, digits = 1, colour = "black",
-  size = 0.2, addlabel = FALSE, hide.legend = FALSE, ...)
+  reverse = FALSE, width = NULL, maxylev = 6, digits = 1,
+  colour = "black", size = 0.2, addlabel = FALSE, hide.legend = TRUE,
+  xangle = 0, yangle = 0, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -29,6 +30,8 @@ c("count","identity")}
 
 \item{width}{Bar width}
 
+\item{maxylev}{integer indicating threshold of unique value to be treated as a categorical variable}
+
 \item{digits}{integer indicating the number of decimal places}
 
 \item{colour}{Bar colour}
@@ -38,6 +41,10 @@ c("count","identity")}
 \item{addlabel}{A logical value. If TRUE, label will be added to the plot}
 
 \item{hide.legend}{A logical value. If TRUE, the legend is removed and y labels are recreated}
+
+\item{xangle}{angle of axis label}
+
+\item{yangle}{angle of axis label}
 
 \item{...}{other arguments passed on to geom_rect_interactive.}
 }
