@@ -3,6 +3,8 @@
 #'@param theta variable to map angle to (x or y)
 #'@param start offset of starting point from 12 o'clock in radians
 #'@importFrom ggplot2 ggproto
+#'
+#'@export
 #'@param direction 1, clockwise; -1, counterclockwise
 coord_radar <- function (theta = "x", start = 0, direction = 1)
 {
@@ -73,10 +75,18 @@ ggRadar=function(data,mapping=NULL,
                  ylim=NULL,
                  interactive=FALSE,...){
 
-        # mapping=aes(fill=am)
+        # # mapping=aes(fill=am)
+        # data=iris
         # mapping=NULL
+        # rescale=TRUE
+        # legend.position="top"
+        # colour="red"
+        # alpha=0.3
+        # size=3
+        # ylim=NULL
+        # interactive=FALSE
 
-
+        data=as.data.frame(data)
         (groupname=setdiff(names(mapping),c("x","y")))
         #ength(groupname)
         if(length(groupname)==0) {
@@ -104,9 +114,10 @@ ggRadar=function(data,mapping=NULL,
         if(rescale) data=rescale_df(data,groupvar)
         data
         if(is.null(groupvar)) {
-                data$id=1
+                id=newColName(data)
+                data[[id]]=1
 
-                longdf=reshape2::melt(data,id.vars="id",measure.vars=xvars)
+                longdf=reshape2::melt(data,id.vars=id,measure.vars=xvars)
         } else{
                 longdf=reshape2::melt(data,id.vars=groupvar,measure.vars=xvars)
         }
@@ -118,23 +129,27 @@ ggRadar=function(data,mapping=NULL,
         colnames(df)[length(df)]="value"
 
         if(is.null(groupvar)){
-                df$id2="all"
-                df$id=1:nrow(df)
+                id2=newColName(df)
+                df[[id2]]="all"
+                id3=newColName(df)
+                df[[id3]]=1:nrow(df)
                 df$tooltip=paste0(df$variable,"=",round(df$value,1))
                 df$tooltip2=paste0("all")
                 #str(df)
                 p<-ggplot(data=df,aes_string(x="variable",y="value",group=1))+
                         geom_polygon_interactive(aes_string(tooltip="tooltip2"),colour=colour,fill=colour,alpha=alpha)+
-                        geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),colour=colour,size=size,...)
+                        geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),colour=colour,size=size,...)
         } else{
-                df$id2=df[[groupvar]]
-                df$id=1:nrow(df)
+                id2=newColName(df)
+                df[[id2]]=df[[groupvar]]
+                id3=newColName(df)
+                df[[id3]]=1:nrow(df)
                 df$tooltip=paste0(groupvar,"=",df[[groupvar]],"<br>",df$variable,"=",round(df$value,1))
                 df$tooltip2=paste0(groupvar,"=",df[[groupvar]])
                 #str(df)
                 p<-ggplot(data=df,aes_string(x="variable",y="value",colour=groupvar,fill=groupvar,group=groupvar))+
                         geom_polygon_interactive(aes_string(tooltip="tooltip2"),alpha=alpha)+
-                        geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),size=size,...)
+                        geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size,...)
 
         }
         p
@@ -153,4 +168,17 @@ ggRadar=function(data,mapping=NULL,
                            zoom_max=10,hover_css=hover_css,selected_css=selected_css)
         }
         p
+}
+
+#' find new column name
+#' @param df a data.frame
+#' @export
+newColName=function(df){
+        temp="id"
+        no=0
+        while(1){
+                id=paste0(temp,no)
+                if(!(id %in% colnames(df))) return(id)
+                no=no+1
+        }
 }

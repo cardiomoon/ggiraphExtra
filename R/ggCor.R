@@ -31,8 +31,10 @@
 ggCor=function(data,what=1,label=0,colors=NULL,title=TRUE,mode=2,digits=2,interactive=FALSE,yreverse=TRUE,angle=45,...){
 
     # data=mtcars;label=0;colors=NULL;title=FALSE;mode=2;interactive=TRUE;yreverse=TRUE
+    data=as.data.frame(data)
     select=sapply(data,is.numeric)
     data=data[select]
+    data=na.omit(data)
     if(what==1)  {
             result=mycor(data,digits=digits,...)
             method=result$out$method

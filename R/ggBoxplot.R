@@ -24,6 +24,7 @@ ggBoxplot=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,interactive=
 #    data=acs;rescale=FALSE;horizontal=FALSE;interactive=FALSE
 
         #data=mtcars;mapping=NULL;rescale=FALSE;horizontal=FALSE;polar=FALSE;interactive=FALSE
+        data=as.data.frame(data)
         (groupname=setdiff(names(mapping),c("x","y")))
         if(length(groupname)==0) {
                 groupvar<-NULL

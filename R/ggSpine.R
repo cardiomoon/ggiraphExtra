@@ -71,7 +71,7 @@ num2cut=function(x){
 ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "Blues",
                   interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,maxylev=6,
                   digits = 1, colour = "black", size = 0.2, addlabel = FALSE, hide.legend=TRUE,
-                  xangle=0,yangle=0,...)
+                  xangle=NULL,yangle=NULL,...)
 {
         xvar <- fillvar <- facetvar <- yvar <- NULL
         if ("x" %in% names(mapping))
@@ -228,9 +228,10 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         }
         if (addlabel)
                 p = p + geom_text(aes(x = x, y = y, label = df2$label))
-        if(yangle!=0) p<-p+theme(axis.text.y=element_text(angle=yangle,hjust = 0.5))
-        if(xangle!=0) p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
-        p <- p  + theme(axis.text.y = element_text(angle = 90),
+
+        if(!is.null(xangle)) p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
+        if(is.null(yangle)) yangle=90
+        p <- p  + theme(axis.text.y = element_text(angle = yangle),
                         axis.ticks.y = element_blank())
         if (polar == TRUE)
                 p <- p + coord_polar()

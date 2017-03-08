@@ -19,7 +19,7 @@
 ggPair=function(data,mapping=NULL,idcolor=TRUE,horizontal=FALSE,interactive=FALSE) {
 
 
-    df=data
+    df=as.data.frame(data)
 
     (colorvar<-paste0(mapping[["colour"]]))
     if(length(colorvar)==0) colorvar<-NULL

@@ -21,6 +21,7 @@
 #'ggViolin(mtcars,aes(x=c(mpg,cyl,disp,hp,drat)),rescale=TRUE)
 ggViolin=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,alpha=0.1,addBoxplot=TRUE,addMean=TRUE,...){
 
+        data=as.data.frame(data)
         (groupname=setdiff(names(mapping),c("x","y")))
         if(length(groupname)==0) {
                 groupvar<-NULL

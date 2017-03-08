@@ -8,7 +8,7 @@ ggSpine(data, mapping, stat = "count", position = "fill",
   palette = "Blues", interactive = FALSE, polar = FALSE,
   reverse = FALSE, width = NULL, maxylev = 6, digits = 1,
   colour = "black", size = 0.2, addlabel = FALSE, hide.legend = TRUE,
-  xangle = 0, yangle = 0, ...)
+  xangle = NULL, yangle = NULL, ...)
 }
 \arguments{
 \item{data}{A data.frame}
