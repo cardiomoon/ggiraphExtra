@@ -55,24 +55,36 @@ num2cut=function(x){
 #'@param hide.legend A logical value. If TRUE, the legend is removed and y labels are recreated
 #'@param xangle  angle of axis label
 #'@param yangle angle of axis label
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param ... other arguments passed on to geom_rect_interactive.
 #'@importFrom ggplot2 coord_polar scale_y_continuous guide_legend
 #'@importFrom ggiraph geom_rect_interactive
+#'@importFrom scales percent
 #'@export
 #'@return An interactive spinogram
 #'@examples
 #'require(moonBook)
 #'require(ggplot2)
 #'require(ggiraph)
-#'ggSpine(data=acs,aes(x=age,fill=sex),interactive=TRUE)
+#'require(scales)
+#'ggSpine(data=acs,aes(x=age,fill=sex))
 #'ggSpine(data=acs,aes(x=sex,fill=Dx),addlabel=TRUE,interactive=TRUE)
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge",addlabel=TRUE,interactive=TRUE)
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE,interactive=TRUE)
 ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "Blues",
                   interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,maxylev=6,
                   digits = 1, colour = "black", size = 0.2, addlabel = FALSE, hide.legend=TRUE,
+                  use.label=TRUE,use.labels=TRUE,
                   xangle=NULL,yangle=NULL,...)
 {
+        # data=acs;mapping=aes(x=age,fill=sex)
+        # stat = "count"; position = "fill"; palette = "Blues";
+        # interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;maxylev=6;
+        # digits = 1; colour = "black"; size = 0.2; addlabel = FALSE; hide.legend=TRUE
+        # use.label=TRUE;use.labels=TRUE;
+        # xangle=NULL;yangle=NULL
+
         xvar <- fillvar <- facetvar <- yvar <- NULL
         if ("x" %in% names(mapping))
                 xvar <- paste(mapping[["x"]])
@@ -83,6 +95,14 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         if ("facet" %in% names(mapping))
                 facetvar <- paste(mapping[["facet"]])
         contmode = 0
+
+        (xlab=attr(data[[xvar]],"label"))
+        if(is.null(xlab)) xlab=xvar
+        if(!use.label) xlab=xvar
+        (filllab=attr(data[[fillvar]],"label"))
+        if(is.null(filllab)) filllab=fillvar
+        if(!use.label) filllab=fillvar
+        if(use.labels) data=addLabelDf(data,mapping)
 
         if (is.numeric(data[[xvar]])&(length(unique(data[[xvar]]))>maxylev)) {
                 if (is.null(width)) width = 1
@@ -179,8 +199,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         df2$label = ifelse((df2$csum/total) > 0.04, df2$nrow, "")
         df2$tooltip = paste0(df2$tooltip, "(", df2$ratio, "%)")
         if (position == "fill") {
-                df2$label = ifelse((df2$csum/total) > 0.04, paste0(df2$ratio,
-                                                                   "%"), "")
+                df2$label = ifelse((df2$csum/total) > 0.04, percent(df2$ratio/100),"")
         }
         if (contmode) {
                 xlabels = breaks[2:length(breaks)]
@@ -199,24 +218,26 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         if (is.numeric(df2[[fillvar]]))
                 df2[[fillvar]] = factor(df2[[fillvar]])
         p <- ggplot(mapping = aes_string(xmin = "xmin", xmax = "xmax",
-                                         ymin = "ymin", ymax = "ymax", fill = fillvar), data = df2) +
-                geom_rect_interactive(aes_string(tooltip = "tooltip",
-                                                 data_id = "data_id"), size = size, colour = colour,...) + xlab(xvar)
+                                         ymin = "ymin", ymax = "ymax", fill = fillvar), data = df2)
+        p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
+                                                 data_id = "data_id"), size = size, colour = colour,...)
+         p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
+                                                  data_id = "data_id"), size = size, colour = colour)
 
         p
         if (contmode) {
-                p <- p + scale_x_continuous(breaks = xmax, labels = xlabels,
+                p <- p + scale_x_continuous(breaks = xmax, labels = xlabels,name=xlab,
                                             limits = c(0, total))
         }else {
                 #if(length(x)!=length(xlabels)) xlabels=c(xlabels,NA)
-                p <- p + scale_x_continuous(breaks = x, labels = xlabels,
+                p <- p + scale_x_continuous(breaks = x, labels = xlabels, name=xlab,
                                             limits = c(0, total))
         }
         p
         direction = ifelse(reverse, -1, 1)
 
         if ((position != "dodge") & hide.legend ){
-                p <- p + scale_y_continuous(breaks = y, labels = ylabels) +
+                p <- p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab) +
                         scale_fill_brewer(palette = palette, direction = direction,
                                           guide = FALSE) + ylab("")
         }
@@ -229,7 +250,12 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         if (addlabel)
                 p = p + geom_text(aes(x = x, y = y, label = df2$label))
 
-        if(!is.null(xangle)) p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
+        if(is.null(xangle)){
+                if(max(nchar(colnames(df2)))>10) xangle=20
+                else xangle=0
+        }
+        p
+        p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
         if(is.null(yangle)) yangle=90
         p <- p  + theme(axis.text.y = element_text(angle = yangle),
                         axis.ticks.y = element_blank())
@@ -237,8 +263,42 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                 p <- p + coord_polar()
         tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
         hover_css = "fill-opacity=.3;cursor:pointer;stroke:gold;"
+
+
         if (interactive)
                 p <- ggiraph(code = print(p), tooltip_extra_css = tooltip_css,
                              tooltip_opacity = 0.75, zoom_max = 10, hover_css = hover_css)
         p
+}
+
+
+#' Add value labels to the data.frame
+#'@param data A data.frame
+#'@param mapping Set of aesthetic mappings created by aes or aes_.
+#'@importFrom sjmisc to_label
+#'@export
+addLabelDf=function(data,mapping=NULL){
+
+        if(!is.null(mapping)) {
+                (mapnames=names(mapping))
+                cols=c()
+                for(i in 1:length(mapnames)) {
+                        temp=paste(mapping[[mapnames[i]]])
+                        if(length(temp)>1) temp=temp[-1]
+                        cols=c(cols,temp)
+                }
+                cols=unique(cols)
+                data[cols]=lapply(data[cols],function(x) to_label(x,add.non.labelled=TRUE))
+                # for(i in 1:length(cols)){
+                #
+                #         data[[cols[[i]]]]=to_label(data[[cols[i]]],add.non.labelled=TRUE)
+                # }
+        } else{
+                # cols=colnames(data)
+                # for(i in 1:length(cols)){
+                #         data[[cols[[i]]]]=to_label(data[[cols[i]]],add.non.labelled=TRUE)
+                # }
+                data=lapply(data,function(x) to_label(x,add.non.labelled=TRUE))
+        }
+        data
 }

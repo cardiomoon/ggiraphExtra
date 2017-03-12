@@ -6,7 +6,7 @@
 \usage{
 ggDot(data, mapping, stackdir = "center", binaxis = "y", binwidth = 0.5,
   method = "dotdensity", position = 0.2, boxwidth = 0.25,
-  boxfill = NULL, ...)
+  boxfill = NULL, use.label = TRUE, use.labels = TRUE, ...)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -26,6 +26,10 @@ ggDot(data, mapping, stackdir = "center", binaxis = "y", binwidth = 0.5,
 \item{boxwidth}{The width of boxplot}
 
 \item{boxfill}{Fill color of boxplot}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{...}{other arguments passed on to geom_dotplot}
 }

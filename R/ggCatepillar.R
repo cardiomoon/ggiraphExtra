@@ -14,6 +14,8 @@ pastecolon=function(...){
 #'@param digits An integer indicating the number of decimal places
 #'@param errorbar which value is displayed with errorbar :"se" or "sd"
 #'@param flip Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@importFrom ggplot2 geom_errorbar
 #'@export
 #'@return An interactive catepillar plot
@@ -21,19 +23,34 @@ pastecolon=function(...){
 #'require(moonBook)
 #'require(ggiraph)
 #'require(ggplot2)
-#'ggCatepillar(acs,aes(Dx,age,color=HBP),interactive=TRUE)
+#'ggCatepillar(acs,aes(Dx,age,color=HBP))
 #'ggCatepillar(acs,aes(c(Dx,sex),age,color=HBP),interactive=TRUE,flip=TRUE)
 #'ggCatepillar(acs,aes(age,height,color=sex),errorbar=FALSE,interactive=TRUE)
-ggCatepillar=function(data,mapping,errorbar="se",interactive=FALSE,digits=1,flip=FALSE){
+ggCatepillar=function(data,mapping,errorbar="se",interactive=FALSE,digits=1,flip=FALSE,use.label=TRUE,use.labels=TRUE){
 
         #data=acs;mapping=aes(c(Dx,sex),height,color=HBP);interactive=FALSE;digits=1;errorbar="se";flip=TRUE
-        xvar<-yvar<-groupvar<-NULL
+        xvar<-yvar<-groupvar<-colourvar<-NULL
         (xvar=paste(mapping[["x"]]))
         yvar=paste(mapping[["y"]])
 
         if(is.null(xvar)|is.null(yvar)) warning("Both x and y aesthetics are should be mapped")
         (groupname=setdiff(names(mapping),c("x","y")))
         if(length(groupname)>0) (groupvar=paste(mapping[groupname]))
+        name=names(mapping)
+
+        xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
+        for(i in 1:length(name)){
+                (varname=paste0(name[i],"var"))
+                labname=paste0(name[i],"lab")
+                labelsname=paste0(name[i],"labels")
+
+                temp=paste(mapping[[name[i]]])
+                if(length(temp)>1) temp=temp[-1]
+                assign(varname,temp)
+                x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
+                assign(labname,attr(x,"label"))
+                assign(labelsname,get_labels(x))
+        }
 
 
         if(length(xvar)>1) xvar<-xvar[-1]
@@ -94,6 +111,26 @@ ggCatepillar=function(data,mapping,errorbar="se",interactive=FALSE,digits=1,flip
                                     A,"+",errorbar,"),width=",mywidth,",
                                     position=position_dodge(width=mywidth))")))
         if(flip) p<-p+coord_flip()
+        if(use.labels) {
+                if(!is.null(xlabels)) {
+                        if(is.numeric(data[[xvar[1]]])) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
+                        else p<-p+scale_x_discrete(labels=xlabels)
+                }
+                if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
+                if(!is.null(filllabels)) p=p+scale_fill_discrete(labels=filllabels)
+                if(!is.null(colourlabels)) {
+                        if(!is.numeric(data[[colourvar]])) p=p+scale_color_discrete(labels=colourlabels)
+
+                }
+
+        }
+        if(use.label){
+                if(!is.null(xlab)) p<-p+labs(x=xlab)
+                if(!is.null(ylab)) p<-p+labs(y=ylab)
+                if(!is.null(colourlab)) p<-p+labs(colour=colourlab)
+                if(!is.null(filllab)) p<-p+labs(fill=filllab)
+        }
+        p
         #p<-my_theme(p)
         #p<-p+theme(legend.position="none")
         if(interactive){

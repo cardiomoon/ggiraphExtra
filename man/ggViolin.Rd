@@ -5,7 +5,8 @@
 \title{Draw violin plots of a data.frame}
 \usage{
 ggViolin(data, mapping = NULL, rescale = FALSE, horizontal = FALSE,
-  alpha = 0.1, addBoxplot = TRUE, addMean = TRUE, ...)
+  alpha = 0.1, addBoxplot = TRUE, addMean = TRUE, use.label = TRUE,
+  use.labels = TRUE, ...)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -21,6 +22,10 @@ ggViolin(data, mapping = NULL, rescale = FALSE, horizontal = FALSE,
 \item{addBoxplot}{Whether add boxplots on the plot}
 
 \item{addMean}{Whether add mean point on the plot}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{...}{other arguments passed on to geom_boxplot_interactive}
 }

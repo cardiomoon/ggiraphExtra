@@ -16,20 +16,50 @@ ggAncova=function(x,...) UseMethod("ggAncova")
 
 #'@describeIn ggAncova Make an interactive plot for an ANCOVA model
 #'@param mapping Set of aesthetic mappings created by aes or aes_.
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@export
-ggAncova.default=function(x,mapping,...){
+ggAncova.default=function(x,mapping,use.label=TRUE,use.labels=TRUE,...){
     data<-x
 
     xvar<-yvar<-groupvar<-NULL
-    (xvar=paste(mapping[["x"]]))
-    yvar=paste(mapping[["y"]])
+    name=names(mapping)
+    xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
+    for(i in 1:length(name)){
+            (varname=paste0(name[i],"var"))
+            (labname=paste0(name[i],"lab"))
+            (labelsname=paste0(name[i],"labels"))
+            temp=paste(mapping[[name[i]]])
+            if(length(temp)>1) temp=temp[-1]
+            assign(varname,temp)
+            tempx=eval(parse(text=paste0("x$",eval(parse(text=varname)))))
+            assign(labname,attr(tempx,"label"))
+            assign(labelsname,get_labels(tempx))
+    }
+
     if(is.null(xvar)|is.null(yvar)) warning("Both x and y aesthetics are should be mapped")
     (groupname=setdiff(names(mapping),c("x","y")))
     if(length(groupname)>0) (groupvar=paste(mapping[groupname]))
 
     A=groupvar[1]
     formula=as.formula(paste(yvar,"~",xvar,"+",A))
-    ggAncova.formula(formula,data,...)
+    if(use.labels) data[[A]]=factor(data[[A]],labels=colourlabels)
+    p<-ggAncova.formula(formula,data,...)
+    if(use.labels) {
+            if(!is.null(xlabels)) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
+            if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
+            if(!is.null(filllabels)) p=p+scale_fill_discrete(labels=filllabels)
+            #if(!is.null(colourlabels)) p=p+scale_color_discrete(labels=colourlabels)
+            #p+scale_color_continuous(labels=colourlabels)
+    }
+    if(use.label){
+            if(!is.null(xlab)) p<-p+labs(x=xlab)
+            if(!is.null(ylab)) p<-p+labs(y=ylab)
+            if(!is.null(colourlab)) p<-p+labs(colour=colourlab)
+            if(!is.null(filllab)) p<-p+labs(fill=filllab)
+    }
+    p
+
 }
 
 

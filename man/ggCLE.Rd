@@ -5,7 +5,8 @@
 \title{Draw a cleveland dot plot}
 \usage{
 ggCLE(data, mapping, reorderByX = TRUE, no = NULL, start = 0.99,
-  interactive = FALSE, decreasing = TRUE, ...)
+  interactive = FALSE, decreasing = TRUE, use.label = TRUE,
+  use.labels = TRUE, ...)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -21,6 +22,10 @@ ggCLE(data, mapping, reorderByX = TRUE, no = NULL, start = 0.99,
 \item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
 
 \item{decreasing}{Should the sort order be increasing or decreasing?}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{...}{other arguments passed on to geom_point_interactive}
 }

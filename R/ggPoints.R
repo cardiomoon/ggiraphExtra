@@ -129,20 +129,24 @@ model2df=function(model,x=NULL,n=100){
 #'@param formula formula to use in smoothing function, eg. y ~ x, y ~ poly(x, 2), y ~ log(x)
 #'@param fullrange should the fit span the full range of the plot, or just the data
 #'@param level level of confidence interval to use (0.95 by default)
+#'@param use.count Logical. If true use geom_count instead of geom_point_interactive
 #'@param maxfactorno An integer. Maximum unique number of a numeric vector treated as a factor
 #'@param digits integer indicating the number of decimal places
 #'@param tooltip A character string of column name be included in tooltip. Default value is NULL
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param title The text for plot title
 #'@param subtitle The text for plot subtitle
 #'@param caption The text for plot caption
 #'@param ... other arguments passed on to geom_point
 #'@export
-#'@importFrom ggplot2 ggplot stat_smooth aes aes_string position_jitter facet_wrap labs
+#'@importFrom ggplot2 ggplot stat_smooth aes aes_string position_jitter facet_wrap labs geom_count scale_color_discrete scale_fill_discrete
 #'@importFrom ggiraph ggiraph geom_point_interactive geom_path_interactive
 #'@importFrom mgcv gam
 #'@importFrom plyr dlply splat
 #'@importFrom stats as.formula predict
+#'@importFrom sjmisc get_labels get_label
 #'@examples
 #'require(ggplot2)
 #'require(ggiraph)
@@ -151,7 +155,9 @@ model2df=function(model,x=NULL,n=100){
 #'ggPoints(aes(x=wt,y=mpg,color=am),data=mtcars,interactive=TRUE)
 ggPoints=function(data,mapping, smooth=TRUE,
                   se=TRUE,method="auto",formula=y~x, fullrange=FALSE,level=0.95,
+                  use.count=FALSE,
                   maxfactorno=6,digits=2,title=NULL,subtitle=NULL,caption=NULL,
+                  use.label=TRUE,use.labels=TRUE,
                   tooltip=NULL,interactive=FALSE,...) {
 
 
@@ -185,6 +191,18 @@ ggPoints=function(data,mapping, smooth=TRUE,
                 colorname <- paste(mapping[["colour"]])
         if ("facet" %in% names(mapping))
                 facetname <- paste(mapping[["facet"]])
+
+        name=names(mapping)
+        xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
+        for(i in 1:length(name)){
+                (varname=paste0(name[i],"var"))
+                labname=paste0(name[i],"lab")
+                labelsname=paste0(name[i],"labels")
+                assign(varname,paste(mapping[[name[i]]]))
+                x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
+                assign(labname,attr(x,"label"))
+                assign(labelsname,get_labels(x))
+        }
     # xname=paste(mapping[["x"]])
     #
     # yname=paste(mapping[["y"]])
@@ -243,16 +261,28 @@ ggPoints=function(data,mapping, smooth=TRUE,
 
     if(method=="glm") {
             if(smooth) p<-p+stat_smooth(method='glm',formula=formula,method.args=list(family='binomial'),se=se,fullrange=fullrange)
-            if(is.null(fillname))
-            p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),
+            if(is.null(fillname)){
+                         p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),
                                         position=position_jitter(width=0.3,height=0.06),alpha=0.5,...)
+            }
             else p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),shape=21,
                                              position=position_jitter(width=0.3,height=0.06),alpha=0.5,...)
     } else {
             if(smooth) p<-p+ stat_smooth(method=method,formula=formula,se=se,fullrange=fullrange)
-            if(is.null(fillname))
-                 p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),...)
-            else p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),shape=21,...)
+            if(is.null(fillname)){
+                    if(use.count){
+                       p<-p+geom_count(...)
+                    } else{
+                       p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),...)
+                    }
+            } else {
+                    if(use.count){
+                            p<-p+geom_point_interactive(shape=21,...)
+                    } else{
+                    p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),shape=21,...)
+                    }
+
+            }
 
              # p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),shape=21)
 
@@ -335,6 +365,20 @@ ggPoints=function(data,mapping, smooth=TRUE,
     }
 
     if(!is.null(xlevels)) p<-p+scale_x_continuous(breaks=1:length(xlevels),labels=xlevels)
+     if(use.labels) {
+             if(!is.null(xlabels)) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
+             if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
+             if(!is.null(filllabels)) p=p+scale_fill_discrete(labels=filllabels)
+             if(!is.null(colourlabels)) p=p+scale_color_discrete(labels=colourlabels)
+             #p+scale_color_continuous(labels=colourlabels)
+     }
+     if(use.label){
+             if(!is.null(xlab)) p<-p+labs(x=xlab)
+             if(!is.null(ylab)) p<-p+labs(y=ylab)
+             if(!is.null(colourlab)) p<-p+labs(colour=colourlab)
+             if(!is.null(filllab)) p<-p+labs(fill=filllab)
+     }
+     p
     if(interactive){
         tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
         #hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
@@ -343,8 +387,7 @@ ggPoints=function(data,mapping, smooth=TRUE,
         p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
                    zoom_max=10,hover_css=hover_css,selected_css=selected_css)
     }
-
-    p
+   p
 }
 
 

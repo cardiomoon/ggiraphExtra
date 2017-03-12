@@ -6,7 +6,8 @@
 \usage{
 ggHeatmap(data, mapping, stat = "count", palette = "Blues",
   reverse = FALSE, addlabel = FALSE, polar = FALSE, interactive = FALSE,
-  yangle = 0, color = "grey50", size = 0.1, ...)
+  yangle = 0, color = "grey50", size = 0.1, use.label = TRUE,
+  use.labels = TRUE, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -31,6 +32,10 @@ c("count","identity")}
 \item{color}{Color argument passed on to geom_rect_interactive.}
 
 \item{size}{Size argument passed on to geom_rect_interactive.}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{...}{other arguments passed on to geom_rect_interactive.}
 }

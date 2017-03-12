@@ -50,6 +50,7 @@ rescale_df=function(data,groupvar=NULL){
 #'@param size  Point size
 #'@param ylim A numeric vector of length 2, giving the y coordinates ranges.
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
+#'@param use.label Logical. Whether or not use column label
 #'@param ... other arguments passed on to geom_point
 #'@importFrom reshape2 melt
 #'@importFrom plyr ddply summarize
@@ -73,10 +74,12 @@ ggRadar=function(data,mapping=NULL,
                  alpha=0.3,
                  size=3,
                  ylim=NULL,
+                 use.label=FALSE,
                  interactive=FALSE,...){
 
-        # # mapping=aes(fill=am)
-        # data=iris
+        # mapping=aes(x=c(q33a01w1,q33a02w1,q33a03w1),color=sexw1)
+
+        # data=spssdata
         # mapping=NULL
         # rescale=TRUE
         # legend.position="top"
@@ -84,6 +87,7 @@ ggRadar=function(data,mapping=NULL,
         # alpha=0.3
         # size=3
         # ylim=NULL
+        # use.label=TRUE
         # interactive=FALSE
 
         data=as.data.frame(data)
@@ -104,6 +108,7 @@ ggRadar=function(data,mapping=NULL,
                 xvars=colnames(data)[select]
         } else {
                 xvars=paste0(mapping[["x"]])
+                xvars
                 if(length(xvars)>1) xvars<-xvars[-1]
                 if(length(xvars)<3) warning("At least three variables are required")
         }
@@ -112,13 +117,18 @@ ggRadar=function(data,mapping=NULL,
 
 
         if(rescale) data=rescale_df(data,groupvar)
-        data
+
+        temp=get_label(data)
+        cols=ifelse(temp=="",colnames(data),temp)
+
+
         if(is.null(groupvar)) {
                 id=newColName(data)
                 data[[id]]=1
 
                 longdf=reshape2::melt(data,id.vars=id,measure.vars=xvars)
         } else{
+                cols=setdiff(cols,groupvar)
                 longdf=reshape2::melt(data,id.vars=groupvar,measure.vars=xvars)
         }
         #summary(longdf)
@@ -150,15 +160,19 @@ ggRadar=function(data,mapping=NULL,
                 p<-ggplot(data=df,aes_string(x="variable",y="value",colour=groupvar,fill=groupvar,group=groupvar))+
                         geom_polygon_interactive(aes_string(tooltip="tooltip2"),alpha=alpha)+
                         geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size,...)
+                p<-ggplot(data=df,aes_string(x="variable",y="value",colour=groupvar,fill=groupvar,group=groupvar))+
+                        geom_polygon_interactive(aes_string(tooltip="tooltip2"),alpha=alpha)+
+                        geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size)
 
         }
         p
         p<- p+ xlab("")+ylab("")+theme(legend.position=legend.position)
-
+        if(use.label) p<-p+scale_x_discrete(labels=cols)
         p<-p+coord_radar()
 
         if(!is.null(ylim)) p<-p+expand_limits(y=ylim)
 
+        p
         if(interactive){
                 tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
                 #hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
@@ -182,3 +196,5 @@ newColName=function(df){
                 no=no+1
         }
 }
+
+

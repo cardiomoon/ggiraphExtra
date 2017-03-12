@@ -9,7 +9,8 @@
 \usage{
 ggEffect(x, ...)
 
-\method{ggEffect}{default}(x, mapping, ...)
+\method{ggEffect}{default}(x, mapping, use.label = TRUE, use.labels = TRUE,
+  ...)
 
 \method{ggEffect}{formula}(x, data, ...)
 
@@ -23,6 +24,10 @@ ggEffect(x, ...)
 \item{...}{additional arguments passed to the generic function}
 
 \item{mapping}{Set of aesthetic mappings created by aes or aes_.}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{data}{A data.frame}
 

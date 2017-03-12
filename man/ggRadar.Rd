@@ -6,7 +6,7 @@
 \usage{
 ggRadar(data, mapping = NULL, rescale = TRUE, legend.position = "top",
   colour = "red", alpha = 0.3, size = 3, ylim = NULL,
-  interactive = FALSE, ...)
+  use.label = FALSE, interactive = FALSE, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -24,6 +24,8 @@ ggRadar(data, mapping = NULL, rescale = TRUE, legend.position = "top",
 \item{size}{Point size}
 
 \item{ylim}{A numeric vector of length 2, giving the y coordinates ranges.}
+
+\item{use.label}{Logical. Whether or not use column label}
 
 \item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
 

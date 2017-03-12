@@ -9,13 +9,16 @@
 #' @param digits The number of decimal place
 #' @param interactive A logical value. If TRUE, an interactive plot will be returned
 #' @param yreverse If true, reverse y axis
-#' @param angle x-axis text angle
+#' @param xangle x-axis text angle
+#' @param yangle y-axis text angle
+#' @param use.label Logical whether or not use label in case of labelled data
 #' @param ... further arguments to be passed to cor.test
 #' @importFrom mycor mycor
 #' @importFrom ggplot2 scale_fill_gradient2 coord_equal geom_text scale_x_discrete scale_y_discrete
 #' @importFrom ggiraph geom_tile_interactive
 #' @importFrom  stats na.omit
 #' @importFrom ppcor pcor spcor
+#' @importFrom sjmisc get_label
 #' @export
 #' @examples
 #' require(mycor)
@@ -28,13 +31,19 @@
 #' ggCor(mtcars,interactive=TRUE)
 #' ggCor(mtcars,mode=2,interactive=TRUE)
 #' ggCor(iris,method="pearson",interactive=TRUE)
-ggCor=function(data,what=1,label=0,colors=NULL,title=TRUE,mode=2,digits=2,interactive=FALSE,yreverse=TRUE,angle=45,...){
+ggCor=function(data,what=1,label=0,colors=NULL,title=TRUE,mode=2,digits=2,interactive=FALSE,yreverse=TRUE,
+               xangle=45,yangle=0,use.label=FALSE,...){
 
     # data=mtcars;label=0;colors=NULL;title=FALSE;mode=2;interactive=TRUE;yreverse=TRUE
     data=as.data.frame(data)
     select=sapply(data,is.numeric)
     data=data[select]
-    data=na.omit(data)
+    select=sapply(data,function(x) any(is.na(x)))
+    data=data[!select]
+    if(use.label){
+            colnames(data)=get_label(data)
+            data
+    }
     if(what==1)  {
             result=mycor(data,digits=digits,...)
             method=result$out$method
@@ -95,7 +104,7 @@ ggCor=function(data,what=1,label=0,colors=NULL,title=TRUE,mode=2,digits=2,intera
     p<-p+scale_x_discrete(limits=mynames[-length(mynames)])
     if(yreverse) p<-p+scale_y_discrete(limits=rev(mynames[-1]))
     else p<-p+scale_y_discrete(limits=mynames[-1])
-    p<-p+theme_clean2(angle=angle)
+    p<-p+theme_clean2(xangle=xangle,yangle=yangle)
     p<-p+theme(legend.position=c(0.8,0.8))+labs(fill="r value")
     }
 
@@ -110,14 +119,20 @@ ggCor=function(data,what=1,label=0,colors=NULL,title=TRUE,mode=2,digits=2,intera
     p
 }
 
+#' Clean theme for ggCor
+#'@param base_size  base font size
+#'@param xangle x-axis text angle
+#'@param yangle y-axis text angle
 #'@importFrom ggplot2 element_text
-theme_clean2=function(base_size=12, angle=45){
+#'@export
+theme_clean2=function(base_size=12, xangle=45,yangle=0){
         theme_grey(base_size) %+replace%
                 theme(
                         panel.background=element_blank(),
                         panel.grid=element_blank(),
                         axis.title=element_blank(),
-                        axis.text.x=element_text(angle=angle),
+                        axis.text.x=element_text(angle=xangle),
+                        axis.text.y=element_text(angle=yangle),
                         axis.ticks.length=unit(0,"cm"),
                         #axis.ticks.margin=unit(0,"cm"),
                         #panel.margin=unit(0,"lines"),
@@ -128,6 +143,7 @@ theme_clean2=function(base_size=12, angle=45){
 
 #' Convert p values to character
 #' @param x A vector
+#' @export
 p2chr=function(x){
         ifelse(is.na(x),"",ifelse(x<0.001,"(<.001)",paste0("(",substr(sprintf("%.3f",x),2,5),")")))
 }

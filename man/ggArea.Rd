@@ -5,7 +5,7 @@
 \title{Draw an interactive area plot}
 \usage{
 ggArea(data, mapping, palette = "Blues", reverse = TRUE, alpha = 0.4,
-  size = 0.3)
+  size = 0.3, use.label = TRUE, use.labels = TRUE)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -19,6 +19,10 @@ ggArea(data, mapping, palette = "Blues", reverse = TRUE, alpha = 0.4,
 \item{alpha}{Transparency}
 
 \item{size}{Line size}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 }
 \value{
 An area plot

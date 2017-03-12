@@ -6,7 +6,8 @@
 \usage{
 ggPie(data, mapping, addPieLabel = TRUE, showRatioPie = TRUE,
   showRatioPieAbove10 = TRUE, title = "", labelposition = 1,
-  polar = TRUE, interactive = FALSE)
+  polar = TRUE, use.label = TRUE, use.labels = TRUE,
+  interactive = FALSE)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -24,6 +25,10 @@ ggPie(data, mapping, addPieLabel = TRUE, showRatioPie = TRUE,
 \item{labelposition}{A number indicating the label position}
 
 \item{polar}{A logical value. If TRUE, coord_polar() function will be added}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
 }

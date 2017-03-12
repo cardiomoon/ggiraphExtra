@@ -1,10 +1,18 @@
+# ggiraphExtra 0.2.0
+=====================
+(2017-3-12)
+
+# bug-fixed
+
+# ggiraphExtra can handle labelled data
+
 # ggiraphExtra 0.1.7
 ====================
 (2017-3-5)
 
 # bug fixed
 
-# ggBar and ggSpine can handle panel data
+# ggBar and ggSpine can handle labelled data
 
 # ggiraphExtra 0.1.6
 ====================

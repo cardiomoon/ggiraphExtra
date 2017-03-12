@@ -13,6 +13,8 @@
 #'@param addlabel A logical value. If TRUE, label will be added to the plot
 #'@param polar A logical value. If TRUE, coord_polar() function will be added
 #'@param reverse If true, reverse palette colors
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
 #'@param ... other arguments passed on to geom_bar_interactive.
 #'@importFrom ggplot2 position_dodge position_stack position_fill
@@ -28,16 +30,19 @@
 #'ggBar(acs,aes(x=Dx,fill=smoking),interactive=TRUE,width=1,colour="white",size=0.2,polar=TRUE)
 #'ggBar(acs,aes(x=Dx,fill=smoking),position="fill",addlabel=TRUE,horizontal=TRUE,width=0.5)
 #'ggBar(acs,aes(x=Dx,fill=smoking),position="dodge",interactive=TRUE,addlabel=TRUE)
+#'ggBar(acs,aes(x=Dx,fill=smoking),position="fill",addlabel=TRUE)
 #'ggBar(rose,aes(x=Month,fill=group,y=value),stat="identity",polar=TRUE,palette="Reds",width=1,
 #'       color="black",size=0.1,reverse=TRUE,interactive=TRUE)
 ggBar=function(data,mapping,
                stat="count",position="stack",palette=NULL,
                horizontal=FALSE,yangle=0,xangle=0,maxylev=6,
-               addlabel=FALSE,polar=FALSE,reverse=FALSE,interactive=FALSE,...){
+               addlabel=FALSE,polar=FALSE,reverse=FALSE,
+               use.label=TRUE,use.labels=TRUE,
+               interactive=FALSE,...){
         # data=acs;mapping=aes(x=Dx,fill=smoking)
         # palette=NULL;position="stack";stat="count"
-        # horizontal=FALSE;yangle=0;xangle=0;maxylev=6
-        # addlabel=FALSE;polar=FALSE;interactive=FALSE;reverse=FALSE
+        # horizontal=FALSE;yangle=0;xangle=0;maxylev=6;use.label=TRUE;use.labels=TRUE
+        # addlabel=TRUE;polar=FALSE;interactive=FALSE;reverse=FALSE
 
         xvar <- fillvar <- facetvar <- yvar <- NULL
         if ("x" %in% names(mapping))
@@ -47,21 +52,47 @@ ggBar=function(data,mapping,
         if ("fill" %in% names(mapping))
                 (fillvar <- paste(mapping[["fill"]]))
 
+        (xlab=attr(data[[xvar]],"label"))
+        if(is.null(xlab)) xlab=xvar
+        if(!use.label) xlab=xvar
+        #(xvars=get_labels(data[[xvar]]))
+        (filllab=attr(data[[fillvar]],"label"))
+        if(is.null(filllab)) filllab=fillvar
+        if(!use.label) filllab=fillvar
+        #(fillvars=get_labels(data[[fillvar]]))
+        if(use.labels) data=addLabelDf(data,mapping)
+
         if(is.numeric(data[[xvar]]) &(length(unique(data[[xvar]]))<=maxylev))
                 data[[xvar]]=factor(data[[xvar]])
         if(is.numeric(data[[fillvar]]) &(length(unique(data[[fillvar]]))<=maxylev))
                 data[[fillvar]]=factor(data[[fillvar]])
         if(stat=="count") {
-                res1=table(data[[fillvar]],data[[xvar]])
-                res3=reshape2::melt(res1)
-                colnames(res3)[3]="n"
-                res2=apply(res1,2,function(x) x/sum(x,na.rm=TRUE))
-                res=reshape2::melt(res2)
-                colnames(res)=c(fillvar,xvar,"ratio")
-                res=cbind(res,n=res3$n)
-                yvar="n"
+                if(fillvar==xvar) {
+                        res1=table(data[[fillvar]])
+                        res1
+                        res3=as.data.frame(res1)
+                        res3
+                        colnames(res3)[2]="n"
+                        res3$ratio=1
+                        res=res3
+                        yvar="n"
+                        res
+                } else {
+                        res1=table(data[[fillvar]],data[[xvar]])
+                        res3=reshape2::melt(res1)
+                        colnames(res3)[3]="n"
+                        res2=apply(res1,2,function(x) x/sum(x,na.rm=TRUE))
+                        res=reshape2::melt(res2)
+                        colnames(res)=c(fillvar,xvar,"ratio")
+                        res=cbind(res,n=res3$n)
+                        yvar="n"
+                        res
+                }
+
+
         } else {
                 res=eval(parse(text=paste0("ddply(data,'",xvar,"',mutate,ratio=",yvar,"/sum(",yvar,"))")))
+                res
         }
         res[["percent"]]=scales::percent(res[["ratio"]])
         res$tooltip=paste0(xvar,"=",res[[xvar]],"\n",fillvar,"=",res[[fillvar]],
@@ -77,6 +108,10 @@ ggBar=function(data,mapping,
 
         p<-ggplot(res,aes_string(x=xvar,fill=fillvar,y=yvar,tooltip="tooltip"))+
                 geom_bar_interactive(stat="identity",position=position,...)
+        p<-ggplot(res,aes_string(x=xvar,fill=fillvar,y=yvar,tooltip="tooltip"))+
+                 geom_bar_interactive(stat="identity",position=position)
+
+
 
         if(addlabel) {
                 if(position=="stack")
@@ -94,13 +129,14 @@ ggBar=function(data,mapping,
                 }
         }
         p
-
+        p<-p+labs(x=xlab,fill=filllab,y="count")
         if(yangle!=0) p<-p+theme(axis.text.y=element_text(angle=yangle,hjust = 0.5))
         if(xangle!=0) p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
         if(polar==TRUE) p<-p+ coord_polar()
         if(horizontal==TRUE) p<-p+ coord_flip()
         direction=ifelse(reverse,-1,1)
         if(!is.null(palette)) p<-p+scale_fill_brewer(palette=palette,direction=direction)
+
         tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
         hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
         if(interactive) p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,

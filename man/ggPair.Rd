@@ -5,7 +5,7 @@
 \title{Make an interactive scatter and line plot}
 \usage{
 ggPair(data, mapping = NULL, idcolor = TRUE, horizontal = FALSE,
-  interactive = FALSE)
+  use.label = TRUE, use.labels = TRUE, interactive = FALSE)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -16,6 +16,10 @@ ggPair(data, mapping = NULL, idcolor = TRUE, horizontal = FALSE,
 
 \item{horizontal}{Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot}
 
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
+
 \item{interactive}{Logical cvalue. If TRUE, an interactive plot using ggiraph() function will be returned}
 }
 \description{
@@ -24,7 +28,8 @@ Make an interactive scatter and line plot
 \examples{
 require(ggplot2)
 require(ggiraph)
-ggPair(iris,interactive=TRUE)
+require(sjmisc)
+ggPair(iris,interactive=TRUE,use.label=FALSE)
 ggPair(iris[3:5],interactive=TRUE)
 ggPair(iris,aes(color=Species),interactive=TRUE)
 ggPair(iris,aes(color=Species),horizontal=TRUE, interactive=TRUE)

@@ -12,6 +12,8 @@
 #'@param yangle A integer. The value will be used adjust the angle of axis.text.y
 #'@param color  Color argument passed on to geom_rect_interactive.
 #'@param size Size argument passed on to geom_rect_interactive.
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param ... other arguments passed on to geom_rect_interactive.
 #'@export
 #'@return An interactive barplot
@@ -26,14 +28,26 @@
 ggHeatmap=function(data,mapping,
                    #xvar,yvar,fillvar=NULL,facetvar=NULL,
                    stat="count",palette="Blues",reverse=FALSE,
-                   addlabel=FALSE,polar=FALSE,interactive=FALSE,yangle=0,color="grey50",size=0.1,...){
+                   addlabel=FALSE,polar=FALSE,interactive=FALSE,yangle=0,color="grey50",size=0.1,
+                   use.label=TRUE,use.labels=TRUE,...){
+
+        # data=spssdata;mapping=aes(y=sexw1,x=q2w1,fill=q33a01w1)
+        # stat="count";palette="Blues";reverse=FALSE
+        # addlabel=FALSE;polar=FALSE;interactive=FALSE;yangle=0;color="grey50";size=0.1
+        # use.label=TRUE;use.labels=TRUE
 
         xvar<-fillvar<-facetvar<-yvar<-NULL
-        if("x" %in% names(mapping)) xvar<-paste(mapping[["x"]])
-        if("y" %in% names(mapping)) yvar<-paste(mapping[["y"]])
-        if("fill" %in% names(mapping)) fillvar<-paste(mapping[["fill"]])
-        if("facet" %in% names(mapping)) facetvar<-paste(mapping[["facet"]])
-
+        name=names(mapping)
+        xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
+        for(i in 1:length(name)){
+                (varname=paste0(name[i],"var"))
+                labname=paste0(name[i],"lab")
+                labelsname=paste0(name[i],"labels")
+                assign(varname,paste(mapping[[name[i]]]))
+                x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
+                assign(labname,attr(x,"label"))
+                assign(labelsname,get_labels(x))
+        }
 
     if(stat=="count") {
         df=plyr::ddply(data,c(xvar,yvar,facetvar),"nrow")
@@ -60,8 +74,8 @@ ggHeatmap=function(data,mapping,
     # gradient_colors=c("white","steelblue");fillvar="value";facetvar=NULL
     # addlabel=FALSE;polar=FALSE;interactive=FALSE;yangle=0;color="black";size=0.1
 
-    xlabels=levels(factor(df[[1]]))
-    ylabels=levels(factor(df[[2]]))
+    if(!use.labels) xlabels=levels(factor(df[[1]]))
+    if(!use.labels) ylabels=levels(factor(df[[2]]))
 
     xtotal=length(xlabels)
     x=1:xtotal
@@ -72,9 +86,10 @@ ggHeatmap=function(data,mapping,
     mycolors=palette2colors(palette,reverse=reverse)
     p<-ggplot(df,aes_string(xmin="xmin",xmax="xmax",ymin="ymin",ymax="ymax",
                             data_id="data_id",tooltip="tooltip"))+
-        geom_rect_interactive(aes_string(fill=fillvar),color=color,size=size,...)+
-        #geom_rect_interactive(aes_string(fill=fillvar),color="black",size=0.1);p
-        xlab(xvar)+ylab(yvar)
+        #geom_rect_interactive(aes_string(fill=fillvar),color=color,size=size,...)+
+        geom_rect_interactive(aes_string(fill=fillvar),color="black",size=0.1);p
+        p<-p+xlab(xvar)+ylab(yvar)
+    p
     p<-p+scale_x_continuous(breaks=x,labels=xlabels,limits = c(0.5,xtotal+0.5))
     p<-p+scale_y_continuous(breaks=y,labels=ylabels,limits = c(0.5,ytotal+0.5))
     if(yangle!=0) p<-p+theme(axis.text.y=element_text(angle=90,hjust = 0.5))
@@ -84,7 +99,21 @@ ggHeatmap=function(data,mapping,
         p<-p+geom_text(aes_string(x="xno",y="yno",label=fillvar))+guides(fill=FALSE)
     if(polar) p<-p+coord_polar()
     if(!is.null(facetvar)) p<-p+facet_wrap(facetvar)
-    p<-p+theme_bw()
+    #p<-p+theme_bw()
+    if(use.labels) {
+            if(!is.null(xlabels)) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
+            if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
+            #if(!is.null(filllabels)) p=p+scale_fill_continuous(breaks=1:length(filllabels),labels=filllabels)
+            if(!is.null(colourlabels)) p=p+scale_color_discrete(labels=colourlabels)
+            #p+scale_color_continuous(labels=colourlabels)
+    }
+    if(use.label){
+            if(!is.null(xlab)) p<-p+labs(x=xlab)
+            if(!is.null(ylab)) p<-p+labs(y=ylab)
+            if(!is.null(colourlab)) p<-p+labs(colour=colourlab)
+            if(!is.null(filllab)) p<-p+labs(fill=filllab)
+    }
+
     if(interactive) p<-ggiraph(code=print(p),zoom_max = 10)
     p
 }

@@ -8,7 +8,8 @@ ggSpine(data, mapping, stat = "count", position = "fill",
   palette = "Blues", interactive = FALSE, polar = FALSE,
   reverse = FALSE, width = NULL, maxylev = 6, digits = 1,
   colour = "black", size = 0.2, addlabel = FALSE, hide.legend = TRUE,
-  xangle = NULL, yangle = NULL, ...)
+  use.label = TRUE, use.labels = TRUE, xangle = NULL, yangle = NULL,
+  ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -42,6 +43,10 @@ c("count","identity")}
 
 \item{hide.legend}{A logical value. If TRUE, the legend is removed and y labels are recreated}
 
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
+
 \item{xangle}{angle of axis label}
 
 \item{yangle}{angle of axis label}
@@ -58,7 +63,8 @@ Draw an interactive spinogram
 require(moonBook)
 require(ggplot2)
 require(ggiraph)
-ggSpine(data=acs,aes(x=age,fill=sex),interactive=TRUE)
+require(scales)
+ggSpine(data=acs,aes(x=age,fill=sex))
 ggSpine(data=acs,aes(x=sex,fill=Dx),addlabel=TRUE,interactive=TRUE)
 ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge",addlabel=TRUE,interactive=TRUE)
 ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE,interactive=TRUE)

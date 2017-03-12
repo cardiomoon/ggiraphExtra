@@ -6,7 +6,7 @@
 \usage{
 ggCor(data, what = 1, label = 0, colors = NULL, title = TRUE,
   mode = 2, digits = 2, interactive = FALSE, yreverse = TRUE,
-  angle = 45, ...)
+  xangle = 45, yangle = 0, use.label = FALSE, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -27,7 +27,11 @@ ggCor(data, what = 1, label = 0, colors = NULL, title = TRUE,
 
 \item{yreverse}{If true, reverse y axis}
 
-\item{angle}{x-axis text angle}
+\item{xangle}{x-axis text angle}
+
+\item{yangle}{y-axis text angle}
+
+\item{use.label}{Logical whether or not use label in case of labelled data}
 
 \item{...}{further arguments to be passed to cor.test}
 }

@@ -5,7 +5,7 @@
 \title{Make an interactive catepillar plot}
 \usage{
 ggCatepillar(data, mapping, errorbar = "se", interactive = FALSE,
-  digits = 1, flip = FALSE)
+  digits = 1, flip = FALSE, use.label = TRUE, use.labels = TRUE)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -19,6 +19,10 @@ ggCatepillar(data, mapping, errorbar = "se", interactive = FALSE,
 \item{digits}{An integer indicating the number of decimal places}
 
 \item{flip}{Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 }
 \value{
 An interactive catepillar plot
@@ -30,7 +34,7 @@ Make an interactive catepillar plot
 require(moonBook)
 require(ggiraph)
 require(ggplot2)
-ggCatepillar(acs,aes(Dx,age,color=HBP),interactive=TRUE)
+ggCatepillar(acs,aes(Dx,age,color=HBP))
 ggCatepillar(acs,aes(c(Dx,sex),age,color=HBP),interactive=TRUE,flip=TRUE)
 ggCatepillar(acs,aes(age,height,color=sex),errorbar=FALSE,interactive=TRUE)
 }

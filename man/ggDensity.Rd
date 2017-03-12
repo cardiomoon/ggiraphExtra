@@ -4,7 +4,8 @@
 \alias{ggDensity}
 \title{Make a density plot with histogram}
 \usage{
-ggDensity(data, mapping, linecolor = "red", addhist = TRUE)
+ggDensity(data, mapping, linecolor = "red", addhist = TRUE,
+  use.label = TRUE, use.labels = TRUE)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -14,6 +15,10 @@ ggDensity(data, mapping, linecolor = "red", addhist = TRUE)
 \item{linecolor}{Color of density curve}
 
 \item{addhist}{Whether add histogram or not}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 }
 \description{
 Make a density plot with histogram

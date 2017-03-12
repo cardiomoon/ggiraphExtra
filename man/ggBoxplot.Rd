@@ -5,7 +5,8 @@
 \title{Draw boxplots of a data.frame}
 \usage{
 ggBoxplot(data, mapping = NULL, rescale = FALSE, horizontal = FALSE,
-  interactive = FALSE, addMean = TRUE, position = 0.9, ...)
+  interactive = FALSE, addMean = TRUE, position = 0.9, use.label = TRUE,
+  use.labels = TRUE, ...)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -21,6 +22,10 @@ ggBoxplot(data, mapping = NULL, rescale = FALSE, horizontal = FALSE,
 \item{addMean}{Whether add mean point on the plot}
 
 \item{position}{An integer. Uses as argumant of position_dodge()}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{...}{other arguments passed on to geom_boxplot_interactive}
 }

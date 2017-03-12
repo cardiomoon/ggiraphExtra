@@ -9,6 +9,8 @@
 #'@param title Plot title
 #'@param labelposition A number indicating the label position
 #'@param polar A logical value. If TRUE, coord_polar() function will be added
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
 #'@importFrom grDevices rainbow
 #'@importFrom ggplot2 geom_segment
@@ -28,7 +30,9 @@ ggPieDonut=function(data,mapping,
                     addPieLabel=TRUE,addDonutLabel=TRUE,
                     showRatioDonut=TRUE,showRatioPie=TRUE,
                     showRatioPieAbove10=TRUE,title="",
-                    labelposition=1, polar=TRUE,interactive=FALSE){
+                    labelposition=1, polar=TRUE,
+                    use.label=TRUE,use.labels=TRUE,
+                    interactive=FALSE){
 
          #data=browsers;mapping=aes(pies=browser,donuts=version,count=share)
         # data=acs;mapping=aes(donuts=Dx)
@@ -36,6 +40,8 @@ ggPieDonut=function(data,mapping,
         # showRatioDonut=TRUE;showRatioPie=TRUE
         # showRatioPieAbove10=TRUE;title=""
         # labelposition=1; polar=TRUE;interactive=FALSE
+        (cols=colnames(data))
+        if(use.labels) data=addLabelDf(data,mapping)
 
         count<-NULL
         if("y" %in% names(mapping)){
@@ -172,6 +178,21 @@ ggPieDonut=function(data,mapping,
                 }
                 if(polar) p<-p+coord_polar(theta="y",start=3*pi/2)
                 if(title!="") p<-p+ggtitle(title)
+                if(use.label){
+                        labels=c()
+                        for(i in 1:length(cols)) {
+                                temp=get_label(data[[cols[i]]])
+                                labels=c(labels,ifelse(is.null(temp),cols[i],temp))
+                        }
+                        labels
+                        # angles=(90-(0:(length(labels)-1))*(360/length(labels)))-5
+                        # angles
+                        # angles[which(angles < -90)]=angles[which(angles < -90)]+180
+                        p<-p+scale_x_discrete(labels=labels)
+                        #theme(axis.text.x=element_text(angle=angles))
+
+                }
+
                 if(interactive) p<-ggiraph(code=print(p),zoom_max=10)
                 p
 
@@ -188,6 +209,8 @@ ggPieDonut=function(data,mapping,
 #'@param polar A logical value. If TRUE, coord_polar() function will be added
 #'@param labelposition A number indicating the label position
 #'@param title Plot title
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
 #'@importFrom ggplot2 xlim geom_segment
 #'@importFrom grDevices rainbow
@@ -202,7 +225,11 @@ ggDonut=function(data,mapping,
 
                  addDonutLabel=TRUE,showRatio=TRUE,
                  polar=TRUE,labelposition=1,title="",
+                 use.label=TRUE,use.labels=TRUE,
                  interactive=FALSE){
+
+        # (cols=colnames(data))
+        if(use.labels) data=addLabelDf(data,mapping)
 
         donuts<-count<-NULL
         if("y" %in% names(mapping)) count<-paste(mapping[["y"]])
@@ -245,6 +272,21 @@ ggDonut=function(data,mapping,
                 p<- p+ geom_text(aes_string(label="donutlabel",x="3.5",y="ypos"),size=3)
         }
         if(title!="") p<-p+ggtitle(title)
+        # if(use.label){
+        #         labels=c()
+        #         for(i in 1:length(cols)) {
+        #                 temp=get_label(data[[cols[i]]])
+        #                 labels=c(labels,ifelse(is.null(temp),cols[i],temp))
+        #         }
+        #         labels
+        #         # angles=(90-(0:(length(labels)-1))*(360/length(labels)))-5
+        #         # angles
+        #         # angles[which(angles < -90)]=angles[which(angles < -90)]+180
+        #         #p<-p+scale_x_discrete(labels=labels)
+        #         #theme(axis.text.x=element_text(angle=angles))
+        #
+        # }
+
         if(interactive) p<-ggiraph(code=print(p),zoom_max = 10)
         p
 
@@ -283,6 +325,8 @@ subcolors <- function(.dta,main,mainCol){
 #'@param title Plot title
 #'@param labelposition A number indicating the label position
 #'@param polar A logical value. If TRUE, coord_polar() function will be added
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
 #'@export
 #'@return An interactive pie plot
@@ -297,13 +341,18 @@ ggPie=function(data,mapping,
                     #pies="Dx",count=NULL,
                     addPieLabel=TRUE,showRatioPie=TRUE,
                     showRatioPieAbove10=TRUE,title="",
-                    labelposition=1, polar=TRUE,interactive=FALSE){
+                    labelposition=1, polar=TRUE,
+                    use.label=TRUE,use.labels=TRUE,
+                    interactive=FALSE){
 
          # data=browsers;mapping=aes(pies=browser,count=share)
          # addPieLabel=TRUE;addDonutLabel=TRUE
          # showRatioDonut=TRUE;showRatioPie=TRUE
          # showRatioPieAbove10=TRUE;title=""
          # labelposition=1; polar=TRUE;interactive=FALSE
+
+        (cols=colnames(data))
+        if(use.labels) data=addLabelDf(data,mapping)
 
         count<-NULL
         if("y" %in% names(mapping)){
@@ -379,6 +428,21 @@ ggPie=function(data,mapping,
         }
         if(polar) p<-p+coord_polar(theta="y",start=3*pi/2)
         if(title!="") p<-p+ggtitle(title)
+        if(use.label){
+                labels=c()
+                for(i in 1:length(cols)) {
+                        temp=get_label(data[[cols[i]]])
+                        labels=c(labels,ifelse(is.null(temp),cols[i],temp))
+                }
+                labels
+                # angles=(90-(0:(length(labels)-1))*(360/length(labels)))-5
+                # angles
+                # angles[which(angles < -90)]=angles[which(angles < -90)]+180
+                p<-p+scale_x_discrete(labels=labels)
+                #theme(axis.text.x=element_text(angle=angles))
+
+        }
+
         if(interactive) p<-ggiraph(code=print(p),zoom_max=10)
         p
 

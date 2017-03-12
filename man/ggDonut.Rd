@@ -5,7 +5,8 @@
 \title{Draw a Donut plot}
 \usage{
 ggDonut(data, mapping, addDonutLabel = TRUE, showRatio = TRUE,
-  polar = TRUE, labelposition = 1, title = "", interactive = FALSE)
+  polar = TRUE, labelposition = 1, title = "", use.label = TRUE,
+  use.labels = TRUE, interactive = FALSE)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -21,6 +22,10 @@ ggDonut(data, mapping, addDonutLabel = TRUE, showRatio = TRUE,
 \item{labelposition}{A number indicating the label position}
 
 \item{title}{Plot title}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
 }

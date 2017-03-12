@@ -5,9 +5,10 @@
 \title{Make an interactive scatterplot with regression line(s)}
 \usage{
 ggPoints(data, mapping, smooth = TRUE, se = TRUE, method = "auto",
-  formula = y ~ x, fullrange = FALSE, level = 0.95, maxfactorno = 6,
-  digits = 2, title = NULL, subtitle = NULL, caption = NULL,
-  tooltip = NULL, interactive = FALSE, ...)
+  formula = y ~ x, fullrange = FALSE, level = 0.95, use.count = FALSE,
+  maxfactorno = 6, digits = 2, title = NULL, subtitle = NULL,
+  caption = NULL, use.label = TRUE, use.labels = TRUE, tooltip = NULL,
+  interactive = FALSE, ...)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -26,6 +27,8 @@ ggPoints(data, mapping, smooth = TRUE, se = TRUE, method = "auto",
 
 \item{level}{level of confidence interval to use (0.95 by default)}
 
+\item{use.count}{Logical. If true use geom_count instead of geom_point_interactive}
+
 \item{maxfactorno}{An integer. Maximum unique number of a numeric vector treated as a factor}
 
 \item{digits}{integer indicating the number of decimal places}
@@ -35,6 +38,10 @@ ggPoints(data, mapping, smooth = TRUE, se = TRUE, method = "auto",
 \item{subtitle}{The text for plot subtitle}
 
 \item{caption}{The text for plot caption}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{tooltip}{A character string of column name be included in tooltip. Default value is NULL}
 

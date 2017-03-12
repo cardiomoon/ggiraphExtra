@@ -6,8 +6,8 @@
 \usage{
 ggBar(data, mapping, stat = "count", position = "stack", palette = NULL,
   horizontal = FALSE, yangle = 0, xangle = 0, maxylev = 6,
-  addlabel = FALSE, polar = FALSE, reverse = FALSE, interactive = FALSE,
-  ...)
+  addlabel = FALSE, polar = FALSE, reverse = FALSE, use.label = TRUE,
+  use.labels = TRUE, interactive = FALSE, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -35,6 +35,10 @@ c("count","identity")}
 
 \item{reverse}{If true, reverse palette colors}
 
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
+
 \item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
 
 \item{...}{other arguments passed on to geom_bar_interactive.}
@@ -53,6 +57,7 @@ require(plyr)
 ggBar(acs,aes(x=Dx,fill=smoking),interactive=TRUE,width=1,colour="white",size=0.2,polar=TRUE)
 ggBar(acs,aes(x=Dx,fill=smoking),position="fill",addlabel=TRUE,horizontal=TRUE,width=0.5)
 ggBar(acs,aes(x=Dx,fill=smoking),position="dodge",interactive=TRUE,addlabel=TRUE)
+ggBar(acs,aes(x=Dx,fill=smoking),position="fill",addlabel=TRUE)
 ggBar(rose,aes(x=Month,fill=group,y=value),stat="identity",polar=TRUE,palette="Reds",width=1,
       color="black",size=0.1,reverse=TRUE,interactive=TRUE)
 }

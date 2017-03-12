@@ -9,7 +9,8 @@
 \usage{
 ggAncova(x, ...)
 
-\method{ggAncova}{default}(x, mapping, ...)
+\method{ggAncova}{default}(x, mapping, use.label = TRUE, use.labels = TRUE,
+  ...)
 
 \method{ggAncova}{formula}(x, data, ...)
 
@@ -22,6 +23,10 @@ ggAncova(x, ...)
 \item{...}{additional arguments passed to the generic function}
 
 \item{mapping}{Set of aesthetic mappings created by aes or aes_.}
+
+\item{use.label}{Logical. Whether or not use column label in case of labelled data}
+
+\item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{data}{a data.frame}
 

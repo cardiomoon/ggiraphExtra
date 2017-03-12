@@ -6,30 +6,46 @@
 #'@param digits An integer indicating the number of decimal places
 #'@param mode if 2, two-sided error bar will be displayed, if 1 one-sided errorbar will be displayed
 #'@param errorbar which value is displayed with errorbar :"se" or "sd"
+#'@param use.label Logical. Whether or not use column label in case of labelled data
+#'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@importFrom ggiraph geom_bar_interactive
 #'@export
 #'@return An interactive catepillar plot
 #'@examples
 #'require(ggplot2)
 #'require(ggiraph)
-#'ggErrorBar(mpg,aes(x=drv,y=cty),interactive=TRUE)
+#'ggErrorBar(mpg,aes(x=drv,y=cty))
 #'ggErrorBar(mpg,aes(x=drv,y=hwy,color=cyl),mode=1,interactive=TRUE,errorbar="sd")
-ggErrorBar=function(data,mapping,interactive=FALSE,digits=1,mode=2,errorbar="se"){
+ggErrorBar=function(data,mapping,interactive=FALSE,digits=1,mode=2,errorbar="se",
+                    use.label=TRUE,use.labels=TRUE){
 
     df<-data
 
     yvar=paste(mapping[["y"]])
+    xvar=paste(mapping[["x"]])
+    if(is.numeric(data[[xvar]])) data[[xvar]]=factor(data[[xvar]])
     (groupname=setdiff(names(mapping),c("x","y")))
     (groupvar=paste(mapping[groupname]))
     if(length(groupvar)==0) groupvar<-NULL
 
+    name=names(mapping)
+    xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
+    for(i in 1:length(name)){
+            (varname=paste0(name[i],"var"))
+            labname=paste0(name[i],"lab")
+            labelsname=paste0(name[i],"labels")
+            assign(varname,paste(mapping[[name[i]]]))
+            x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
+            assign(labname,attr(x,"label"))
+            assign(labelsname,get_labels(x))
+    }
+
     A=yvar
    (B<-groupvar)
 
-    xvar=paste0(mapping[["x"]])
-    if(length(xvar)>1) xvar<-xvar[-1]
-
     (C=xvar)
+
+
 
     if(is.null(B)){
         dat=summarySE(df,A,C)
@@ -45,7 +61,7 @@ ggErrorBar=function(data,mapping,interactive=FALSE,digits=1,mode=2,errorbar="se"
     }
 
     dat$id=as.character(1:nrow(dat))
-
+    dat
     if(is.null(B)) {
         p<-ggplot(dat,aes_string(x=xvar,fill=xvar,y=yvar,tooltip="label",data_id="id"))+guides(fill=FALSE)
     } else {
@@ -56,6 +72,21 @@ ggErrorBar=function(data,mapping,interactive=FALSE,digits=1,mode=2,errorbar="se"
                                  A,"+",errorbar,"),position=position_dodge(0.9),width=0.2)")))
 
     if(mode!=2) p<-p+geom_bar_interactive(position="dodge",stat="identity")
+    p
+    if(use.labels) {
+            if(!is.null(xlabels)) p<-p+scale_x_discrete(labels=xlabels)
+            if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
+            if(!is.null(filllabels)) p=p+scale_fill_discrete(labels=filllabels)
+            if(!is.null(colourlabels)) p=p+scale_color_discrete(labels=colourlabels)
+            #p+scale_color_continuous(labels=colourlabels)
+    }
+    if(use.label){
+            if(!is.null(xlab)) p<-p+labs(x=xlab)
+            if(!is.null(ylab)) p<-p+labs(y=ylab)
+            if(!is.null(colourlab)) p<-p+labs(colour=colourlab)
+            if(!is.null(filllab)) p<-p+labs(fill=filllab)
+    }
+    p
 
    # if(interactive) p<-ggiraph(code=print(p),zoom_max = 10)
     if(interactive){
