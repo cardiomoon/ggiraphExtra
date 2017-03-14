@@ -48,7 +48,7 @@ ggPair=function(data,mapping=NULL,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
         cols=colnames(df[xvars])
         varcount=length(xvars)
 
-        df1[["id"]]=1:nrow(df1)
+        df1[["id"]]=rownames(df1)
         temp=df1[["id"]]
         for(i in 1:(length(df1)-1)) {
                 temp=paste0(temp,"<br>",names(df1)[i],":",df1[[i]])

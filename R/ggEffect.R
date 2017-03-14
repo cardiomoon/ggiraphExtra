@@ -132,7 +132,7 @@ ggEffect.lm=function(x,
                                         name[1+no],"=",round(df[[name[1+no]]],digits),"<br>",
                                         name[1],"=",round(df[[name[1]]],digits))
                 }
-                df$data_id=1:nrow(df)
+                df$data_id=rownames(df)
                 # str(df)
                 # coef
                 # summary(fit)
@@ -192,7 +192,7 @@ ggEffect.lm=function(x,
         } else {
                 (z=name[4-no])
                 color=name[4-count]
-                df$data_id=1:nrow(df)
+                df$data_id=rownames(df)
                 if(use.rownames){
                         df$label=rownames(df)
                 } else {

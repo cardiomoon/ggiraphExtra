@@ -134,7 +134,7 @@ ggAncova.lm=function(x,label=NULL,digits=1,interactive=FALSE,...){
     if(is.null(label)) {
         df$label=paste0(df[[A]],"<br>",x,"=",round(df[[x]],1),"<br>",y,"=",round(df[[y]],digits))
     } else df$label=df[[label]]
-    df$data_id=1:nrow(df)
+    df$data_id=rownames(df)
     coef=fit$coef
     slope=rep(coef[2],length(coef)-1)
     intercept=coef[1]

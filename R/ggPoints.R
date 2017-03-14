@@ -250,7 +250,7 @@ ggPoints=function(data,mapping, smooth=TRUE,
             groupvar=unselectNumeric(data,groupvar,maxfactorno=maxfactorno)
             if(!is.null(facetname)) groupvar=c(groupvar,facetname)
     }
-    data$id=1:nrow(data)
+    data$id=rownames(data)
     if(is.null(tooltip)) data$tooltip=data$id
     else data$tooltip=data[[tooltip]]
     data$tooltip=paste0(data$tooltip,"<br>",xname,"=",data[[xname]],"<br>",yname,"=",data[[yname]])
