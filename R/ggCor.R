@@ -34,12 +34,16 @@
 ggCor=function(data,what=1,label=0,colors=NULL,title=TRUE,mode=2,digits=2,interactive=FALSE,yreverse=TRUE,
                xangle=45,yangle=0,use.label=FALSE,...){
 
-    # data=mtcars;label=0;colors=NULL;title=FALSE;mode=2;interactive=TRUE;yreverse=TRUE
+    # data=acs;what=1;label=0;colors=NULL;title=FALSE;mode=2;interactive=TRUE;yreverse=TRUE
+    # digits=2;xangle=45;yangle=0;use.label=FALSE
     data=as.data.frame(data)
     select=sapply(data,is.numeric)
     data=data[select]
-    select=sapply(data,function(x) any(is.na(x)))
-    data=data[!select]
+    if(what>1){
+
+       data=na.omit(data)
+    }
+    data
     if(use.label){
             colnames(data)=get_label(data)
             data
