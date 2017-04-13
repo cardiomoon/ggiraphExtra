@@ -57,8 +57,12 @@ ggPair=function(data,mapping=NULL,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
         df1$tooltip=temp
         #df1$tooltip=paste0(df1$id,"<br>",df1[[1]],"<br>",df[[2]])
         #str(df1)
+        addboxplot=TRUE
         longdf=reshape2::melt(df1,id=c("id","tooltip",colorvar))
-        if(is.null(colorvar) & idcolor) colorvar="id"
+        if(is.null(colorvar) & idcolor) {
+                colorvar="id"
+                addboxplot=FALSE
+        }
 
 
         #str(longdf)
@@ -71,15 +75,23 @@ ggPair=function(data,mapping=NULL,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
         if(!is.null(colorvar)) {
                 if(colorvar=="id") p <- p+guides(colour=FALSE)
         }
-        if(varcount==2) {
+        if((varcount==2)){
                 longdf1=longdf[longdf[["variable"]]==xvars[1],]
                 #longdf1$toolitip=paste0(longdf1$id,"<br>",vars[1])
+                if(addboxplot)
                 p<-p+geom_boxplot(data=longdf1,
                                   aes(x=as.numeric(longdf1[["variable"]])-0.2,group=NULL),width=0.2)
+                else
+                        p<-p+geom_boxplot(data=longdf1,
+                                          aes(x=as.numeric(longdf1[["variable"]])-0.2,colour=NULL,group=NULL),width=0.2)
                 longdf2=longdf[longdf[["variable"]]==xvars[2],]
                 #longdf2$toolitip=paste0(longdf2$id,"<br>",vars[2])
+                if(addboxplot)
                 p<-p+geom_boxplot(data=longdf2,
                                   aes(x=as.numeric(longdf2[["variable"]])+0.2,group=NULL),width=0.2)
+                else
+                        p<-p+geom_boxplot(data=longdf2,
+                                          aes(x=as.numeric(longdf2[["variable"]])+0.2,colour=NULL,group=NULL),width=0.2)
         }
         if(use.label){
                 labels=c()
