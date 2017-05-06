@@ -72,6 +72,7 @@ ggBar=function(data,mapping,
                         res1
                         res3=as.data.frame(res1)
                         res3
+                        colnames(res3)[1]=fillvar
                         colnames(res3)[2]="n"
                         res3$ratio=1
                         res=res3
@@ -128,7 +129,8 @@ ggBar=function(data,mapping,
 
                 }
         }
-        p
+        if(fillvar==xvar) p<-p+guides(fill=FALSE)
+
         p<-p+labs(x=xlab,fill=filllab,y="count")
         if(yangle!=0) p<-p+theme(axis.text.y=element_text(angle=yangle,hjust = 0.5))
         if(xangle!=0) p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
