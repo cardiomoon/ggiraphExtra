@@ -109,8 +109,8 @@ ggBar=function(data,mapping,
 
         p<-ggplot(res,aes_string(x=xvar,fill=fillvar,y=yvar,tooltip="tooltip"))+
                 geom_bar_interactive(stat="identity",position=position,...)
-        p<-ggplot(res,aes_string(x=xvar,fill=fillvar,y=yvar,tooltip="tooltip"))+
-                 geom_bar_interactive(stat="identity",position=position)
+        # p<-ggplot(res,aes_string(x=xvar,fill=fillvar,y=yvar,tooltip="tooltip"))+
+        #          geom_bar_interactive(stat="identity",position=position)
 
 
 
