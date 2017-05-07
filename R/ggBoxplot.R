@@ -26,7 +26,8 @@ ggBoxplot=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,interactive=
                    use.label=TRUE,use.labels=TRUE,...){
 #    data=acs;rescale=FALSE;horizontal=FALSE;interactive=FALSE
 
-        #data=mtcars;mapping=NULL;rescale=FALSE;horizontal=FALSE;polar=FALSE;interactive=FALSE
+        # data=mtcars;mapping=NULL;rescale=FALSE;horizontal=FALSE;polar=FALSE;interactive=FALSE;
+        # addMean=TRUE;position=0.9;use.label=TRUE;use.labels=TRUE
         data=as.data.frame(data)
         (groupname=setdiff(names(mapping),c("x","y")))
         if(length(groupname)==0) {
@@ -81,9 +82,9 @@ ggBoxplot=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,interactive=
     else colorvar=groupvar
     p<-ggplot(longdf,aes_string(y="value",x="variable",color=colorvar,fill=colorvar,
                                 data_id="id",tooltip="variable"))+
-        #geom_boxplot()
-        geom_boxplot_interactive(position=position_dodge(position),alpha=0.1,...)
 
+        geom_boxplot_interactive(position=position_dodge(position),alpha=0.1,...)
+        #geom_boxplot_interactive(position=position_dodge(position),alpha=0.1)
     if(is.null(groupvar)){
             if(addMean) p<-p+ stat_summary(fill="white",geom='point',fun.y=mean,shape=23,size=3)
         p<-p+theme(axis.title.x = element_blank(),
@@ -108,7 +109,7 @@ ggBoxplot=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,interactive=
             for(i in 1:length(xvar)){
                     labels=c(labels,get_label(data[[xvar[i]]]))
             }
-            p<-p+scale_x_discrete(labels=labels)
+            if(!is.null(labels)) p<-p+scale_x_discrete(labels=labels)
             if(!is.null(colourlab)) p<-p+labs(colour=colourlab,fill=colourlab)
     }
     p

@@ -110,7 +110,7 @@ ggViolin=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,alpha=0.1,add
             for(i in 1:length(xvar)){
                     labels=c(labels,get_label(data[[xvar[i]]]))
             }
-            p<-p+scale_x_discrete(labels=labels)
+            if(!is.null(labels)) p<-p+scale_x_discrete(labels=labels)
             if(!is.null(colourlab)) p<-p+labs(colour=colourlab,fill=colourlab)
     }
     p
