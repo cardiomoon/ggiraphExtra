@@ -24,22 +24,29 @@
 #'require(moonBook) #for use data radial
 #'ggDot(radial,aes(x=sex,y=height,fill=sex),boxfill="white",position=0,binwidth=1,boxwidth=1)
 #'ggDot(radial,aes(x=height,fill=sex),binwidth=1)
+#'ggDot(acs,aes(x=sex,y=age,color=sex))
+#'ggDot(acs,aes(x=Dx,y=age,color=Dx))
 ggDot=function(data,mapping,
                 stackdir="center",binaxis="y",binwidth=0.5,method="dotdensity",
                 position=0.2,boxwidth=0.25,
                 boxfill=NULL,use.label=TRUE,use.labels=TRUE,
                ...){
 
-         # data=radial;mapping=aes(x=sex,y=height,fill=sex)
+
          #   data=spssdata;mapping=aes(x=sexw1,y=q33a01w1,fill=sexw1)
-         # stackdir="center";binaxis="y";binwidth=0.5;method="dotdensity"
-         # position=0;boxwidth=1
-         # boxfill="white";use.label=TRUE;use.labels=TRUE;
+        #   data=acs;mapping=aes(x=smoking,y=age,fill=smoking)
+        # data=radial;mapping=aes(x=sex,y=height,fill=sex)
+        #   stackdir="center";binaxis="y";binwidth=0.5;method="dotdensity"
+        # #  position=0.2;boxwidth=0.25
+        # #  boxfill=NULL;use.label=TRUE;use.labels=TRUE;
+        # boxfill="white";position=0;binwidth=1;boxwidth=1
 
         name=names(mapping)
+        name
         xvar<-yvar<-NULL
         xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
         for(i in 1:length(name)){
+
                 (varname=paste0(name[i],"var"))
                 labname=paste0(name[i],"lab")
                 labelsname=paste0(name[i],"labels")
@@ -48,8 +55,9 @@ ggDot=function(data,mapping,
                 assign(labname,attr(x,"label"))
                 assign(labelsname,get_labels(x))
         }
-        # xlabels
-        # ylabels
+         xlabels
+         ylabels
+         yvar
         (groupname=setdiff(names(mapping),c("x","y")))
         (groupvar=paste(mapping[groupname]))
         if(length(groupvar)==0) groupvar<-NULL
@@ -89,11 +97,16 @@ ggDot=function(data,mapping,
                 p<-p+theme(legend.position='none')
         }
         p
+        #str(data[[xvar]])
+       # str(data)
+        # is.numeric(data[[xvar]])
 
         if(use.labels) {
                 if(!is.null(xlabels)) {
-                        if(is.numeric(data[[xvar]])) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
-                        else  p<-p+scale_x_discrete(labels=xlabels)
+                        if(position!=0)
+                                p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
+                         else
+                                 p<-p+scale_x_discrete(labels=xlabels)
                 }
                 if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
                 if(!is.null(filllabels)) p=p+scale_fill_discrete(labels=filllabels)
