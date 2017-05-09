@@ -96,7 +96,7 @@ ggHeatmap=function(data,mapping,
     p<- p+scale_fill_gradientn(colours=mycolors)
 
     if(addlabel)
-        p<-p+geom_text(aes_string(x="xno",y="yno",label=fillvar))+guides(fill=FALSE)
+        p<-p+geom_text(aes_string(x="xno",y="yno",label=fillvar))
     if(polar) p<-p+coord_polar()
     if(!is.null(facetvar)) p<-p+facet_wrap(facetvar)
     #p<-p+theme_bw()
