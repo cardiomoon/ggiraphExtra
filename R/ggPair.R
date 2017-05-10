@@ -1,7 +1,16 @@
+#' Rescale a vector with which minimum value 0 and maximum value 1
+#' @param x A numeric vector
+myscale=function(x){
+        if(is.factor(x)) x=as.numeric(x)
+        x=(x-min(x,na.rm=T))/(max(x,na.rm=T)-min(x,na.rm=T))
+        x
+}
+
 #' Make an interactive scatter and line plot
 #'
 #' @param data a data.frame
 #' @param mapping Set of aesthetic mappings created by aes or aes_.
+#' @param rescale if true, rescale the data.frame
 #' @param idcolor Logical cvalue. If TRUE, row numbers uses as a color variable
 #' @param horizontal Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot
 #' @param use.label Logical. Whether or not use column label in case of labelled data
@@ -19,9 +28,11 @@
 #' ggPair(iris,aes(color=Species),horizontal=TRUE, interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),interactive=TRUE)
-ggPair=function(data,mapping=NULL,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
+ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
                 use.labels=TRUE,interactive=FALSE) {
 
+         # data=iris;mapping=NULL;rescale=FALSE;idcolor=TRUE;horizontal=FALSE;use.label=TRUE;
+         # use.labels=TRUE;interactive=FALSE
 
         df=as.data.frame(data)
 
@@ -33,7 +44,10 @@ ggPair=function(data,mapping=NULL,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
         (xvars=paste0(mapping[["x"]]))
 
         (select=sapply(df,is.numeric))
-
+        if(rescale) {
+                (select1=sapply(df,is.factor))
+                select=select|select1
+        }
         if(length(paste0(mapping[["x"]]))<3) {
                 xvars=colnames(df)[select]
         } else {
@@ -42,8 +56,12 @@ ggPair=function(data,mapping=NULL,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
                 if(length(xvars)<2) warning("At least two variables are required")
         }
 
-
-        df1=df[c(xvars,colorvar)]
+        if(rescale) {
+                df1<-data.frame(lapply(df[xvars],myscale))
+        } else {
+                df1<-df[xvars]
+        }
+        if(!is.null(colorvar)) df1[[colorvar]]=df[[colorvar]]
         df1
         cols=colnames(df[xvars])
         varcount=length(xvars)
@@ -64,8 +82,6 @@ ggPair=function(data,mapping=NULL,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
                 addboxplot=FALSE
         }
 
-
-        #str(longdf)
         p<-ggplot(data=longdf,
                   aes_string(x="variable",y="value",group="id",colour=colorvar))+
                 geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"))+
@@ -112,6 +128,9 @@ ggPair=function(data,mapping=NULL,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
                 }
 
         }
+        if(rescale) p<-p+scale_y_continuous(breaks=c(0,1),labels=c("Min","Max"))
+        p<-p+theme_bw()
+        p
         tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
         hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
         if(interactive) p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
