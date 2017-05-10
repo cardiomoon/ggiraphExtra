@@ -4,13 +4,16 @@
 \alias{ggPair}
 \title{Make an interactive scatter and line plot}
 \usage{
-ggPair(data, mapping = NULL, idcolor = TRUE, horizontal = FALSE,
-  use.label = TRUE, use.labels = TRUE, interactive = FALSE)
+ggPair(data, mapping = NULL, rescale = FALSE, idcolor = TRUE,
+  horizontal = FALSE, use.label = TRUE, use.labels = TRUE,
+  interactive = FALSE)
 }
 \arguments{
 \item{data}{a data.frame}
 
 \item{mapping}{Set of aesthetic mappings created by aes or aes_.}
+
+\item{rescale}{if true, rescale the data.frame}
 
 \item{idcolor}{Logical cvalue. If TRUE, row numbers uses as a color variable}
 
@@ -30,7 +33,7 @@ require(ggplot2)
 require(ggiraph)
 require(sjmisc)
 ggPair(iris,interactive=TRUE,use.label=FALSE)
-ggPair(iris[3:5],interactive=TRUE)
+ggPair(iris,rescale=TRUE)
 ggPair(iris,aes(color=Species),interactive=TRUE)
 ggPair(iris,aes(color=Species),horizontal=TRUE, interactive=TRUE)
 ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)

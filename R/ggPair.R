@@ -2,7 +2,7 @@
 #' @param x A numeric vector
 myscale=function(x){
         if(is.factor(x)) x=as.numeric(x)
-        x=(x-min(x,na.rm=T))/(max(x,na.rm=T)-min(x,na.rm=T))
+        x=round((x-min(x,na.rm=T))/(max(x,na.rm=T)-min(x,na.rm=T)),2)
         x
 }
 
@@ -23,7 +23,7 @@ myscale=function(x){
 #' require(ggiraph)
 #' require(sjmisc)
 #' ggPair(iris,interactive=TRUE,use.label=FALSE)
-#' ggPair(iris[3:5],interactive=TRUE)
+#' ggPair(iris,rescale=TRUE)
 #' ggPair(iris,aes(color=Species),interactive=TRUE)
 #' ggPair(iris,aes(color=Species),horizontal=TRUE, interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)
