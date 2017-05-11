@@ -34,10 +34,10 @@ myscale2=function(x,minx=0,maxx=1){
 #' require(ggplot2)
 #' require(ggiraph)
 #' require(sjmisc)
-#' ggPair(iris)
-#' ggPair(iris,rescale=TRUE)
-#' ggPair(iris,rescale=TRUE,horizontal=TRUE)
-#' ggPair(iris,aes(color=Species),rescale=TRUE)
+#' ggPair(iris,interactive=TRUE)
+#' ggPair(iris,rescale=TRUE,interactive=TRUE)
+#' ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
+#' ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),horizontal=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),interactive=TRUE)
@@ -55,7 +55,7 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
                 if(is.numeric(df[[colorvar]])) df[[colorvar]]=factor(df[[colorvar]])
         }
         (xvars=paste0(mapping[["x"]]))
-
+        xvarlength=length(xvars)
         select=sapply(df,is.numeric)
         minx=min(df[select],na.rm=T)
         maxx=max(df[select],na.rm=T)
@@ -70,23 +70,25 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
                 if(length(xvars)<2) warning("At least two variables are required")
         }
 
+
+        #if(!is.null(colorvar)) df1[[colorvar]]=df[[colorvar]]
+        df1<-df[c(xvars,colorvar)]
+        cols=colnames(df[xvars])
+        varcount=length(xvars)
+
+        temp=rownames(df1)
+        count=(length(df1)-length(colorvar)+(xvarlength>0))
+        if(is.null(colorvar)&(xvarlength>0)) count=count-1
+        for(i in 1:count) {
+                temp=paste0(temp,"<br>",names(df1)[i],":",df1[[i]])
+        }
         if(rescale) {
                 df1<-data.frame(lapply(df[c(xvars,colorvar)],myscale))
         } else {
 
                 df1<-data.frame(lapply(df[c(xvars,colorvar)],myscale2,minx=minx,maxx=maxx))
         }
-        #if(!is.null(colorvar)) df1[[colorvar]]=df[[colorvar]]
-        df1
-        cols=colnames(df[xvars])
-        varcount=length(xvars)
-
         df1[["id"]]=rownames(df1)
-        temp=df1[["id"]]
-        for(i in 1:(length(df1)-1)) {
-                temp=paste0(temp,"<br>",names(df1)[i],":",df1[[i]])
-        }
-
         df1$tooltip=temp
         #df1$tooltip=paste0(df1$id,"<br>",df1[[1]],"<br>",df[[2]])
         #str(df1)
