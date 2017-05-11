@@ -6,6 +6,18 @@ myscale=function(x){
         x
 }
 
+#' Rescale a vector with which minimum value 0 and maximum value 1
+#' @param x A numeric vector
+#' @param minx The minimun value
+#' @param maxx The maximum value
+myscale2=function(x,minx=0,maxx=1){
+        if(is.factor(x)) {
+                x=as.numeric(x)
+                x=round((x-min(x,na.rm=T))/(max(x,na.rm=T)-min(x,na.rm=T)),2)
+                x=x*(maxx-minx)+minx
+        }
+        x
+}
 #' Make an interactive scatter and line plot
 #'
 #' @param data a data.frame
@@ -22,16 +34,17 @@ myscale=function(x){
 #' require(ggplot2)
 #' require(ggiraph)
 #' require(sjmisc)
-#' ggPair(iris,interactive=TRUE,use.label=FALSE)
+#' ggPair(iris)
 #' ggPair(iris,rescale=TRUE)
-#' ggPair(iris,aes(color=Species),interactive=TRUE)
-#' ggPair(iris,aes(color=Species),horizontal=TRUE, interactive=TRUE)
+#' ggPair(iris,rescale=TRUE,horizontal=TRUE)
+#' ggPair(iris,aes(color=Species),rescale=TRUE)
+#' ggPair(iris,aes(color=Species),horizontal=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),interactive=TRUE)
 ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
                 use.labels=TRUE,interactive=FALSE) {
 
-         # data=iris;mapping=NULL;rescale=FALSE;idcolor=TRUE;horizontal=FALSE;use.label=TRUE;
+         # data=iris;mapping=aes(color=Species);rescale=FALSE;idcolor=TRUE;horizontal=FALSE;use.label=TRUE;
          # use.labels=TRUE;interactive=FALSE
 
         df=as.data.frame(data)
@@ -43,11 +56,12 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         }
         (xvars=paste0(mapping[["x"]]))
 
-        (select=sapply(df,is.numeric))
-        if(rescale) {
-                (select1=sapply(df,is.factor))
-                select=select|select1
-        }
+        select=sapply(df,is.numeric)
+        minx=min(df[select],na.rm=T)
+        maxx=max(df[select],na.rm=T)
+        select1=sapply(df,is.factor)
+        select=select|select1
+
         if(length(paste0(mapping[["x"]]))<3) {
                 xvars=colnames(df)[select]
         } else {
@@ -57,11 +71,12 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         }
 
         if(rescale) {
-                df1<-data.frame(lapply(df[xvars],myscale))
+                df1<-data.frame(lapply(df[c(xvars,colorvar)],myscale))
         } else {
-                df1<-df[xvars]
+
+                df1<-data.frame(lapply(df[c(xvars,colorvar)],myscale2,minx=minx,maxx=maxx))
         }
-        if(!is.null(colorvar)) df1[[colorvar]]=df[[colorvar]]
+        #if(!is.null(colorvar)) df1[[colorvar]]=df[[colorvar]]
         df1
         cols=colnames(df[xvars])
         varcount=length(xvars)
@@ -77,6 +92,10 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         #str(df1)
         addboxplot=TRUE
         longdf=reshape2::melt(df1,id=c("id","tooltip",colorvar))
+        if(!is.null(colorvar)) {
+                colorlabels=get_labels(data[[colorvar]])
+                longdf[[colorvar]]=factor(longdf[[colorvar]],labels=colorlabels)
+        }
         if(is.null(colorvar) & idcolor) {
                 colorvar="id"
                 addboxplot=FALSE
@@ -119,15 +138,21 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
                 colorlab=get_label(data[[colorvar]])
                 if(!is.null(colorlab)) p<-p+labs(colour=colorlab)
         }
-        if(use.labels){
-                if(use.labels) {
-                        colorlabels=get_labels(data[[colorvar]])
-                        if(!is.null(colorlabels)) {
-                                p<-p+scale_color_discrete(labels=colorlabels)
-                        }
-                }
-
-        }
+        # if(use.labels){
+        #         if(use.labels) {
+        #                 colorlabels=get_labels(data[[colorvar]])
+        #                 colorlabels
+        #                 if(!is.null(colorlabels)) {
+        #                         # if(rescale) {
+        #                         #         p<-p+scale_color_discrete(labels=colorlabels)
+        #                         # } else {
+        #                                 p<-p+scale_color_continuous(breaks=sort(unique(longdf[[colorvar]])),
+        #                                                                     labels=colorlabels)
+        #                         #}
+        #                 }
+        #         }
+        #
+        # }
         if(rescale) p<-p+scale_y_continuous(breaks=c(0,1),labels=c("Min","Max"))
         p<-p+theme_bw()
         p
