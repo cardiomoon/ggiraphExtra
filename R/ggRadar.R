@@ -63,9 +63,12 @@ rescale_df=function(data,groupvar=NULL){
 #'require(ggiraph)
 #'require(plyr)
 #'require(reshape2)
+#'require(moonBook)
+#'require(sjmisc)
 #'ggRadar(data=iris,aes(group=Species))
 #'ggRadar(data=mtcars,interactive=TRUE)
 #'ggRadar(data=mtcars,aes(colour=am,facet=cyl),interactive=TRUE)
+#'ggRadar(data=acs,aes(colour=Dx,facet=Dx))
 #'ggRadar(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width)))
 ggRadar=function(data,mapping=NULL,
                  rescale=TRUE,
@@ -79,8 +82,8 @@ ggRadar=function(data,mapping=NULL,
 
         # mapping=aes(x=c(q33a01w1,q33a02w1,q33a03w1),color=sexw1)
 
-        # data=spssdata
-        # mapping=NULL
+        # data=acs
+        # mapping=aes(color=Dx,facet=Dx)
         # rescale=TRUE
         # legend.position="top"
         # colour="red"
@@ -102,6 +105,8 @@ ggRadar=function(data,mapping=NULL,
         if ("facet" %in% names(mapping))
                 (facetname <- paste(mapping[["facet"]]))
         (colorname=setdiff(groupvar,facetname))
+
+        if((length(colorname)==0) &!is.null(facetname)) colorname<-facetname
         #if(length(groupvar)>1) warning("Only one grouping variable is allowed")
         data=num2factorDf(data,groupvar)
 
@@ -140,6 +145,7 @@ ggRadar=function(data,mapping=NULL,
 
         colnames(df)[length(df)]="value"
         df
+        groupvar
         if(is.null(groupvar)){
                 id2=newColName(df)
                 df[[id2]]="all"
