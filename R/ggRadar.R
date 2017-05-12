@@ -65,7 +65,7 @@ rescale_df=function(data,groupvar=NULL){
 #'require(reshape2)
 #'ggRadar(data=iris,aes(group=Species))
 #'ggRadar(data=mtcars,interactive=TRUE)
-#'ggRadar(data=mtcars,aes(colour=am),interactive=TRUE)
+#'ggRadar(data=mtcars,aes(colour=am,facet=cyl),interactive=TRUE)
 #'ggRadar(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width)))
 ggRadar=function(data,mapping=NULL,
                  rescale=TRUE,
@@ -92,14 +92,17 @@ ggRadar=function(data,mapping=NULL,
 
         data=as.data.frame(data)
         (groupname=setdiff(names(mapping),c("x","y")))
-        #ength(groupname)
+        #length(groupname)
         if(length(groupname)==0) {
                 (groupvar<-NULL)
         } else {
                 (groupvar=paste(mapping[groupname]))
         }
-
-        if(length(groupvar)>1) warning("Only one grouping variable is allowed")
+        facetname<-colorname<-NULL
+        if ("facet" %in% names(mapping))
+                (facetname <- paste(mapping[["facet"]]))
+        (colorname=setdiff(groupvar,facetname))
+        #if(length(groupvar)>1) warning("Only one grouping variable is allowed")
         data=num2factorDf(data,groupvar)
 
         (select=sapply(data,is.numeric))
@@ -121,7 +124,6 @@ ggRadar=function(data,mapping=NULL,
         temp=get_label(data)
         cols=ifelse(temp=="",colnames(data),temp)
 
-
         if(is.null(groupvar)) {
                 id=newColName(data)
                 data[[id]]=1
@@ -137,7 +139,7 @@ ggRadar=function(data,mapping=NULL,
         df=eval(parse(text=temp))
 
         colnames(df)[length(df)]="value"
-
+        df
         if(is.null(groupvar)){
                 id2=newColName(df)
                 df[[id2]]="all"
@@ -150,22 +152,30 @@ ggRadar=function(data,mapping=NULL,
                         geom_polygon_interactive(aes_string(tooltip="tooltip2"),colour=colour,fill=colour,alpha=alpha)+
                         geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),colour=colour,size=size,...)
         } else{
-                id2=newColName(df)
-                df[[id2]]=df[[groupvar]]
+
+                if(!is.null(colorname)){
+                        id2=newColName(df)
+                        df[[id2]]=df[[colorname]]
+                }
                 id3=newColName(df)
                 df[[id3]]=1:nrow(df)
-                df$tooltip=paste0(groupvar,"=",df[[groupvar]],"<br>",df$variable,"=",round(df$value,1))
-                df$tooltip2=paste0(groupvar,"=",df[[groupvar]])
+                df$tooltip=paste0(groupvar,"=",df[[colorname]],"<br>",df$variable,"=",round(df$value,1))
+                df$tooltip2=paste0(groupvar,"=",df[[colorname]])
                 #str(df)
-                p<-ggplot(data=df,aes_string(x="variable",y="value",colour=groupvar,fill=groupvar,group=groupvar))+
+                p<-ggplot(data=df,aes_string(x="variable",y="value",colour=colorname,fill=colorname,group=colorname))+
                         geom_polygon_interactive(aes_string(tooltip="tooltip2"),alpha=alpha)+
                         geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size,...)
-                p<-ggplot(data=df,aes_string(x="variable",y="value",colour=groupvar,fill=groupvar,group=groupvar))+
-                        geom_polygon_interactive(aes_string(tooltip="tooltip2"),alpha=alpha)+
-                        geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size)
+                # p<-ggplot(data=df,aes_string(x="variable",y="value",colour=colorname,fill=colorname,group=colorname))+
+                #         geom_polygon_interactive(aes_string(tooltip="tooltip2"),alpha=alpha)+
+                #         geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size)
 
         }
         p
+        if(!is.null(facetname)) {
+                formula1=as.formula(paste0("~",facetname))
+                p<-p+facet_wrap(formula1)
+        }
+
         p<- p+ xlab("")+ylab("")+theme(legend.position=legend.position)
         if(use.label) p<-p+scale_x_discrete(labels=cols)
         p<-p+coord_radar()

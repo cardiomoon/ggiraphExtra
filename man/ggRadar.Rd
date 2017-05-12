@@ -44,7 +44,7 @@ require(plyr)
 require(reshape2)
 ggRadar(data=iris,aes(group=Species))
 ggRadar(data=mtcars,interactive=TRUE)
-ggRadar(data=mtcars,aes(colour=am),interactive=TRUE)
+ggRadar(data=mtcars,aes(colour=am,facet=cyl),interactive=TRUE)
 ggRadar(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width)))
 }
 
