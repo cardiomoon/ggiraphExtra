@@ -6,7 +6,7 @@
 \usage{
 ggPair(data, mapping = NULL, rescale = FALSE, idcolor = TRUE,
   horizontal = FALSE, use.label = TRUE, use.labels = TRUE,
-  interactive = FALSE)
+  numericOnly = TRUE, interactive = FALSE)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -23,6 +23,8 @@ ggPair(data, mapping = NULL, rescale = FALSE, idcolor = TRUE,
 
 \item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
+\item{numericOnly}{logical. Whether or not include numeric variables only}
+
 \item{interactive}{Logical cvalue. If TRUE, an interactive plot using ggiraph() function will be returned}
 }
 \description{
@@ -32,8 +34,11 @@ Make an interactive scatter and line plot
 require(ggplot2)
 require(ggiraph)
 require(sjmisc)
+require(moonBook)
 ggPair(iris,interactive=TRUE)
-ggPair(iris,rescale=TRUE,interactive=TRUE)
+ggPair(radial,aes(color=smoking),horizontal=TRUE,rescale=TRUE)
+ggPair(radial,aes(color=DM),horizontal=TRUE,rescale=TRUE,numericOnly=FALSE)
+ggPair(mtcars,horizontal=TRUE,rescale=TRUE)
 ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
 ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
 ggPair(iris,aes(color=Species),horizontal=TRUE)

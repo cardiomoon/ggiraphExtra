@@ -1,6 +1,7 @@
 #' Rescale a vector with which minimum value 0 and maximum value 1
 #' @param x A numeric vector
 myscale=function(x){
+        if(is.character(x)) x=as.numeric(factor(x))
         if(is.factor(x)) x=as.numeric(x)
         x=round((x-min(x,na.rm=T))/(max(x,na.rm=T)-min(x,na.rm=T)),2)
         x
@@ -27,6 +28,7 @@ myscale2=function(x,minx=0,maxx=1){
 #' @param horizontal Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot
 #' @param use.label Logical. Whether or not use column label in case of labelled data
 #' @param use.labels Logical. Whether or not use value labels in case of labelled data
+#' @param numericOnly logical. Whether or not include numeric variables only
 #' @param interactive Logical cvalue. If TRUE, an interactive plot using ggiraph() function will be returned
 #' @importFrom ggplot2 guides coord_flip geom_boxplot
 #' @export
@@ -34,18 +36,21 @@ myscale2=function(x,minx=0,maxx=1){
 #' require(ggplot2)
 #' require(ggiraph)
 #' require(sjmisc)
+#' require(moonBook)
 #' ggPair(iris,interactive=TRUE)
-#' ggPair(iris,rescale=TRUE,interactive=TRUE)
+#' ggPair(radial,aes(color=smoking),horizontal=TRUE,rescale=TRUE)
+#' ggPair(radial,aes(color=DM),horizontal=TRUE,rescale=TRUE,numericOnly=FALSE)
+#' ggPair(mtcars,horizontal=TRUE,rescale=TRUE)
 #' ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),horizontal=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),interactive=TRUE)
 ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
-                use.labels=TRUE,interactive=FALSE) {
+                use.labels=TRUE,numericOnly=TRUE,interactive=FALSE) {
 
-         # data=iris;mapping=aes(color=Species);rescale=FALSE;idcolor=TRUE;horizontal=FALSE;use.label=TRUE;
-         # use.labels=TRUE;interactive=FALSE
+          # data=iris[3:5];mapping=NULL;rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
+          # use.labels=TRUE;interactive=FALSE;numericOnly=TRUE
 
         df=as.data.frame(data)
 
@@ -63,7 +68,11 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         select=select|select1
 
         if(length(paste0(mapping[["x"]]))<3) {
-                xvars=colnames(df)[select]
+                if(numericOnly) {
+                        xvars=colnames(df)[select]
+                } else {
+                        xvars=colnames(df)
+                }
         } else {
                 xvars=paste0(mapping[["x"]])
                 if(length(xvars)>1) xvars<-xvars[-1]
@@ -82,6 +91,8 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         for(i in 1:count) {
                 temp=paste0(temp,"<br>",names(df1)[i],":",df1[[i]])
         }
+        df
+        xvars
         if(rescale) {
                 df1<-data.frame(lapply(df[c(xvars,colorvar)],myscale))
         } else {
@@ -94,21 +105,25 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         #str(df1)
         addboxplot=TRUE
         longdf=reshape2::melt(df1,id=c("id","tooltip",colorvar))
+        colorvar
+
         if(!is.null(colorvar)) {
                 colorlabels=get_labels(data[[colorvar]])
-                longdf[[colorvar]]=factor(longdf[[colorvar]],labels=colorlabels)
+                colorlabels
+                if(!is.null(colorlabels)) longdf[[colorvar]]=factor(longdf[[colorvar]],labels=colorlabels)
         }
         if(is.null(colorvar) & idcolor) {
                 colorvar="id"
                 addboxplot=FALSE
         }
-
+        longdf
         p<-ggplot(data=longdf,
                   aes_string(x="variable",y="value",group="id",colour=colorvar))+
                 geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"))+
                 geom_path_interactive(aes_string(data_id="id",tooltip="tooltip"))+xlab("")+ylab("")
-        p
+
         if(horizontal) p<-p+coord_flip()
+        p
         if(!is.null(colorvar)) {
                 if(colorvar=="id") p <- p+guides(colour=FALSE)
         }
@@ -130,8 +145,14 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
                         p<-p+geom_boxplot(data=longdf2,
                                           aes(x=as.numeric(longdf2[["variable"]])+0.2,colour=NULL,group=NULL),width=0.2)
         }
+        p
+
         if(use.label){
                 labels=c()
+                xvars
+                colorvar
+                if(!is.null(colorvar) &(colorvar!="id")) xvars=c(setdiff(xvars,colorvar),colorvar)
+                cols=colnames(df[xvars])
                 for(i in 1:length(xvars)){
                         temp=get_label(data[[xvars[i]]])
                         labels=c(labels,ifelse(is.null(temp),cols[i],temp))
