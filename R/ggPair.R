@@ -38,7 +38,7 @@ myscale2=function(x,minx=0,maxx=1){
 #' require(sjmisc)
 #' require(moonBook)
 #' ggPair(iris,interactive=TRUE)
-#' ggPair(radial,aes(color=smoking),horizontal=TRUE,rescale=TRUE)
+#' ggPair(acs,aes(color=smoking),numericOnly=FALSE,horizontal=TRUE,rescale=TRUE)
 #' ggPair(radial,aes(color=DM),horizontal=TRUE,rescale=TRUE,numericOnly=FALSE)
 #' ggPair(mtcars,horizontal=TRUE,rescale=TRUE)
 #' ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
@@ -49,7 +49,7 @@ myscale2=function(x,minx=0,maxx=1){
 ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
                 use.labels=TRUE,numericOnly=TRUE,interactive=FALSE) {
 
-          # data=iris[3:5];mapping=NULL;rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
+          # data=acs;mapping=aes(color=sex);rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
           # use.labels=TRUE;interactive=FALSE;numericOnly=TRUE
 
         df=as.data.frame(data)
@@ -69,7 +69,7 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
 
         if(length(paste0(mapping[["x"]]))<3) {
                 if(numericOnly) {
-                        xvars=colnames(df)[select]
+                        xvars=c(colnames(df)[select],colorvar)
                 } else {
                         xvars=colnames(df)
                 }
