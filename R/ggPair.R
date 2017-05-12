@@ -39,17 +39,17 @@ myscale2=function(x,minx=0,maxx=1){
 #' require(moonBook)
 #' ggPair(iris,interactive=TRUE)
 #' ggPair(acs,aes(color=smoking),numericOnly=FALSE,horizontal=TRUE,rescale=TRUE)
-#' ggPair(radial,aes(color=DM),horizontal=TRUE,rescale=TRUE,numericOnly=FALSE)
+#' ggPair(radial,aes(color=male),horizontal=TRUE,rescale=TRUE)
 #' ggPair(mtcars,horizontal=TRUE,rescale=TRUE)
 #' ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
-#' ggPair(iris,aes(color=Species),horizontal=TRUE)
+#' ggPair(iris,aes(color=Species),horizontal=TRUE,rescale=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),interactive=TRUE)
 ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
                 use.labels=TRUE,numericOnly=TRUE,interactive=FALSE) {
 
-          # data=acs;mapping=aes(color=sex);rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
+          # data=iris;mapping=aes(color=Species);rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
           # use.labels=TRUE;interactive=FALSE;numericOnly=TRUE
 
         df=as.data.frame(data)
@@ -65,11 +65,11 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         minx=min(df[select],na.rm=T)
         maxx=max(df[select],na.rm=T)
         select1=sapply(df,is.factor)
-        select=select|select1
+        (select=select|select1)
 
         if(length(paste0(mapping[["x"]]))<3) {
                 if(numericOnly) {
-                        xvars=c(colnames(df)[select],colorvar)
+                        xvars=union(colnames(df)[select],colorvar)
                 } else {
                         xvars=colnames(df)
                 }
@@ -78,11 +78,10 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
                 if(length(xvars)>1) xvars<-xvars[-1]
                 if(length(xvars)<2) warning("At least two variables are required")
         }
-
-
+        xvars
         #if(!is.null(colorvar)) df1[[colorvar]]=df[[colorvar]]
-        df1<-df[c(xvars,colorvar)]
-        cols=colnames(df[xvars])
+        df1<-df[union(xvars,colorvar)]
+        (cols=colnames(df[xvars]))
         varcount=length(xvars)
 
         temp=rownames(df1)
@@ -99,14 +98,16 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
 
                 df1<-data.frame(lapply(df[c(xvars,colorvar)],myscale2,minx=minx,maxx=maxx))
         }
+        summary(df1)
         df1[["id"]]=rownames(df1)
         df1$tooltip=temp
         #df1$tooltip=paste0(df1$id,"<br>",df1[[1]],"<br>",df[[2]])
         #str(df1)
         addboxplot=TRUE
+
         longdf=reshape2::melt(df1,id=c("id","tooltip",colorvar))
         colorvar
-
+        summary(longdf)
         if(!is.null(colorvar)) {
                 colorlabels=get_labels(data[[colorvar]])
                 colorlabels
@@ -116,7 +117,7 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
                 colorvar="id"
                 addboxplot=FALSE
         }
-        longdf
+        summary(longdf)
         p<-ggplot(data=longdf,
                   aes_string(x="variable",y="value",group="id",colour=colorvar))+
                 geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"))+
