@@ -44,12 +44,14 @@ myscale2=function(x,minx=0,maxx=1){
 #' ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),horizontal=TRUE,rescale=TRUE)
+#' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width),color=Species))
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),interactive=TRUE)
 ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
                 use.labels=TRUE,numericOnly=TRUE,interactive=FALSE) {
 
-          # data=iris;mapping=aes(color=Species);rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
+          # data=iris;mapping=aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width),color=Species);
+          # rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
           # use.labels=TRUE;interactive=FALSE;numericOnly=TRUE
 
         df=as.data.frame(data)
@@ -78,7 +80,7 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
                 if(length(xvars)>1) xvars<-xvars[-1]
                 if(length(xvars)<2) warning("At least two variables are required")
         }
-        xvars
+        xvars=union(xvars,colorvar)
         #if(!is.null(colorvar)) df1[[colorvar]]=df[[colorvar]]
         df1<-df[union(xvars,colorvar)]
         (cols=colnames(df[xvars]))
