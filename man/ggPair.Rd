@@ -6,7 +6,7 @@
 \usage{
 ggPair(data, mapping = NULL, rescale = FALSE, idcolor = TRUE,
   horizontal = FALSE, use.label = TRUE, use.labels = TRUE,
-  numericOnly = TRUE, interactive = FALSE)
+  includeFactor = TRUE, includeAll = FALSE, interactive = FALSE)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -23,7 +23,9 @@ ggPair(data, mapping = NULL, rescale = FALSE, idcolor = TRUE,
 
 \item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
-\item{numericOnly}{logical. Whether or not include numeric variables only}
+\item{includeFactor}{Logical. Whether or not include factor variables}
+
+\item{includeAll}{Logical. Whether or not include all variables}
 
 \item{interactive}{Logical cvalue. If TRUE, an interactive plot using ggiraph() function will be returned}
 }
@@ -35,15 +37,16 @@ require(ggplot2)
 require(ggiraph)
 require(sjmisc)
 require(moonBook)
-ggPair(iris,interactive=TRUE)
-ggPair(acs,aes(color=smoking),numericOnly=FALSE,horizontal=TRUE,rescale=TRUE)
+ggPair(iris,rescale=TRUE)
+ggPair(iris,rescale=TRUE,horizontal=TRUE)
+ggPair(acs,aes(color=smoking),horizontal=TRUE,rescale=TRUE)
 ggPair(radial,aes(color=male),horizontal=TRUE,rescale=TRUE)
 ggPair(mtcars,horizontal=TRUE,rescale=TRUE)
 ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
 ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
 ggPair(iris,aes(color=Species),horizontal=TRUE,rescale=TRUE)
-ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width),color=Species))
-ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)
-ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),interactive=TRUE)
+ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width),color=Species),horizontal=TRUE)
+ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),horizontal=TRUE,interactive=TRUE)
+ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),horizontal=TRUE,interactive=TRUE)
 }
 

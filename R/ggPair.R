@@ -28,7 +28,8 @@ myscale2=function(x,minx=0,maxx=1){
 #' @param horizontal Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot
 #' @param use.label Logical. Whether or not use column label in case of labelled data
 #' @param use.labels Logical. Whether or not use value labels in case of labelled data
-#' @param numericOnly logical. Whether or not include numeric variables only
+#' @param includeFactor Logical. Whether or not include factor variables
+#' @param includeAll Logical. Whether or not include all variables
 #' @param interactive Logical cvalue. If TRUE, an interactive plot using ggiraph() function will be returned
 #' @importFrom ggplot2 guides coord_flip geom_boxplot
 #' @export
@@ -37,22 +38,24 @@ myscale2=function(x,minx=0,maxx=1){
 #' require(ggiraph)
 #' require(sjmisc)
 #' require(moonBook)
-#' ggPair(iris,interactive=TRUE)
-#' ggPair(acs,aes(color=smoking),numericOnly=FALSE,horizontal=TRUE,rescale=TRUE)
+#' ggPair(iris,rescale=TRUE)
+#' ggPair(iris,rescale=TRUE,horizontal=TRUE)
+#' ggPair(acs,aes(color=smoking),horizontal=TRUE,rescale=TRUE)
 #' ggPair(radial,aes(color=male),horizontal=TRUE,rescale=TRUE)
 #' ggPair(mtcars,horizontal=TRUE,rescale=TRUE)
 #' ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),horizontal=TRUE,rescale=TRUE)
-#' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width),color=Species))
-#' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),interactive=TRUE)
-#' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),interactive=TRUE)
+#' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width),color=Species),horizontal=TRUE)
+#' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),horizontal=TRUE,interactive=TRUE)
+#' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),horizontal=TRUE,interactive=TRUE)
 ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
-                use.labels=TRUE,numericOnly=TRUE,interactive=FALSE) {
+                use.labels=TRUE,includeFactor=TRUE,includeAll=FALSE,interactive=FALSE) {
 
-          # data=iris;mapping=aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width),color=Species);
+          # data=iris;mapping=aes(x=c(Sepal.Length,Sepal.Width),color=Species);
+          # data=iris;mapping=NULL
           # rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
-          # use.labels=TRUE;interactive=FALSE;numericOnly=TRUE
+          # use.labels=TRUE;interactive=FALSE;includeFactor=FALSE;includeAll=FALSE
 
         df=as.data.frame(data)
 
@@ -66,21 +69,23 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         select=sapply(df,is.numeric)
         minx=min(df[select],na.rm=T)
         maxx=max(df[select],na.rm=T)
-        select1=sapply(df,is.factor)
-        (select=select|select1)
+        if(includeFactor){
+                select1=sapply(df,is.factor)
+                (select=select|select1)
+        }
+        if(length(paste0(mapping[["x"]]))==0) {
 
-        if(length(paste0(mapping[["x"]]))<3) {
-                if(numericOnly) {
-                        xvars=union(colnames(df)[select],colorvar)
-                } else {
+                if(includeAll){
                         xvars=colnames(df)
+                } else {
+                        xvars=union(colnames(df)[select],colorvar)
                 }
         } else {
                 xvars=paste0(mapping[["x"]])
                 if(length(xvars)>1) xvars<-xvars[-1]
                 if(length(xvars)<2) warning("At least two variables are required")
         }
-        xvars=union(xvars,colorvar)
+        if(horizontal) (xvars=union(xvars,colorvar))
         #if(!is.null(colorvar)) df1[[colorvar]]=df[[colorvar]]
         df1<-df[union(xvars,colorvar)]
         (cols=colnames(df[xvars]))

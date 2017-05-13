@@ -1,7 +1,7 @@
 Package: ggiraphExtra
 Type: Package
 Title: Make Interactive 'ggplot2'. Extension to 'ggplot2' and 'ggiraph'
-Version: 0.2.1.8
+Version: 0.2.1.9
 Authors@R: person("Keon-Woong", "Moon", email = "cardiomoon@gmail.com",
                   role = c("aut", "cre"))
 Maintainer: Keon-Woong Moon <cardiomoon@gmail.com>
