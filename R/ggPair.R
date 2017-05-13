@@ -49,7 +49,7 @@ myscale2=function(x,minx=0,maxx=1){
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width),color=Species),horizontal=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),horizontal=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),horizontal=TRUE,interactive=TRUE)
-ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=TRUE,
+ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=FALSE,
                 use.labels=TRUE,includeFactor=TRUE,includeAll=FALSE,interactive=FALSE) {
 
           # data=iris;mapping=aes(x=c(Sepal.Length,Sepal.Width),color=Species);
@@ -155,17 +155,19 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         }
         p
 
-        if(use.label){
+
                 labels=c()
                 xvars
                 colorvar
                 if(!is.null(colorvar) &(colorvar!="id")) xvars=c(setdiff(xvars,colorvar),colorvar)
                 cols=colnames(df[xvars])
                 for(i in 1:length(xvars)){
-                        temp=get_label(data[[xvars[i]]])
+                        temp=NULL
+                        if(use.label) temp=get_label(data[[xvars[i]]])
                         labels=c(labels,ifelse(is.null(temp),cols[i],temp))
                 }
                 p<-p+scale_x_discrete(labels=labels)
+       if(use.label){
                 colorlab=get_label(data[[colorvar]])
                 if(!is.null(colorlab)) p<-p+labs(colour=colorlab)
         }
