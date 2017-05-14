@@ -23,7 +23,7 @@
 #'require(ggplot2)
 #'require(ggiraph)
 #'require(sjmisc)
-#'ggHeatmap(acs,aes(x=Dx,y=smoking),addlabel=TRUE)
+#'ggHeatmap(acs,aes(x=Dx,y=smoking),addlabel=TRUE,interactive=TRUE)
 #'ggHeatmap(acs,aes(x=sex,y=Dx,fill=age),addlabel=TRUE,interactive=TRUE)
 #'ggHeatmap(rose,aes(x=Month,y=group,fill=value),stat="identity",addlabel=TRUE)
 #'ggHeatmap(rose,aes(x=Month,y=group,fill=value),addlabel=TRUE)
@@ -51,6 +51,7 @@ ggHeatmap=function(data,mapping,
                 assign(labname,attr(x,"label"))
                 assign(labelsname,get_labels(x))
         }
+
         mycount=length(unique(data[[xvar]]))*length(unique(data[[yvar]]))
         if(!is.null(facetvar)) mycount=mycount*length(unique(data[[facetvar]]))
         if(nrow(data)<=mycount) stat="identity"
@@ -67,7 +68,7 @@ ggHeatmap=function(data,mapping,
     }
     df
     width=1
-    df$xno=as.numeric(factor(df[[1]]))
+    (df$xno=as.numeric(factor(df[[1]])))
     df$yno=as.numeric(factor(df[[2]]))
 
     df$xmin=df$xno-width/2
@@ -84,8 +85,8 @@ ggHeatmap=function(data,mapping,
     # gradient_colors=c("white","steelblue");fillvar="value";facetvar=NULL
     # addlabel=FALSE;polar=FALSE;interactive=FALSE;yangle=0;color="black";size=0.1
 
-    if(!use.labels) xlabels=levels(factor(df[[1]]))
-    if(!use.labels) ylabels=levels(factor(df[[2]]))
+    xlabels=levels(factor(df[[1]]))
+    ylabels=levels(factor(df[[2]]))
 
     xtotal=length(xlabels)
     x=1:xtotal
