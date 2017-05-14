@@ -45,7 +45,7 @@ ggPair(mtcars,horizontal=TRUE,rescale=TRUE)
 ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
 ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
 ggPair(iris,aes(color=Species),horizontal=TRUE,rescale=TRUE)
-ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width),color=Species),horizontal=TRUE)
+ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length),color=Species),horizontal=TRUE)
 ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),horizontal=TRUE,interactive=TRUE)
 ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),horizontal=TRUE,interactive=TRUE)
 }
