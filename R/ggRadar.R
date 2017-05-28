@@ -50,6 +50,7 @@ rescale_df=function(data,groupvar=NULL){
 #'@param size  Point size
 #'@param ylim A numeric vector of length 2, giving the y coordinates ranges.
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
+#'@param scales should Scales be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")
 #'@param use.label Logical. Whether or not use column label
 #'@param ... other arguments passed on to geom_point
 #'@importFrom reshape2 melt
@@ -77,6 +78,7 @@ ggRadar=function(data,mapping=NULL,
                  alpha=0.3,
                  size=3,
                  ylim=NULL,
+                 scales="fixed",
                  use.label=FALSE,
                  interactive=FALSE,...){
 
@@ -179,7 +181,7 @@ ggRadar=function(data,mapping=NULL,
         p
         if(!is.null(facetname)) {
                 formula1=as.formula(paste0("~",facetname))
-                p<-p+facet_wrap(formula1)
+                p<-p+facet_wrap(formula1,scales=scales)
         }
 
         p<- p+ xlab("")+ylab("")+theme(legend.position=legend.position)

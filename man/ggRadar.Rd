@@ -6,7 +6,7 @@
 \usage{
 ggRadar(data, mapping = NULL, rescale = TRUE, legend.position = "top",
   colour = "red", alpha = 0.3, size = 3, ylim = NULL,
-  use.label = FALSE, interactive = FALSE, ...)
+  scales = "fixed", use.label = FALSE, interactive = FALSE, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -24,6 +24,8 @@ ggRadar(data, mapping = NULL, rescale = TRUE, legend.position = "top",
 \item{size}{Point size}
 
 \item{ylim}{A numeric vector of length 2, giving the y coordinates ranges.}
+
+\item{scales}{should Scales be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y")}
 
 \item{use.label}{Logical. Whether or not use column label}
 
