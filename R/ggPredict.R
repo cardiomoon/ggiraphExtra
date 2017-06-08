@@ -22,7 +22,7 @@
 #'ggPredict(fit4,interactive=TRUE)
 ggPredict <- function(x,...) UseMethod("ggPredict")
 
-#'@describeIn ggEffect Visualize the effect of interaction between two continuous independent variables on a response variable
+#'@describeIn ggPredict Visualize the multiple linear/logistic regression model with or without interaction
 #'
 #'@export
 ggPredict.lm=function(x,...){
@@ -61,7 +61,7 @@ ggPredict.lm=function(x,...){
         ggPredict(x=fit$model,mapping=mapping,method="lm",interaction=interaction,...)
 }
 
-#'@describeIn ggEffect Visualize the effect of interaction between two continuous independent variables on a response variable
+#'@describeIn ggPredict Visualize the multiple linear/logistic regression model with or without interaction
 #'
 #'@export
 ggPredict.glm=function(x,...){
@@ -98,7 +98,7 @@ ggPredict.glm=function(x,...){
         ggPredict(x=fit$model,mapping=mapping,method="glm",interaction=interaction,...)
 }
 
-#'@describeIn ggEffect Visualize the effect of interaction between two continuous independent variables on a response variable
+#'@describeIn ggPredict Visualize the effect of interaction between two continuous independent variables on a response variable
 #'
 #'@param mapping Set of aesthetic mappings created by aes or aes_.
 #'@param colorn Integer. Number of subgroups of color variables.

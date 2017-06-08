@@ -4,16 +4,6 @@
 #'@param ... additional arguments passed to the generic function
 #'@export
 #'
-#'@examples
-#'require(ggplot2)
-#'require(ggiraph)
-#'ggEffect(mtcars,aes(x=wt,y=mpg,color=hp),use.rownames=TRUE,interactive=TRUE)
-#'require(moonBook)
-#'ggEffect(acs,aes(x=height,y=weight,color=smoking))
-#'ggEffect(NTAV~age*smoking,data=radial,interactive=TRUE)
-#'fit=lm(age~sex*smoking,data=acs)
-#'ggEffect(fit,interactive=TRUE)
-#'ggEffect(radial,aes(x=age,y=NTAV,group=smoking))
 ggEffect <- function(x,...) UseMethod("ggEffect")
 
 
@@ -23,6 +13,13 @@ ggEffect <- function(x,...) UseMethod("ggEffect")
 #'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@export
 #'@return An interactive plot showing interaction
+#'
+#'@examples
+#'require(ggplot2)
+#'require(ggiraph)
+#'ggEffect(mtcars,aes(x=wt,y=mpg,color=hp))
+#'require(moonBook)
+#'ggEffect(acs,aes(x=height,y=weight,color=smoking))
 ggEffect.default <-function(x,mapping,use.label=TRUE,use.labels=TRUE,...) {
 
         # maping=aes(x=q33a01w1,y=q33a02w1,color=sexw1)
@@ -76,6 +73,12 @@ ggEffect.default <-function(x,mapping,use.label=TRUE,use.labels=TRUE,...) {
 #'
 #'@param data A data.frame
 #'@export
+#'
+#'@examples
+#'require(ggplot2)
+#'require(ggiraph)
+#'require(moonBook)
+#'ggEffect(NTAV~age*smoking,data=radial)
 ggEffect.formula <-function(x,data,...){
 
     # print(df)
@@ -103,6 +106,14 @@ ggEffect.formula <-function(x,data,...){
 #'@importFrom stats quantile
 #'@importFrom utils str
 #'@export
+#'
+#'@examples
+#'require(moonBook)
+#'require(ggplot2)
+#'require(ggiraph)
+#'fit=lm(age~sex*smoking,data=acs)
+#'ggEffect(fit,interactive=TRUE)
+#'ggEffect(radial,aes(x=age,y=NTAV,group=smoking))
 ggEffect.lm=function(x,
                      no=1,
                      probs=c(0.10,0.5,0.90),

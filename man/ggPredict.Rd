@@ -2,18 +2,55 @@
 % Please edit documentation in R/ggPredict.R
 \name{ggPredict}
 \alias{ggPredict}
+\alias{ggPredict.default}
+\alias{ggPredict.glm}
+\alias{ggPredict.lm}
 \title{Visualize the multiple linear/logistic regression model with or without interaction}
 \usage{
 ggPredict(x, ...)
+
+\method{ggPredict}{lm}(x, ...)
+
+\method{ggPredict}{glm}(x, ...)
+
+\method{ggPredict}{default}(x, mapping, colorn = 4, method = "glm",
+  interaction = TRUE, point = FALSE, se = FALSE, colorAsFactor = FALSE,
+  digits = 2, interactive = FALSE, ...)
 }
 \arguments{
 \item{x}{Object to ggPredict}
 
 \item{...}{additional arguments passed to the generic function}
+
+\item{mapping}{Set of aesthetic mappings created by aes or aes_.}
+
+\item{colorn}{Integer. Number of subgroups of color variables.}
+
+\item{method}{"lm" or "glm"}
+
+\item{interaction}{Logical. Whether or not include interaction between independent variables}
+
+\item{point}{Logical. Whether ot not draw each point}
+
+\item{se}{Logical. Whether ot not draw se}
+
+\item{colorAsFactor}{Logical. Whether ot not treat color variable as categorical variable}
+
+\item{digits}{An integer indicating the number of decimal places}
+
+\item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
 }
 \description{
 Visualize the multiple linear/logistic regression model with or without interaction
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{lm}: Visualize the multiple linear/logistic regression model with or without interaction
+
+\item \code{glm}: Visualize the multiple linear/logistic regression model with or without interaction
+
+\item \code{default}: Visualize the effect of interaction between two continuous independent variables on a response variable
+}}
 \examples{
 require(ggplot2)
 require(ggiraph)
