@@ -2,70 +2,42 @@
 % Please edit documentation in R/ggPredict.R
 \name{ggPredict}
 \alias{ggPredict}
-\alias{ggPredict.default}
-\alias{ggPredict.glm}
-\alias{ggPredict.lm}
-\title{Visualize the multiple linear/logistic regression model with or without interaction}
+\title{Visualize predictions from the results of various model fitting functions.}
 \usage{
-ggPredict(x, ...)
-
-\method{ggPredict}{lm}(x, ...)
-
-\method{ggPredict}{glm}(x, ...)
-
-\method{ggPredict}{default}(x, mapping, colorn = 4, method = "glm",
-  interaction = TRUE, point = FALSE, se = FALSE, colorAsFactor = FALSE,
-  digits = 2, interactive = FALSE, ...)
+ggPredict(fit, colorn = 4, point = FALSE, se = FALSE, jitter = FALSE,
+  colorAsFactor = FALSE, digits = 2, interactive = FALSE, ...)
 }
 \arguments{
-\item{x}{Object to ggPredict}
-
-\item{...}{additional arguments passed to the generic function}
-
-\item{mapping}{Set of aesthetic mappings created by aes or aes_.}
+\item{fit}{a model object for which prediction is desired.}
 
 \item{colorn}{Integer. Number of subgroups of color variables.}
-
-\item{method}{"lm" or "glm"}
-
-\item{interaction}{Logical. Whether or not include interaction between independent variables}
 
 \item{point}{Logical. Whether ot not draw each point}
 
 \item{se}{Logical. Whether ot not draw se}
+
+\item{jitter}{Logical. Whether ot not jitter points}
 
 \item{colorAsFactor}{Logical. Whether ot not treat color variable as categorical variable}
 
 \item{digits}{An integer indicating the number of decimal places}
 
 \item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
+
+\item{...}{additional arguments affecting the predictions produced.}
 }
 \description{
-Visualize the multiple linear/logistic regression model with or without interaction
+Visualize predictions from the results of various model fitting functions.
 }
-\section{Methods (by class)}{
-\itemize{
-\item \code{lm}: Visualize the multiple linear/logistic regression model with or without interaction
-
-\item \code{glm}: Visualize the multiple linear/logistic regression model with or without interaction
-
-\item \code{default}: Visualize the effect of interaction between two continuous independent variables on a response variable
-}}
 \examples{
+require(moonBook)
 require(ggplot2)
 require(ggiraph)
-require(moonBook)
+fit=lm(NTAV~age*weight,data=radial)
+ggPredict(fit,point=TRUE)
 require(TH.data)
-ggPredict(radial,aes(y=NTAV,x=age,color=sex),method="lm",se=TRUE)
-fit=lm(NTAV~age*DM,data=radial)
-ggPredict(fit,point=TRUE,interactive=TRUE)
-fit1=lm(NTAV~age*weight,data=radial)
-ggPredict(fit1,interactive=TRUE,point=TRUE)
-fit2=glm(cens~pnodes*horTh,data=GBSG2)
-ggPredict(fit2,se=TRUE,interactive=TRUE)
-fit3=glm(cens~pnodes*age,data=GBSG2)
-ggPredict(fit3,colorn=100,interactive=TRUE)
-fit4=glm(cens~pnodes*age*horTh,data=GBSG2)
-ggPredict(fit4,interactive=TRUE)
+fit1=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
+ggPredict(fit1,interactive=TRUE)
+ggPredict(fit1,colorn=100,interactive=TRUE)
 }
 

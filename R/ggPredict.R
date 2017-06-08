@@ -1,143 +1,55 @@
-#'Visualize the multiple linear/logistic regression model with or without interaction
-#'
-#'@param x Object to ggPredict
-#'@param ... additional arguments passed to the generic function
-#'@export
-#'
-#'@examples
-#'require(ggplot2)
-#'require(ggiraph)
-#'require(moonBook)
-#'require(TH.data)
-#'ggPredict(radial,aes(y=NTAV,x=age,color=sex),method="lm",se=TRUE)
-#'fit=lm(NTAV~age*DM,data=radial)
-#'ggPredict(fit,point=TRUE,interactive=TRUE)
-#'fit1=lm(NTAV~age*weight,data=radial)
-#'ggPredict(fit1,interactive=TRUE,point=TRUE)
-#'fit2=glm(cens~pnodes*horTh,data=GBSG2)
-#'ggPredict(fit2,se=TRUE,interactive=TRUE)
-#'fit3=glm(cens~pnodes*age,data=GBSG2)
-#'ggPredict(fit3,colorn=100,interactive=TRUE)
-#'fit4=glm(cens~pnodes*age*horTh,data=GBSG2)
-#'ggPredict(fit4,interactive=TRUE)
-ggPredict <- function(x,...) UseMethod("ggPredict")
-
-#'@describeIn ggPredict Visualize the multiple linear/logistic regression model with or without interaction
-#'
-#'@export
-ggPredict.lm=function(x,...){
-
-        fit<-x
-
-        names(fit$model)
-        (count=length(names(fit$model))-1)
-
-        interaction<-NULL
-        if(length(unlist(strsplit(deparse(fit$terms),"*",fixed=TRUE)))==count) interaction<-TRUE
-        else if(length(unlist(strsplit(deparse(fit$terms),"+",fixed=TRUE)))==count) interaction<-FALSE
-
-        if(count>3) {
-                warning("maximum three independent variables are allowed")
-                return
-        }
-        if(is.null(interaction)){
-                warning("only completely crossing or non-crossing models are allowed")
-                return
-        }
-
-        (yname=names(fit$model)[1])
-        (xname=names(fit$model)[2])
-        temp=paste0("aes(y=",yname,",x=",xname)
-        if(count>1) {
-                (colorname=names(fit$model)[3])
-                temp=paste0(temp,",color=",colorname)
-        }
-        if(count>2){
-                (facetname=names(fit$model)[4])
-                temp=paste0(temp,",facet=",facetname)
-        }
-        temp=paste0(temp,")")
-        mapping=eval(parse(text=temp))
-        ggPredict(x=fit$model,mapping=mapping,method="lm",interaction=interaction,...)
-}
-
-#'@describeIn ggPredict Visualize the multiple linear/logistic regression model with or without interaction
-#'
-#'@export
-ggPredict.glm=function(x,...){
-
-        fit<-x
-        (count=length(names(fit$model))-1)
-
-        interaction<-NULL
-        if(length(unlist(strsplit(deparse(fit$terms),"*",fixed=TRUE)))==count) interaction<-TRUE
-        else if(length(unlist(strsplit(deparse(fit$terms),"+",fixed=TRUE)))==count) interaction<-FALSE
-
-        if(count>3) {
-                warning("maximum three independent variables are allowed")
-                return
-        }
-        if(is.null(interaction)){
-                warning("only completely crossing or non-crossing models are allowed")
-                return
-        }
-
-        (yname=names(fit$model)[1])
-        (xname=names(fit$model)[2])
-        temp=paste0("aes(y=",yname,",x=",xname)
-        if(count>1) {
-                (colorname=names(fit$model)[3])
-                temp=paste0(temp,",color=",colorname)
-        }
-        if(count>2){
-                (facetname=names(fit$model)[4])
-                temp=paste0(temp,",facet=",facetname)
-        }
-        temp=paste0(temp,")")
-        mapping=eval(parse(text=temp))
-        ggPredict(x=fit$model,mapping=mapping,method="glm",interaction=interaction,...)
-}
-
-#'@describeIn ggPredict Visualize the effect of interaction between two continuous independent variables on a response variable
-#'
-#'@param mapping Set of aesthetic mappings created by aes or aes_.
+#'Visualize predictions from the results of various model fitting functions.
+#'@param fit a model object for which prediction is desired.
 #'@param colorn Integer. Number of subgroups of color variables.
-#'@param method "lm" or "glm"
-#'@param interaction Logical. Whether or not include interaction between independent variables
 #'@param point Logical. Whether ot not draw each point
+#'@param jitter Logical. Whether ot not jitter points
 #'@param se Logical. Whether ot not draw se
 #'@param colorAsFactor Logical. Whether ot not treat color variable as categorical variable
 #'@param digits An integer indicating the number of decimal places
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
-#'
-#'@importFrom ggplot2 geom_jitter geom_ribbon
-#'@importFrom ggiraph geom_line_interactive
+#'@param ... additional arguments affecting the predictions produced.
 #'@export
-ggPredict.default=function(x,mapping,colorn=4,method="glm",interaction=TRUE,point=FALSE,se=FALSE,
-                           colorAsFactor=FALSE,digits=2,interactive=FALSE,...) {
+#'
+#'@importFrom ggplot2 geom_ribbon geom_jitter
+#'@importFrom ggiraph geom_line_interactive
+#'@examples
+#'require(moonBook)
+#'require(ggplot2)
+#'require(ggiraph)
+#'fit=lm(NTAV~age*weight,data=radial)
+#'ggPredict(fit,point=TRUE)
+#'require(TH.data)
+#'fit1=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
+#'ggPredict(fit1,interactive=TRUE)
+#'ggPredict(fit1,colorn=100,interactive=TRUE)
+ggPredict=function(fit,colorn=4,point=FALSE,se=FALSE,jitter=FALSE,
+                   colorAsFactor=FALSE,digits=2,interactive=FALSE,...){
 
-        data<-x
+        #colorn=4;point=FALSE;se=FALSE;jitter=FALSE;colorAsFactor=FALSE;digits=2;interactive=FALSE
+
+        (count=length(names(fit$model))-1)
+
+        if(count>3) {
+                warning("maximum three independent variables are allowed")
+                return
+        }
         xname <- facetname <- colorname<-yname <- NULL
-        if ("x" %in% names(mapping))
-                xname <- paste(mapping[["x"]])
-        if ("y" %in% names(mapping))
-                yname <- paste(mapping[["y"]])
-        if ("colour" %in% names(mapping))
-                colorname <- paste(mapping[["colour"]])
-        if ("facet" %in% names(mapping))
-                facetname <- paste(mapping[["facet"]])
-
-
-        operator=ifelse(interaction,"*","+")
-        temp=paste0(method,"(",yname,"~",xname)
-        if(!is.null(colorname)) temp=paste0(temp,operator,colorname)
-        if(!is.null(facetname)) temp=paste0(temp,operator,facetname)
-        temp=paste0(temp,",data=data")
-        if(method=="glm") temp=paste0(temp,",family='binomial'")
+        (yname=names(fit$model)[1])
+        (xname=names(fit$model)[2])
+        temp=paste0("aes(y=",yname,",x=",xname)
+        if(count>1) {
+                (colorname=names(fit$model)[3])
+                temp=paste0(temp,",color=",colorname)
+        }
+        if(count>2){
+                (facetname=names(fit$model)[4])
+                temp=paste0(temp,",facet=",facetname)
+        }
         temp=paste0(temp,")")
+        mapping=eval(parse(text=temp))
 
-        model <- eval(parse(text=temp))
-        #print(summary(model))
+        data<-fit$model
+
         (uniqueXNo=length(unique(data[[xname]])))
         if(uniqueXNo>colorn) {
                 newx = pretty(data[[xname]],20)
@@ -149,13 +61,24 @@ ggPredict.default=function(x,mapping,colorn=4,method="glm",interaction=TRUE,poin
         }
 
         if(!is.null(colorname)){
+
                 uniqueColorNo=length(unique(data[[colorname]]))
                 if(uniqueColorNo>colorn){
                         newcolor=pretty(data[[colorname]],colorn-1)
                         colorcount=1
+
+
                 } else{
+                        if(is.numeric(data[[colorname]])&(length(unique(data[[colorname]]))>6)){
+                        newcolor=seq(from=min(data[[colorname]],na.rm = T),to=max(data[[colorname]],na.rm=T),
+                                     length.out=colorn)
+                        colorcount=colorn
+                        } else{
+
                         newcolor = unique(data[[colorname]])
                         colorcount=length(unique(data[[colorname]]))
+                        }
+
                 }
         }
         if(!is.null(facetname)){
@@ -190,7 +113,7 @@ ggPredict.default=function(x,mapping,colorn=4,method="glm",interaction=TRUE,poin
         }
 
 
-        result <- predict(model, newdata = newdata, type = "response",se.fit=TRUE)
+        result <- predict(fit, newdata = newdata, type = "response",se.fit=TRUE,...)
         newdata[[yname]]<-result$fit
         newdata$se.fit<-result$se.fit
         newdata$ymax<-newdata[[yname]]+result$se.fit
@@ -198,43 +121,54 @@ ggPredict.default=function(x,mapping,colorn=4,method="glm",interaction=TRUE,poin
 
         #print(summary(model))
         xcount
-        if(is.null(facetname)){
-                if(is.null(colorname)){
-                        newdata$intercept=model$coef[1]
-                        newdata$slope=model$coef[2]
-                } else if(is.numeric(newdata[[colorname]])){
+        interaction<-NULL
+        if(length(unlist(strsplit(deparse(fit$terms),"*",fixed=TRUE)))==count) interaction<-TRUE
+        else if(length(unlist(strsplit(deparse(fit$terms),"+",fixed=TRUE)))==count) interaction<-FALSE
 
-                        newdata$intercept=model$coef[1]+model$coef[2+xcount]*newdata[[colorname]]
-                        newdata$slope=ifelse(interaction,model$coef[2]+model$coef[3+xcount]*newdata[[colorname]],model$coef[2])
+        if(is.null(facetname) && !is.null(interaction)){
+                if(is.null(colorname)){
+                        newdata$intercept=fit$coef[1]
+                        newdata$slope=fit$coef[2]
+                } else
+                        if(is.numeric(newdata[[colorname]])){
+
+                        newdata$intercept=fit$coef[1]+fit$coef[2+xcount]*newdata[[colorname]]
+                        newdata$slope=ifelse(interaction,fit$coef[2]+fit$coef[3+xcount]*newdata[[colorname]],fit$coef[2])
                 } else{
                         if(!is.factor(newdata[[colorname]])) newdata[[colorname]]=factor(newdata[[colorname]])
                         newdata$start=as.numeric(newdata[[colorname]])-1
 
-                        #newdata$intercept=model$coef[1]
-                        newdata$intercept=ifelse(newdata$start==0,model$coef[1],model$coef[1]+model$coef[1+xcount+newdata$start])
-                        newdata$slope=model$coef[2]
-                        if(interaction) newdata$slope=ifelse(newdata$start==0,model$coef[2],model$coef[2]+model$coef[1+xcount+colorcount-1+newdata$start])
+                        #newdata$intercept=fit$coef[1]
+                        newdata$intercept=ifelse(newdata$start==0,fit$coef[1],fit$coef[1]+fit$coef[1+xcount+newdata$start])
+                        newdata$slope=fit$coef[2]
+                        if(interaction) newdata$slope=ifelse(newdata$start==0,fit$coef[2],fit$coef[2]+fit$coef[1+xcount+colorcount-1+newdata$start])
                 }
         }
         newdata$tooltip=""
-        if(method=="lm"){
+
+        if("glm" %in% class(fit)){
                 if(!is.null(colorname)) newdata$tooltip=paste0("for ",colorname,"=",newdata[[colorname]])
-                if(is.null(facetname)){
-                        if(xcount==1) newdata$tooltip=paste0(newdata$tooltip,"\ny=",round(newdata$slope,digits),"*x",ifelse(newdata$intercept>0,"+",""),round(newdata$intercept,digits))
-                } else{
-                        newdata$tooltip=paste0(newdata$tooltip,"\n",facetname,"=",newdata[[facetname]])
-                }
-        } else if(method=="glm"){
-                if(!is.null(colorname)) newdata$tooltip=paste0("for ",colorname,"=",newdata[[colorname]])
-                if(is.null(facetname)){
+                if(is.null(facetname) && !is.null(interaction)){
                         if(xcount==1) newdata$tooltip=paste0(newdata$tooltip,"\ny=1/(1+exp(-(",round(newdata$slope,digits),"x",ifelse(newdata$intercept>=0,"+","-"),abs(round(newdata$intercept,digits)),")))")
                 } else{
                         newdata$tooltip=paste0(newdata$tooltip,"\n",facetname,"=",newdata[[facetname]])
                 }
+        } else if(class(fit)=="lm"){
+                if(!is.null(colorname)) newdata$tooltip=paste0("for ",colorname,"=",newdata[[colorname]])
+                if(is.null(facetname) && !is.null(interaction)){
+                        if(xcount==1) newdata$tooltip=paste0(newdata$tooltip,"\ny=",round(newdata$slope,digits),"*x",ifelse(newdata$intercept>0,"+",""),round(newdata$intercept,digits))
+                } else{
+                        newdata$tooltip=paste0(newdata$tooltip,"\n",facetname,"=",newdata[[facetname]])
+                }
+        } else{
+                if(!is.null(colorname)) newdata$tooltip=paste0("for ",colorname,"=",newdata[[colorname]])
+                if(!is.null(facetname)) newdata$tooltip=paste0(newdata$tooltip,"\n",facetname,"=",newdata[[facetname]])
         }
+
         newdata
         newdata$id=rownames(newdata)
         #print(newdata)
+        if(colorAsFactor) newdata[[colorname]]=factor(newdata[[colorname]])
         p<-ggplot(data=newdata,mapping=mapping) #+
         #stat_smooth(method="glm",method.args=list(family='binomial'),se=FALSE)
 
@@ -243,10 +177,12 @@ ggPredict.default=function(x,mapping,colorn=4,method="glm",interaction=TRUE,poin
         #         geom_line()
         #
         if(point) {
+                if(colorAsFactor) data[[colorname]]=factor(data[[colorname]])
                 data$data_id=rownames(data)
                 data$tooltip=paste0(data$data_id,"\n",xname,"=",data[[xname]],"\n",yname,"=",data[[yname]])
-                if(method=="lm") p<-p+geom_point_interactive(data=data,aes_string(data_id="data_id",tooltip="tooltip"))
-                else p<-p+geom_jitter(data=data,width=0,height=0.05)
+                if(jitter) p<-p+geom_jitter(data=data,width=0,height=0.05)
+                else p<-p+geom_point_interactive(data=data,aes_string(data_id="data_id",tooltip="tooltip"))
+
         }
         newdata
         if(is.null(colorname)) {
@@ -254,7 +190,7 @@ ggPredict.default=function(x,mapping,colorn=4,method="glm",interaction=TRUE,poin
                 p<-p+geom_line_interactive(aes_string(x = xname, y = yname,tooltip="tooltip",data_id="id",group=1),size=0.75)
 
         } else {
-                if(colorAsFactor) newdata[[colorname]]=factor(newdata[[colorname]])
+
                 if(se) p<-p+geom_ribbon(aes_string(x=xname,ymin="ymin",ymax="ymax",fill=colorname,group=colorname,color=NULL),alpha=0.2)
                 p<-p+geom_line_interactive(aes_string(x = xname, y = yname,colour=colorname,group=colorname,
                                                       tooltip="tooltip",data_id="id"),size=0.75)
@@ -275,4 +211,5 @@ ggPredict.default=function(x,mapping,colorn=4,method="glm",interaction=TRUE,poin
 
 
 }
+
 
