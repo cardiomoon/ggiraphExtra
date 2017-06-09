@@ -113,7 +113,8 @@ ggPredict=function(fit,colorn=4,point=FALSE,se=FALSE,jitter=FALSE,
         }
 
 
-        result <- predict(fit, newdata = newdata, type = "response",se.fit=TRUE,...)
+        #result <- predict(fit, newdata = newdata, type = "response",se.fit=TRUE,...)
+        result <- predict(fit, newdata = newdata, type = "response",se.fit=TRUE)
         newdata[[yname]]<-result$fit
         newdata$se.fit<-result$se.fit
         newdata$ymax<-newdata[[yname]]+result$se.fit
@@ -121,19 +122,29 @@ ggPredict=function(fit,colorn=4,point=FALSE,se=FALSE,jitter=FALSE,
 
         #print(summary(model))
         xcount
+
         interaction<-NULL
+
         if(length(unlist(strsplit(deparse(fit$terms),"*",fixed=TRUE)))==count) interaction<-TRUE
         else if(length(unlist(strsplit(deparse(fit$terms),"+",fixed=TRUE)))==count) interaction<-FALSE
-
+        print("count=")
+        print(count)
+        print("interaction=")
+        print(interaction)
+        str(newdata)
         if(is.null(facetname) && !is.null(interaction)){
                 if(is.null(colorname)){
                         newdata$intercept=fit$coef[1]
                         newdata$slope=fit$coef[2]
-                } else
-                        if(is.numeric(newdata[[colorname]])){
+                } else if(is.numeric(newdata[[colorname]])){
 
                         newdata$intercept=fit$coef[1]+fit$coef[2+xcount]*newdata[[colorname]]
-                        newdata$slope=ifelse(interaction,fit$coef[2]+fit$coef[3+xcount]*newdata[[colorname]],fit$coef[2])
+                        if(interaction){
+                                newdata$slope=fit$coef[2]+fit$coef[3+xcount]*newdata[[colorname]]
+                        } else{
+                                newdata$slope=fit$coef[2]
+                        }
+
                 } else{
                         if(!is.factor(newdata[[colorname]])) newdata[[colorname]]=factor(newdata[[colorname]])
                         newdata$start=as.numeric(newdata[[colorname]])-1
@@ -145,6 +156,7 @@ ggPredict=function(fit,colorn=4,point=FALSE,se=FALSE,jitter=FALSE,
                 }
         }
         newdata$tooltip=""
+        newdata
 
         if("glm" %in% class(fit)){
                 if(!is.null(colorname)) newdata$tooltip=paste0("for ",colorname,"=",newdata[[colorname]])
