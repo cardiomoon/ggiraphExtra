@@ -1,4 +1,4 @@
-#'Visualize predictions from the results of various model fitting functions.
+#'Visualize predictions from the multiple regression models.
 #'@param fit a model object for which prediction is desired.
 #'@param colorn Integer. Number of subgroups of color variables.
 #'@param point Logical. Whether ot not draw each point
@@ -10,218 +10,238 @@
 #'@param ... additional arguments affecting the predictions produced.
 #'@export
 #'
-#'@importFrom ggplot2 geom_ribbon geom_jitter
+#'@importFrom ggplot2 geom_ribbon geom_jitter label_both
 #'@importFrom ggiraph geom_line_interactive
 #'@examples
 #'require(moonBook)
 #'require(ggplot2)
 #'require(ggiraph)
-#'fit=lm(NTAV~age*weight,data=radial)
-#'ggPredict(fit,point=TRUE)
+#'require(plyr)
+#'fit=lm(NTAV~age*weight*DM,data=radial)
+#'ggPredict(fit,interactive=TRUE)
 #'require(TH.data)
-#'fit1=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
-#'ggPredict(fit1,interactive=TRUE)
-#'ggPredict(fit1,colorn=100,interactive=TRUE)
-ggPredict=function(fit,colorn=4,point=FALSE,se=FALSE,jitter=FALSE,
-                   colorAsFactor=FALSE,digits=2,interactive=FALSE,...){
-
-        #colorn=4;point=FALSE;se=FALSE;jitter=FALSE;colorAsFactor=FALSE;digits=2;interactive=FALSE
-
-        (count=length(names(fit$model))-1)
-
-        if(count>3) {
-                warning("maximum three independent variables are allowed")
-                return
-        }
-        xname <- facetname <- colorname<-yname <- NULL
-        (yname=names(fit$model)[1])
-        (xname=names(fit$model)[2])
-        temp=paste0("aes(y=",yname,",x=",xname)
-        if(count>1) {
-                (colorname=names(fit$model)[3])
-                temp=paste0(temp,",color=",colorname)
-        }
-        if(count>2){
-                (facetname=names(fit$model)[4])
-                temp=paste0(temp,",facet=",facetname)
-        }
-        temp=paste0(temp,")")
-        mapping=eval(parse(text=temp))
-
-        data<-fit$model
-
-        (uniqueXNo=length(unique(data[[xname]])))
-        if(uniqueXNo>colorn) {
-                newx = pretty(data[[xname]],20)
-                xcount=1
-        } else {
-                newx = unique(data[[xname]])
-                if(is.numeric(data[[xname]])) xcount=1
-                else xcount=length(unique(data[[xname]]))
-        }
-
-        if(!is.null(colorname)){
-
-                uniqueColorNo=length(unique(data[[colorname]]))
-                if(uniqueColorNo>colorn){
-                        newcolor=pretty(data[[colorname]],colorn-1)
-                        colorcount=1
+#'fit1=glm(cens~pnodes*age,data=GBSG2,family=binomial)
+#'ggPredict(fit1)
+#'ggPredict(fit1,colorn=100,jitter=FALSE,interactive=TRUE)
+#'fit2=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
+#'ggPredict(fit2,interactive=TRUE)
+ggPredict=function(fit,colorn=4,point=NULL,se=FALSE,jitter=NULL,
+                   colorAsFactor=FALSE,digits=2,interactive=FALSE,...) {
 
 
-                } else{
-                        if(is.numeric(data[[colorname]])&(length(unique(data[[colorname]]))>6)){
+# colorn=4;point=TRUE;se=TRUE;jitter=FALSE;colorAsFactor=TRUE;digits=2;interactive=FALSE
+
+        #print(summary(fit))
+(count=length(names(fit$model))-1)
+
+if(count>3) {
+        warning("maximum three independent variables are allowed")
+        return
+}
+xname <- facetname <- colorname<-yname <- NULL
+(yname=names(fit$model)[1])
+(xname=names(fit$model)[2])
+temp=paste0("aes(y=",yname,",x=",xname)
+if(count>1) {
+        (colorname=names(fit$model)[3])
+        temp=paste0(temp,",color=",colorname)
+}
+if(count>2){
+        (facetname=names(fit$model)[4])
+        temp=paste0(temp,",facet=",facetname)
+}
+temp=paste0(temp,")")
+mapping=eval(parse(text=temp))
+
+data<-fit$model
+
+(uniqueXNo=length(unique(data[[xname]])))
+if(uniqueXNo>colorn) {
+        newx = pretty(data[[xname]],20)
+        xcount=1
+} else {
+        newx = unique(data[[xname]])
+        if(is.numeric(data[[xname]])) xcount=1
+        else xcount=length(unique(data[[xname]]))
+}
+
+if(!is.null(colorname)){
+
+        uniqueColorNo=length(unique(data[[colorname]]))
+        if(uniqueColorNo>colorn){
+                newcolor=pretty(data[[colorname]],colorn-1)
+                colorcount=colorn
+
+
+        } else{
+                if(is.numeric(data[[colorname]])&(length(unique(data[[colorname]]))>6)){
                         newcolor=seq(from=min(data[[colorname]],na.rm = T),to=max(data[[colorname]],na.rm=T),
                                      length.out=colorn)
                         colorcount=colorn
-                        } else{
+                } else{
 
                         newcolor = unique(data[[colorname]])
                         colorcount=length(unique(data[[colorname]]))
-                        }
-
                 }
-        }
-        if(!is.null(facetname)){
-                uniqueFacetNo=length(unique(data[[facetname]]))
-                if(uniqueFacetNo>colorn){
-                        newfacet=pretty(data[[facetname]],colorn-1)
-                        facetcount=1
-                } else{
-                        newfacet = unique(data[[facetname]])
-                        facetcount=length(unique(data[[facetname]]))
-                }
-        }
-        if(is.null(colorname)&&is.null(facetname)){
-                temp= newx
-                newdata=data.frame(temp)
-                colnames(newdata)=c(xname)
 
-        } else if(is.null(facetname)){
-
-                newdata <-expand.grid(
-                        newx=newx,
-                        newcolor=newcolor
-                )
-                colnames(newdata)=c(xname,colorname)
+        }
+}
+if(!is.null(facetname)){
+        uniqueFacetNo=length(unique(data[[facetname]]))
+        if(uniqueFacetNo>colorn){
+                newfacet=pretty(data[[facetname]],colorn-1)
+                facetcount=1
         } else{
-                newdata <-expand.grid(
-                        newx=newx,
-                        newcolor=newcolor,
-                        newfacet=newfacet
-                )
-                colnames(newdata)=c(xname,colorname,facetname)
+                newfacet = unique(data[[facetname]])
+                facetcount=length(unique(data[[facetname]]))
+        }
+}
+if(is.null(colorname)&&is.null(facetname)){
+        temp= newx
+        newdata=data.frame(temp)
+        colnames(newdata)=c(xname)
+
+} else if(is.null(facetname)){
+
+        newdata <-expand.grid(
+                newx=newx,
+                newcolor=newcolor
+        )
+        colnames(newdata)=c(xname,colorname)
+} else{
+        newdata <-expand.grid(
+                newx=newx,
+                newcolor=newcolor,
+                newfacet=newfacet
+        )
+        colnames(newdata)=c(xname,colorname,facetname)
+}
+
+
+result <- predict(fit, newdata = newdata, type = "response",se.fit=TRUE)
+newdata[[yname]]<-result$fit
+newdata$se.fit<-result$se.fit
+newdata$ymax<-newdata[[yname]]+result$se.fit
+newdata$ymin<-newdata[[yname]]-result$se.fit
+
+newdata
+
+method=""
+if("glm" %in% class(fit)){
+        method="glm"
+} else if(class(fit)=="lm"){
+        method="lm"
+}
+
+if(is.null(point)) {
+        if(method=="lm") point=TRUE
+        else point=FALSE
+}
+if(is.null(jitter)) {
+        if(method=="glm") jitter=TRUE
+        else jitter=FALSE
+}
+fit2eq=function(fit){
+        equation=""
+        slope=round(fit$coef[2],digits)
+        intercept=round(fit$coef[1],digits)
+        if(method=="lm"){
+                equation=paste0("y = ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),round(intercept,digits))
+        } else if(method=="glm"){
+                equation=paste0("y =1/(1+exp(-( ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),round(intercept,digits),")))")
+        }
+        equation
+}
+
+
+if(is.null(colorname)){ ## if color variable is absent
+
+        newdata2<-newdata
+        newdata2$tooltip=fit2eq(fit)
+        newdata2
+
+} else if(colorcount!=colorn) {    ## if color variable is categorical
+
+        temp=paste0("function(",yname,",",xname,",digits=",digits,",...) {fit=",method,"(",yname,"~",xname,");fit2eq(fit)}")
+
+        getEquation=eval(parse(text=temp))
+
+        temp=paste0("ddply(newdata,.(",colorname)
+        if(!is.null(facetname)) temp=paste0(temp,",",facetname)
+        temp=paste0(temp,"),splat(getEquation))")
+        long=eval(parse(text=temp))
+        long
+        colnames(long)[ncol(long)]="tooltip"
+        newdata2=merge(newdata,long,by=c(colorname,facetname))
+
+} else {       ## if color variable is numeric
+        fit2eq2=function(fit){
+                equation=""
+                intercept=fit$coef[1]+fit$coef[3]*newcolor
+                slope=fit$coef[2]+fit$coef[4]*newcolor
+                if(method=="lm"){
+                        equation=paste0("y = ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),round(intercept,digits))
+                } else if(method=="glm"){
+                        equation=paste0("y =1/(1+exp(-( ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),round(intercept,digits),")))")
+                }
+                equation
         }
 
+        temp=paste0("function(",yname,",",xname,",",colorname,",digits=",digits,",...) {fit=",method,"(",yname,"~",xname,"*",colorname,");fit2eq2(fit)}")
 
-        #result <- predict(fit, newdata = newdata, type = "response",se.fit=TRUE,...)
-        result <- predict(fit, newdata = newdata, type = "response",se.fit=TRUE)
-        newdata[[yname]]<-result$fit
-        newdata$se.fit<-result$se.fit
-        newdata$ymax<-newdata[[yname]]+result$se.fit
-        newdata$ymin<-newdata[[yname]]-result$se.fit
+        getEquation2=eval(parse(text=temp))
 
-        #print(summary(model))
-        xcount
+        res=eval(parse(text=paste0("ddply(data,.(",facetname,"),splat(getEquation2))")))
+        colnames(res)[2:ncol(res)]=newcolor
+        long=reshape2::melt(res,facetname,variable.name=colorname,value.name="tooltip")
 
-        interaction<-NULL
+        newdata2=merge(newdata,long,by=c(colorname,facetname))
+}
 
-        if(length(unlist(strsplit(deparse(fit$terms),"*",fixed=TRUE)))==count) interaction<-TRUE
-        else if(length(unlist(strsplit(deparse(fit$terms),"+",fixed=TRUE)))==count) interaction<-FALSE
-        print("count=")
-        print(count)
-        print("interaction=")
-        print(interaction)
-        str(newdata)
-        if(is.null(facetname) && !is.null(interaction)){
-                if(is.null(colorname)){
-                        newdata$intercept=fit$coef[1]
-                        newdata$slope=fit$coef[2]
-                } else if(is.numeric(newdata[[colorname]])){
+if(!is.null(facetname)) newdata2$tooltip=paste0("for ",facetname,"=",newdata2[[facetname]],"\n",newdata2$tooltip)
 
-                        newdata$intercept=fit$coef[1]+fit$coef[2+xcount]*newdata[[colorname]]
-                        if(interaction){
-                                newdata$slope=fit$coef[2]+fit$coef[3+xcount]*newdata[[colorname]]
-                        } else{
-                                newdata$slope=fit$coef[2]
-                        }
+if(!is.null(colorname)) {
+        newdata2$tooltip=paste0("for ",colorname,"=",newdata2[[colorname]],"\n",newdata2$tooltip)
+        if(is.numeric(newdata2[[colorname]])) newdata2[[colorname]]=round(newdata2[[colorname]],digits)
+}
 
-                } else{
-                        if(!is.factor(newdata[[colorname]])) newdata[[colorname]]=factor(newdata[[colorname]])
-                        newdata$start=as.numeric(newdata[[colorname]])-1
+newdata2$data_id=rownames(newdata2)
 
-                        #newdata$intercept=fit$coef[1]
-                        newdata$intercept=ifelse(newdata$start==0,fit$coef[1],fit$coef[1]+fit$coef[1+xcount+newdata$start])
-                        newdata$slope=fit$coef[2]
-                        if(interaction) newdata$slope=ifelse(newdata$start==0,fit$coef[2],fit$coef[2]+fit$coef[1+xcount+colorcount-1+newdata$start])
-                }
-        }
-        newdata$tooltip=""
-        newdata
+if(colorAsFactor) newdata2[[colorname]]=factor(newdata2[[colorname]])
 
-        if("glm" %in% class(fit)){
-                if(!is.null(colorname)) newdata$tooltip=paste0("for ",colorname,"=",newdata[[colorname]])
-                if(is.null(facetname) && !is.null(interaction)){
-                        if(xcount==1) newdata$tooltip=paste0(newdata$tooltip,"\ny=1/(1+exp(-(",round(newdata$slope,digits),"x",ifelse(newdata$intercept>=0,"+","-"),abs(round(newdata$intercept,digits)),")))")
-                } else{
-                        newdata$tooltip=paste0(newdata$tooltip,"\n",facetname,"=",newdata[[facetname]])
-                }
-        } else if(class(fit)=="lm"){
-                if(!is.null(colorname)) newdata$tooltip=paste0("for ",colorname,"=",newdata[[colorname]])
-                if(is.null(facetname) && !is.null(interaction)){
-                        if(xcount==1) newdata$tooltip=paste0(newdata$tooltip,"\ny=",round(newdata$slope,digits),"*x",ifelse(newdata$intercept>0,"+",""),round(newdata$intercept,digits))
-                } else{
-                        newdata$tooltip=paste0(newdata$tooltip,"\n",facetname,"=",newdata[[facetname]])
-                }
-        } else{
-                if(!is.null(colorname)) newdata$tooltip=paste0("for ",colorname,"=",newdata[[colorname]])
-                if(!is.null(facetname)) newdata$tooltip=paste0(newdata$tooltip,"\n",facetname,"=",newdata[[facetname]])
-        }
+if(is.null(colorname)) {
+        p<-ggplot(data=newdata2,aes_string(y=yname,x=xname,group=1))
+} else{
+        p<-ggplot(data=newdata2,aes_string(y=yname,x=xname,color=colorname,fill=colorname,group=colorname))
+}
 
-        newdata
-        newdata$id=rownames(newdata)
-        #print(newdata)
-        if(colorAsFactor) newdata[[colorname]]=factor(newdata[[colorname]])
-        p<-ggplot(data=newdata,mapping=mapping) #+
-        #stat_smooth(method="glm",method.args=list(family='binomial'),se=FALSE)
-
-        # ggplot(data=newdata,aes(x=Temp,y=Sample,color=Age,fill=Age,group=Age))+
-        #         geom_ribbon(aes(x=Temp,ymin=ymin,ymax=ymax,color=NULL),alpha=0.2)+
-        #         geom_line()
-        #
-        if(point) {
+if(se) p<-p+geom_ribbon(aes_string(ymin="ymin",ymax="ymax",colour=NULL),alpha=0.2)
+p
+if(point|jitter) {
+        if(!is.null(colorname)) {
                 if(colorAsFactor) data[[colorname]]=factor(data[[colorname]])
-                data$data_id=rownames(data)
-                data$tooltip=paste0(data$data_id,"\n",xname,"=",data[[xname]],"\n",yname,"=",data[[yname]])
-                if(jitter) p<-p+geom_jitter(data=data,width=0,height=0.05)
-                else p<-p+geom_point_interactive(data=data,aes_string(data_id="data_id",tooltip="tooltip"))
-
         }
-        newdata
-        if(is.null(colorname)) {
-                if(se) p<-p+geom_ribbon(aes_string(x=xname,ymin="ymin",ymax="ymax",group=1),alpha=0.2)
-                p<-p+geom_line_interactive(aes_string(x = xname, y = yname,tooltip="tooltip",data_id="id",group=1),size=0.75)
-
-        } else {
-
-                if(se) p<-p+geom_ribbon(aes_string(x=xname,ymin="ymin",ymax="ymax",fill=colorname,group=colorname,color=NULL),alpha=0.2)
-                p<-p+geom_line_interactive(aes_string(x = xname, y = yname,colour=colorname,group=colorname,
-                                                      tooltip="tooltip",data_id="id"),size=0.75)
-
-        }
-        if(!is.null(facetname)) p<-p+eval(parse(text=paste0("facet_wrap(~",facetname,")")))
-
-        p
-        if(interactive){
-                tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
-                #hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
-                hover_css="r:4px;cursor:pointer;stroke:red;stroke-width:3px;"
-                selected_css = "fill:#FF3333;stroke:black;"
-                p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
-                           zoom_max=10,hover_css=hover_css,selected_css=selected_css)
-        }
-        p
-
+        data$data_id=rownames(data)
+        data$tooltip=paste0(data$data_id,"\n",xname,"=",data[[xname]],"\n",yname,"=",data[[yname]])
+        if(jitter) p<-p+geom_jitter(data=data,width=0,height=0.05)
+        else p<-p+geom_point_interactive(data=data,aes_string(data_id="data_id",tooltip="tooltip"))
 
 }
+
+p<-p+ geom_line_interactive(aes_string(tooltip="tooltip",data_id="data_id"))
+
+if(!is.null(facetname)) p<-p+facet_wrap(as.formula(paste0("~",facetname)),labeller=label_both)
+
+if(interactive){
+        tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
+        #hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
+        hover_css="r:4px;cursor:pointer;stroke:red;stroke-width:2px;"
+        selected_css = "fill:#FF3333;stroke:black;"
+        p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
+                   zoom_max=10,hover_css=hover_css,selected_css=selected_css)
+}
+p
+}
+
 
 

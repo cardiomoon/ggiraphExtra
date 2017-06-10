@@ -2,9 +2,9 @@
 % Please edit documentation in R/ggPredict.R
 \name{ggPredict}
 \alias{ggPredict}
-\title{Visualize predictions from the results of various model fitting functions.}
+\title{Visualize predictions from the multiple regression models.}
 \usage{
-ggPredict(fit, colorn = 4, point = FALSE, se = FALSE, jitter = FALSE,
+ggPredict(fit, colorn = 4, point = NULL, se = FALSE, jitter = NULL,
   colorAsFactor = FALSE, digits = 2, interactive = FALSE, ...)
 }
 \arguments{
@@ -27,17 +27,20 @@ ggPredict(fit, colorn = 4, point = FALSE, se = FALSE, jitter = FALSE,
 \item{...}{additional arguments affecting the predictions produced.}
 }
 \description{
-Visualize predictions from the results of various model fitting functions.
+Visualize predictions from the multiple regression models.
 }
 \examples{
 require(moonBook)
 require(ggplot2)
 require(ggiraph)
-fit=lm(NTAV~age*weight,data=radial)
-ggPredict(fit,point=TRUE)
+require(plyr)
+fit=lm(NTAV~age*weight*DM,data=radial)
+ggPredict(fit,interactive=TRUE)
 require(TH.data)
-fit1=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
-ggPredict(fit1,interactive=TRUE)
-ggPredict(fit1,colorn=100,interactive=TRUE)
+fit1=glm(cens~pnodes*age,data=GBSG2,family=binomial)
+ggPredict(fit1)
+ggPredict(fit1,colorn=100,jitter=FALSE,interactive=TRUE)
+fit2=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
+ggPredict(fit2,interactive=TRUE)
 }
 
