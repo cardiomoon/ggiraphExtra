@@ -33,7 +33,7 @@ ggPredict=function(fit,colorn=4,point=NULL,jitter=NULL,se=FALSE,show.summary=FAL
                    colorAsFactor=FALSE,digits=2,interactive=FALSE,...) {
 
    #fit=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
-  # colorn=4;point=TRUE;se=FALSE;jitter=FALSE;colorAsFactor=FALSE;digits=3;interactive=FALSE;show.summary=TRUE
+   #colorn=4;point=TRUE;se=FALSE;jitter=FALSE;colorAsFactor=FALSE;digits=3;interactive=FALSE;show.summary=TRUE
 
 if(show.summary) print(summary(fit))
 (count=length(names(fit$model))-1)
@@ -58,6 +58,30 @@ temp=paste0(temp,")")
 mapping=eval(parse(text=temp))
 
 data<-fit$model
+
+xnumeric=FALSE
+if(is.numeric(data[[xname]])) {
+        xnumeric=TRUE
+} else {
+      if(count>1){
+          if(is.numeric(data[[colorname]])){
+                  temp=xname
+                  xname=colorname
+                  colorname=temp
+                  xnumeric=TRUE
+          }
+      }
+      if(!xnumeric) {
+              if(count>2) {
+                      if(is.numeric(data[[facetname]])){
+                              temp=xname
+                              xname=facetname
+                              facetname=temp
+                              xnumeric=TRUE
+                      }
+              }
+      }
+}
 
 (uniqueXNo=length(unique(data[[xname]])))
 if(uniqueXNo>colorn) {
@@ -159,17 +183,15 @@ makeEq=function(slope,intercept){
 fit2eq=function(fit){
 
         temp=""
-        #for (i in 1:xcount){
+        if(xnumeric){
                 slope=round(fit$coef[2],digits)
                 intercept=round(fit$coef[1],digits)
         #         if(xcount>1) temp=paste0("\n",xname,":",unique(data[[xname]])[i],"\n")
-        temp=paste0(temp,makeEq(slope,intercept))
-        # }
+                 temp=paste0(temp,makeEq(slope,intercept))
+        }
         temp
 }
 
-fit2eq(fit)
-summary(fit)
 # colorn
 # colorcount
 
@@ -198,12 +220,14 @@ if(is.null(colorname)){ ## if color variable is absent
 } else {       ## if color variable is numeric
         fit2eq2=function(fit){
                 equation=""
+                if(xnumeric){
                 intercept=fit$coef[1]+fit$coef[3]*newcolor
                 slope=fit$coef[2]+fit$coef[4]*newcolor
                 if(method=="lm"){
                         equation=paste0("y = ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),abs(round(intercept,digits)))
                 } else if(method=="glm"){
                         equation=paste0("y =1/(1+exp(-( ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),abs(round(intercept,digits)),")))")
+                }
                 }
                 equation
         }
