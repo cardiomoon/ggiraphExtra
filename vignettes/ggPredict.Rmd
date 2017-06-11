@@ -1,0 +1,225 @@
+---
+title: "ggPredict() - Visualize multiple regression model"
+author: "Keon-Woong Moon"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```
+To reproduce this document, you have to install R package ggiraphExtra from github.
+install.packages("devtools")
+devtools::install_github("cardiomoon/ggiraphExtra")
+```
+
+# Linear regression Model
+
+## Simple linear regression model
+
+In univariate regression model, you can use scatter plot to visualize model. For example, you can make simple linear regression model with data `radial` included in package moonBook. The radial data contains demographic data and laboratory data of 115 pateints performing IVUS(intravascular ultrasound) examination of a radial artery after tansradial coronary angiography. The NTAV(normalized total atheroma volume measured by intravascular ultrasound(IVUS) in cubic mm) is a quantitative measurement of atherosclerosis. Suppose you want to predict the amount of atherosclerosis(NTAV) from age.
+
+```{r,comment=NA}
+require(moonBook)   # for use of data radial
+fit=lm(NTAV~age,data=radial)
+summary(fit)
+```
+
+You can get the regression equation from summary of regression model:
+
+```
+y=`r round(coef(fit)[2],2)`*x+`r round(coef(fit)[1],2)`
+```
+
+You can visualize this model easly with ggplot2 package.
+```{r,comment=NA,message=FALSE,fig.width=5,fig.height=5}
+require(ggplot2)
+ggplot(radial,aes(y=NTAV,x=age))+geom_point()+geom_smooth(method="lm")
+```
+
+You can make interactive plot easily with ggPredict() function included in ggiraphExtra package.
+
+```{r,comment=NA,message=FALSE}
+require(ggiraph)
+require(ggiraphExtra)
+require(plyr)
+ggPredict(fit,se=TRUE,interactive=TRUE)
+```
+With this plot, you can identify the points and see the regression equation with your mouse.
+
+
+## Multiple regression model without interaction
+
+You can make a regession model with two predictor variables. Now you can use age and sex as predcitor variables.
+
+
+```{r,comment=NA}
+fit1=lm(NTAV~age+sex,data=radial)
+summary(fit1)
+```
+
+From the result of regression analysis, you can get regression regression equations of female and male patients :
+
+```
+For female patient, y=`r round(coef(fit1)[2],2)`*x+`r round(coef(fit1)[1],2)`
+For male patient, y=`r round(coef(fit1)[2],2)`*x+`r round(coef(fit1)[1],2)+round(coef(fit1)[3],2)`
+```
+
+You can visualize this model with ggplot2 package.
+```{r,comment=NA,message=FALSE,fig.width=5,fig.height=5}
+
+equation1=function(x){coef(fit1)[2]*x+coef(fit1)[1]}
+equation2=function(x){coef(fit1)[2]*x+coef(fit1)[1]+coef(fit1)[3]}
+
+ggplot(radial,aes(y=NTAV,x=age,color=sex))+geom_point()+
+        stat_function(fun=equation1,geom="line",color=scales::hue_pal()(2)[1])+
+        stat_function(fun=equation2,geom="line",color=scales::hue_pal()(2)[2])
+
+```
+You can make interactive plot easily with ggPredict() function included in ggiraphExtra package.
+```{r}
+ggPredict(fit1,se=TRUE,interactive=TRUE)
+```
+
+
+## Multiple regression model with interaction
+
+You can make a regession model with two predictor variables with interaction. Now you can use age and DM(diabetes mellitus) and interaction between age and DM as predcitor variables.
+
+
+```{r,comment=NA}
+fit2=lm(NTAV~age*DM,data=radial)
+summary(fit2)
+```
+
+The regression equation in this model are as follows: For patients without DM(DM=0), the intercept is 49.65 and the slope is 0.29. For patients with DM(DM=1), the intercept is 49.65-20.86 and the slope is 0.29+0.35.
+
+```
+For patients without DM(DM=0), y=`r round(coef(fit2)[2],2)`*x+`r round(coef(fit2)[1],2)`
+For patients without DM(DM=1), y=`r round((coef(fit2)[2]+coef(fit2)[4]),2)`*x+`r round((coef(fit2)[1]+coef(fit2)[3]),2)`
+```
+
+You can visualize this model with ggplot2.
+
+```{r,comment=NA,message=FALSE,fig.width=5,fig.height=5}
+ggplot(radial,aes(y=NTAV,x=age,color=factor(DM)))+geom_point()+stat_smooth(method="lm",se=FALSE)
+```
+
+You can make interactive plot easily with ggPredict() function included in ggiraphExtra package.
+```{r}
+ggPredict(fit2,colorAsFactor = TRUE,interactive=TRUE)
+```
+
+## Multiple regression model with two continuous predictor variables with or without interaction
+
+You can make a regession model with two continuous predictor variables. Now you can use age and weight(body weight in kilogram) as predcitor variables.
+
+```{r,comment=NA}
+fit3=lm(NTAV~age*weight,data=radial)
+summary(fit3)
+```
+
+From the analysis, you can get the regression equation for a patient with body weight 40kg, the intercept is 37.61+(-0.10416)\*40 and the slope is -0.33+0.01468\*40
+
+```
+For bodyweight 40kg, y=`r round(coef(fit3)[2]+coef(fit3)[4]*40,2)`*x+`r round(coef(fit3)[1]+coef(fit3)[3]*40,2)`
+For bodyweight 50kg, y=`r round(coef(fit3)[2]+coef(fit3)[4]*50,2)`*x+`r round(coef(fit3)[1]+coef(fit3)[3]*50,2)`
+For bodyweight 90kg, y=`r round(coef(fit3)[2]+coef(fit3)[4]*90,2)`*x+`r round(coef(fit3)[1]+coef(fit3)[3]*90,2)`
+```
+
+To visualize this model, the simple ggplot command shows only one regression line.
+
+```{r,comment=NA,message=FALSE,fig.width=5,fig.height=5}
+ggplot(radial,aes(y=NTAV,x=age,color=weight))+geom_point()+stat_smooth(method="lm",se=FALSE)
+```
+
+You can easily show this model with ggPredict() function.
+
+```{r}
+ggPredict(fit3,interactive=TRUE)
+```
+
+
+### Multiple regression model with three predcitor variables
+
+You can make a regession model with three predictor variables. Now you can use age and weight(body weight in kilogram) and HBP(hypertension) as predcitor variables.
+
+```{r,comment=NA,message=FALSE,fig.width=5,fig.height=5}
+fit4=lm(NTAV~age*weight*HBP,data=radial)
+summary(fit4)
+```
+
+From the analysis result, you can get the regression equation for a patient without hypertension(HBP=0) and body weight 60kg: the intercept is 64.12+(-0.39685\*60) and the slope is -0.67650+(0.01686\*60). The equation for a patient with hypertension(HBP=1) and same body weight: the intercept is 64.12+(-0.39685\*60-101.94) and the slope is -0.67650+(0.01686\*60)+1.27972+(-001666*60).
+
+To visualize this model, you can make a faceted plot with ggPredict() function. You can see the regression equation of each subset with hovering your mouse on the regression lines. 
+
+```{r}
+ggPredict(fit4,interactive = TRUE)
+```
+
+
+# Logistic regression model
+
+## Multiple logistic regression model with two predictor variables
+
+### Model with interaction
+You can use glm() function to make a logistic regression model. The GBSG2 data in package TH.data contains data from German Breast Cancer Study Group 2. Suppose you want to predict survival with number of positive nodes and hormonal therapy.
+
+```{r,comment=NA,message=FALSE}
+require(TH.data) # for use data GBSG2
+fit5=glm(cens~pnodes*horTh,data=GBSG2,family=binomial)
+summary(fit5)
+```
+
+You can easily visualize this modelwith ggPredict funition().
+```{r}
+ggPredict(fit5,se=TRUE,interactive=TRUE,digits=3)
+```
+### Model without interaction
+
+You can make multiple logistic regression model with no interaction between predictor variables.
+
+```{r,comment=NA,message=FALSE}
+fit6=glm(cens~pnodes+horTh,data=GBSG2,family=binomial)
+summary(fit6)
+```
+
+```{r}
+ggPredict(fit6,se=TRUE,interactive=TRUE,digits=3)
+```
+
+## Multiple logistic regression model with two continuous predictor variables
+
+You can make multiple logistic regression model with two continuous variables with interaction.
+
+
+```{r,comment=NA,message=FALSE}
+fit7=glm(cens~pnodes*age,data=GBSG2,family=binomial)
+summary(fit7)
+```
+
+```{r,warning=FALSE}
+ggPredict(fit7,interactive=TRUE)
+```
+
+You can adjust the number of regression lines with parameter colorn. for eample you can draw 100 regression lines with following R command.
+
+```{r,warning=FALSE}
+ggPredict(fit7,interactive=TRUE,colorn=100,jitter=FALSE)
+```
+
+## Multiple logistic regression model with two continuous predictor variables
+
+You can make multiple logistic regression model with three predictor variables.
+
+
+```{r,comment=NA,message=FALSE}
+fit8=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
+summary(fit8)
+```
+
+```{r,warning=FALSE}
+ggPredict(fit8,interactive=TRUE,colorn=100,jitter=FALSE)
+```

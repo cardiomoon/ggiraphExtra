@@ -4,6 +4,7 @@
 #'@param point Logical. Whether ot not draw each point
 #'@param jitter Logical. Whether ot not jitter points
 #'@param se Logical. Whether ot not draw se
+#'@param show.summary Logical. Whether ot not show summary
 #'@param colorAsFactor Logical. Whether ot not treat color variable as categorical variable
 #'@param digits An integer indicating the number of decimal places
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
@@ -18,20 +19,23 @@
 #'require(ggiraph)
 #'require(plyr)
 #'fit=lm(NTAV~age*weight*DM,data=radial)
+#'fit=lm(NTAV~age+DM,data=radial)
 #'ggPredict(fit,interactive=TRUE)
 #'require(TH.data)
+#'fit=glm(cens~pnodes*horTh,data=GBSG2,family=binomial)
+#'ggPredict(fit,se=TRUE)
 #'fit1=glm(cens~pnodes*age,data=GBSG2,family=binomial)
 #'ggPredict(fit1)
 #'ggPredict(fit1,colorn=100,jitter=FALSE,interactive=TRUE)
 #'fit2=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
-#'ggPredict(fit2,interactive=TRUE)
-ggPredict=function(fit,colorn=4,point=NULL,se=FALSE,jitter=NULL,
+#'ggPredict(fit2,colorn=100,jitter=FALSE,interactive=TRUE)
+ggPredict=function(fit,colorn=4,point=NULL,jitter=NULL,se=FALSE,show.summary=FALSE,
                    colorAsFactor=FALSE,digits=2,interactive=FALSE,...) {
 
+   #fit=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
+  # colorn=4;point=TRUE;se=FALSE;jitter=FALSE;colorAsFactor=FALSE;digits=3;interactive=FALSE;show.summary=TRUE
 
-# colorn=4;point=TRUE;se=TRUE;jitter=FALSE;colorAsFactor=TRUE;digits=2;interactive=FALSE
-
-        #print(summary(fit))
+if(show.summary) print(summary(fit))
 (count=length(names(fit$model))-1)
 
 if(count>3) {
@@ -141,18 +145,33 @@ if(is.null(jitter)) {
         if(method=="glm") jitter=TRUE
         else jitter=FALSE
 }
-fit2eq=function(fit){
-        equation=""
-        slope=round(fit$coef[2],digits)
-        intercept=round(fit$coef[1],digits)
+
+
+makeEq=function(slope,intercept){
         if(method=="lm"){
-                equation=paste0("y = ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),round(intercept,digits))
+                equation=paste0("y = ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),abs(round(intercept,digits)))
         } else if(method=="glm"){
-                equation=paste0("y =1/(1+exp(-( ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),round(intercept,digits),")))")
+                equation=paste0("y =1/(1+exp(-( ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),abs(round(intercept,digits)),")))")
         }
         equation
 }
 
+fit2eq=function(fit){
+
+        temp=""
+        #for (i in 1:xcount){
+                slope=round(fit$coef[2],digits)
+                intercept=round(fit$coef[1],digits)
+        #         if(xcount>1) temp=paste0("\n",xname,":",unique(data[[xname]])[i],"\n")
+        temp=paste0(temp,makeEq(slope,intercept))
+        # }
+        temp
+}
+
+fit2eq(fit)
+summary(fit)
+# colorn
+# colorcount
 
 if(is.null(colorname)){ ## if color variable is absent
 
@@ -162,8 +181,10 @@ if(is.null(colorname)){ ## if color variable is absent
 
 } else if(colorcount!=colorn) {    ## if color variable is categorical
 
-        temp=paste0("function(",yname,",",xname,",digits=",digits,",...) {fit=",method,"(",yname,"~",xname,");fit2eq(fit)}")
-
+        temp=paste0("function(",yname,",",xname,",digits=",digits,",...) {fit=",method,"(",yname,"~",xname)
+        if(method=="glm") temp=paste0(temp,",family=binomial")
+        temp=paste0(temp,");fit2eq(fit)}")
+        temp
         getEquation=eval(parse(text=temp))
 
         temp=paste0("ddply(newdata,.(",colorname)
@@ -180,20 +201,38 @@ if(is.null(colorname)){ ## if color variable is absent
                 intercept=fit$coef[1]+fit$coef[3]*newcolor
                 slope=fit$coef[2]+fit$coef[4]*newcolor
                 if(method=="lm"){
-                        equation=paste0("y = ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),round(intercept,digits))
+                        equation=paste0("y = ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),abs(round(intercept,digits)))
                 } else if(method=="glm"){
-                        equation=paste0("y =1/(1+exp(-( ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),round(intercept,digits),")))")
+                        equation=paste0("y =1/(1+exp(-( ",round(slope,digits),"*x ",ifelse(intercept>=0,"+","-"),abs(round(intercept,digits)),")))")
                 }
                 equation
         }
 
-        temp=paste0("function(",yname,",",xname,",",colorname,",digits=",digits,",...) {fit=",method,"(",yname,"~",xname,"*",colorname,");fit2eq2(fit)}")
-
+        temp=paste0("function(",yname,",",xname,",",colorname,",digits=",digits,",...) {fit=",method,"(",yname,"~",xname,"*",colorname)
+        if(method=="glm") temp=paste0(temp,",family=binomial")
+        temp=paste0(temp,");fit2eq(fit)}")
+        temp
         getEquation2=eval(parse(text=temp))
 
-        res=eval(parse(text=paste0("ddply(data,.(",facetname,"),splat(getEquation2))")))
-        colnames(res)[2:ncol(res)]=newcolor
-        long=reshape2::melt(res,facetname,variable.name=colorname,value.name="tooltip")
+        temp=paste0("ddply(newdata,.(",colorname)
+        if(!is.null(facetname)) temp=paste0(temp,",",facetname)
+        temp=paste0(temp,"),splat(getEquation2))")
+        temp
+
+        options(warn=-1)
+        res=eval(parse(text=temp))
+        options(warn=0)
+        res
+
+        if(!is.null(facetname)){
+                colnames(res)[ncol(res)]="tooltip"
+                #long=reshape2::melt(res,facetname,variable.name=colorname,value.name="tooltip")
+                long=res
+        } else{
+                colnames(res)[ncol(res)]="tooltip"
+                long=res
+                long
+        }
 
         newdata2=merge(newdata,long,by=c(colorname,facetname))
 }
@@ -206,7 +245,7 @@ if(!is.null(colorname)) {
 }
 
 newdata2$data_id=rownames(newdata2)
-
+newdata2
 if(colorAsFactor) newdata2[[colorname]]=factor(newdata2[[colorname]])
 
 if(is.null(colorname)) {

@@ -4,8 +4,9 @@
 \alias{ggPredict}
 \title{Visualize predictions from the multiple regression models.}
 \usage{
-ggPredict(fit, colorn = 4, point = NULL, se = FALSE, jitter = NULL,
-  colorAsFactor = FALSE, digits = 2, interactive = FALSE, ...)
+ggPredict(fit, colorn = 4, point = NULL, jitter = NULL, se = FALSE,
+  show.summary = FALSE, colorAsFactor = FALSE, digits = 2,
+  interactive = FALSE, ...)
 }
 \arguments{
 \item{fit}{a model object for which prediction is desired.}
@@ -14,9 +15,11 @@ ggPredict(fit, colorn = 4, point = NULL, se = FALSE, jitter = NULL,
 
 \item{point}{Logical. Whether ot not draw each point}
 
+\item{jitter}{Logical. Whether ot not jitter points}
+
 \item{se}{Logical. Whether ot not draw se}
 
-\item{jitter}{Logical. Whether ot not jitter points}
+\item{show.summary}{Logical. Whether ot not show summary}
 
 \item{colorAsFactor}{Logical. Whether ot not treat color variable as categorical variable}
 
@@ -35,12 +38,15 @@ require(ggplot2)
 require(ggiraph)
 require(plyr)
 fit=lm(NTAV~age*weight*DM,data=radial)
+fit=lm(NTAV~age+DM,data=radial)
 ggPredict(fit,interactive=TRUE)
 require(TH.data)
+fit=glm(cens~pnodes*horTh,data=GBSG2,family=binomial)
+ggPredict(fit,se=TRUE)
 fit1=glm(cens~pnodes*age,data=GBSG2,family=binomial)
 ggPredict(fit1)
 ggPredict(fit1,colorn=100,jitter=FALSE,interactive=TRUE)
 fit2=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
-ggPredict(fit2,interactive=TRUE)
+ggPredict(fit2,colorn=100,jitter=FALSE,interactive=TRUE)
 }
 
