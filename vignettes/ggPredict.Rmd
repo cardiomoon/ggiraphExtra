@@ -142,7 +142,7 @@ ggPredict(fit3,interactive=TRUE)
 ```
 
 
-### Multiple regression model with three predcitor variables
+### Multiple regression model with three predictor variables
 
 You can make a regession model with three predictor variables. Now you can use age and weight(body weight in kilogram) and HBP(hypertension) as predcitor variables.
 

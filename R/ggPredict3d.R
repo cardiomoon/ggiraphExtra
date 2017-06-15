@@ -244,6 +244,10 @@ ggPredict3d=function (fit, colorn = 20, maxylev=6, se = FALSE,
                    type=type,radius=myradius,
                    xlab=xname,ylab=colorname,zlab=yname,xlim=myxlim,ylim=myylim,zlim=myzlim,
                    sub=Reduce(paste0,deparse(fit$call)),...)
+                    #newdata2=newdata2[order(newdata2[[colorname]],newdata2[[xname]]),]
+                    temp= paste0("dcast(newdata2[1:3],",xname,"~",colorname,",value.var='",yname,"')[-1]")
+                    newdata3=eval(parse(text=temp))
+                    surface3d(newx,newcolor,as.matrix(newdata3),col="blue",alpha=.4)
             }
             # plot3d(data[[xname]],data[[colorname]],data[[yname]],col=as.numeric(factor(data[[colorname]])),
             #        xlab=xname,ylab=colorname,zlab=yname,xlim=myxlim,ylim=myylim,zlim=myzlim)
@@ -283,7 +287,7 @@ ggPredict3d=function (fit, colorn = 20, maxylev=6, se = FALSE,
                temp= paste0("dcast(newdata2[1:3],",xname,"~",colorname,",value.var='",yname,"')[-1]")
                newdata3=eval(parse(text=temp))
                #surface3d(newx,sort(newcolor),as.matrix(newdata3),col="blue",alpha=.5)
-               surface3d(newx,newcolor,as.matrix(newdata3),col="blue",alpha=.4)
+               if(!overlay) surface3d(newx,newcolor,as.matrix(newdata3),col="blue",alpha=.4)
             }
 
          }

@@ -1,0 +1,247 @@
+---
+title: "3D Visualization of multiple regression model(1)"
+author: "Keon-Woong Moon"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```
+To reproduce this document, you have to install R package ggiraphExtra from github.
+install.packages("devtools")
+devtools::install_github("cardiomoon/ggiraphExtra")
+```
+This documnet is the vignette part 1. You can find the vignette part 2 at:
+
+http://rpubs.com/cardiomoon/284985
+
+
+# Loading required packages
+
+```{r,comment=NA,message=FALSE}
+require(ggplot2)
+require(plyr)
+require(reshape2)
+require(ggiraph)
+require(rgl)
+require(ggiraphExtra)
+require(moonBook)   # for use of data radial
+```
+
+# Linear gegression
+
+## One-way analysis of variance with one covariate(ANCOVA)
+
+The radial data contains demographic data and laboratory data of 115 patients performing IVUS(intravascular ultrasound) examination of a radial artery after tansradial coronary angiography. The NTAV(normalized total atheroma volume measured by intravascular ultrasound(IVUS) in cubic mm) is a quantitative measurement of atherosclerosis. Suppose you want to predict the amount of atherosclerosis(NTAV) from age and status of smoking.
+
+```{r,comment=NA,message=FALSE}
+fit=lm(NTAV~age+smoking,data=radial)
+summary(fit)
+```
+
+### ggPredict() : 2D visualization with interaction
+
+You can visualize this model with ggPredict(). This function uses ggiraph::geom_point_interactive() and ggiraph::geom_path_interactive() functions to make a interactive plot. You can identify the points and see the regression equation with your mouse. In ANCOVA model, the slope of regression lines are all the same. You can see three parallel lines in this model.
+
+```{r,message=FALSE}
+ggPredict(fit,interactive=TRUE)
+```
+
+### ggPredict3d() : 3D visualization
+
+You can make 3D plot for this model with ggPredict3d() function. This function uses rgl::plot3d() function to make 3d plot. You can use your mouse to manipulate the plot. The default is that if you click and hold with the left mouse button, you can rotate the plot by dragging it. The right mouse button(or the mouse wheel) is used to resize it, and the middle button changes the perspective in the point of view.
+
+```{r,warning=FALSE}
+ggPredict3d(fit,radius=2)
+```
+
+```{r,echo=FALSE,fig.height=6,fig.width=6}
+rglwidget()
+```
+
+Alternatively, you can make the facetted plot according to categorical variable. Set the overlay parameter FALSE and you can get a facetted plot.
+
+```{r,warning=FALSE}
+ggPredict3d(fit,radius=2,overlay=FALSE)
+```
+
+```{r,echo=FALSE,fig.height=6,fig.width=6}
+rglwidget()
+```
+
+You can make a HTML file(Write HTML and Javascript to display a scene in a web browser) with writeWebGL() function.
+
+```{r,eval=FALSE}
+writeWebGL("test.html")
+```
+
+You man make a snapshot and save as a *.png file with snapshot3d() function.
+
+```{r,eval=FALSE}
+snapshot3d("test1.png")
+```
+
+## One-way ANCOVA with interaction
+
+You can make model with interaction with same predictor variables.
+
+```{r,comment=NA,message=FALSE}
+fit1=lm(NTAV~age*smoking,data=radial)
+summary(fit1)
+```
+
+In one-way ANCOVA with interaction model, the slope of regression lines are different. The regression equations according to smoking status are:
+
+```
+For ex-smoker, y=`r round(coef(fit1)[2],2)`*x+`r round(coef(fit1)[1],2)`
+For non-smoker, y=`r round(coef(fit1)[2]+coef(fit1)[5],2)`*x+`r round(coef(fit1)[1]+coef(fit1)[3],2)`
+For smoker, y=`r round(coef(fit1)[2]+coef(fit1)[6],2)`*x+`r round(coef(fit1)[1]+coef(fit1)[4],2)`
+```
+
+### 2D visualization
+
+Because the slopes of regression lines are different in one-way ANCOVA with interaction model, you can see the regression lines cross each other.
+
+```{r}
+ggPredict(fit1,interactive=TRUE)
+```
+
+###  3D visualization
+
+You can make 3D plot for this model with ggPredict3d() function. 
+
+```{r,warning=FALSE}
+ggPredict3d(fit1,radius=2)
+```
+
+```{r,echo=FALSE,fig.height=6,fig.width=6}
+rglwidget()
+```
+
+
+## One-way ANOVA with two covariates
+
+Suppose you want to predict the amount of atherosclerosis(NTAV) from age and body weight and the status of smoking.
+
+```{r,comment=NA,message=FALSE}
+fit2=lm(NTAV~age+weight+smoking,data=radial)
+summary(fit2)
+```
+
+In this model, the regression equations according to the smoking status are:
+
+```
+For ex-smoker, NTAV=`r round(coef(fit2)[2],2)`*age+`r round(coef(fit2)[3],2)`*weight+`r round(coef(fit2)[1],2)`
+For non-smoker,  NTAV=`r round(coef(fit2)[2],2)`*age+`r round(coef(fit2)[3],2)`*weight+`r round(coef(fit2)[1]+coef(fit2)[4],2)`
+For smoker,NTAV=`r round(coef(fit2)[2],2)`*age+`r round(coef(fit2)[3],2)`*weight+`r round(coef(fit2)[1]+coef(fit2)[5],2)`
+```
+
+
+### 2D visualization
+
+Because the slopes of regression lines are all the same, you can see the regression planes are all parallel.
+
+```{r}
+ggPredict(fit2,interactive=TRUE)
+```
+
+###  3D visualization
+
+You can make 3D plot for this model with ggPredict3d() function. 
+
+```{r,warning=FALSE}
+ggPredict3d(fit2,radius=2)
+```
+
+```{r,echo=FALSE,fig.height=6,fig.width=6}
+rglwidget()
+```
+
+
+You can make overlayed plot with the following R code.
+
+```{r,warning=FALSE}
+ggPredict3d(fit2,radius=2,overlay=TRUE)
+```
+
+```{r,echo=FALSE,fig.height=6,fig.width=6}
+rglwidget()
+```
+
+## One-way ANOVA with two covariates inth interaction
+
+You can make model with interaction with same predictor variables.
+
+```{r,comment=NA,message=FALSE}
+fit3=lm(NTAV~(age+weight)*smoking,data=radial)
+summary(fit3)
+```
+### 2D visualization
+
+Because the slopes of regression lines are different, you can see the regression lines are not parallel among groups.
+
+
+```{r}
+ggPredict(fit3,interactive=TRUE)
+```
+
+###  3D visualization
+
+You can make 3D plot for this model with ggPredict3d() function. 
+
+```{r,warning=FALSE}
+ggPredict3d(fit3,radius=2)
+```
+
+```{r,echo=FALSE,fig.height=6,fig.width=6}
+rglwidget()
+```
+
+You can make overlayed plot with the following R code. In this plot you can see the regression planes cross each other.
+
+```{r,warning=FALSE}
+ggPredict3d(fit3,radius=2,overlay=TRUE)
+```
+
+```{r,echo=FALSE,fig.height=6,fig.width=6}
+rglwidget()
+```
+
+
+### Two-way factorial ANOVA with one covariate with completely crossing
+
+You can visualize the two-way factorial ANOVA model. 
+
+```{r,comment=NA,message=FALSE}
+fit4=lm(NTAV~age*DM*smoking,data=radial)
+summary(fit4)
+```
+
+```{r}
+ggPredict(fit4,interactive=TRUE)
+```
+
+###  3D visualization
+
+You can make 3D plot for this model with ggPredict3d() function. 
+
+```{r,warning=FALSE}
+ggPredict3d(fit4,radius=2)
+```
+
+```{r,echo=FALSE,fig.height=6,fig.width=6}
+rglwidget()
+```
+
+You can make facetted plot with the following R code. In this plot you can see the regression planes cross each other.
+
+```{r,warning=FALSE}
+ggPredict3d(fit4,radius=2,overlay=TRUE)
+```
+
+```{r,echo=FALSE,fig.height=6,fig.width=6}
+rglwidget()
+```
