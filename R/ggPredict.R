@@ -18,6 +18,7 @@
 #'require(ggplot2)
 #'require(ggiraph)
 #'require(plyr)
+#'fit=lm(NTAV~age*weight,data=radial)
 #'fit=lm(NTAV~age*weight*DM,data=radial)
 #'fit=lm(NTAV~age+DM,data=radial)
 #'ggPredict(fit,interactive=TRUE)
