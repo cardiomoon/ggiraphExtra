@@ -6,7 +6,9 @@
 \usage{
 ggPredict3d(fit, colorn = 20, maxylev = 6, se = FALSE,
   show.summary = FALSE, overlay = NULL, show.legend = FALSE, bg = NULL,
-  type = "s", radius = 1, ...)
+  type = "s", radius = 1, palette = "Blues", palette.reverse = TRUE,
+  show.plane = TRUE, plane.color = "blue", plane.alpha = 0.2,
+  show.lines = TRUE, ...)
 }
 \arguments{
 \item{fit}{A model object for which prediction is desired.}
@@ -28,6 +30,18 @@ ggPredict3d(fit, colorn = 20, maxylev = 6, se = FALSE,
 \item{type}{For the default method, a single character indicating the type of item to plot. Supported types are: 'p' for points, 's' for spheres, 'l' for lines, 'h' for line segments from z = 0, and 'n' for nothing. For the mesh3d method, one of 'shade', 'wire', or 'dots'. Partial matching is used.}
 
 \item{radius}{The size of sphere}
+
+\item{palette}{Name of color palette}
+
+\item{palette.reverse}{Logical. Whether or not reverse the palette order}
+
+\item{show.plane}{Logical. If true, show regression plane}
+
+\item{plane.color}{Name of color of regression plane}
+
+\item{plane.alpha}{Transparency scale of regression plane}
+
+\item{show.lines}{Logical. If true, show regression lines}
 
 \item{...}{additional parameters which will be passed to plot3d}
 }

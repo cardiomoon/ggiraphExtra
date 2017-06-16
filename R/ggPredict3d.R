@@ -1,3 +1,46 @@
+#' Generate regular sequences of desired length between minimum and maximal values
+#' @param x a numeric vector
+#' @param length desired length of the sequence
+#' @export
+myseq=function(x,length=20){
+
+   seq(min(x,na.rm=T),max(x,na.rm=T),length=length)
+}
+
+#'Rank a numeric vector using proportional table and returns a new ordinal vector
+#'
+#'@param x A numeric vector
+#'@param k An integer specifies how many groups you want to classifiy. default value is 4
+#'
+#'@export
+rank2group2=function(x,k=4){
+
+   temp=cumsum(prop.table(table(x)))
+   res=c()
+   for(i in 1:(k-1)){
+      result=which.min(abs(temp-(i/k)))
+      res=c(res,result)
+   }
+   res=as.numeric(names(res))
+   res=c(min(x,na.rm=TRUE)-0.01,res,max(x,na.rm=TRUE))
+   temp=cut(x,breaks=res)
+   as.numeric(temp)
+}
+
+#'Rank a numeric vector using proportional table and returns character vactor of names of color using palette
+#'@param x A numeric vector
+#'@param palette Name of the color palette
+#'@param reverse Logical. Whether or not reverse the order of the color palette
+#'
+#'@export
+rank2colors=function(x,palette="Blues",reverse=TRUE){
+   k=length(ggiraphExtra::palette2colors(palette,reverse=reverse))
+   group=rank2group2(x,k=k)
+   result=ggiraphExtra::palette2colors(palette,reverse=reverse)[group]
+   result
+}
+
+
 #' Draw 3d predict plot using package `rgl`
 #'
 #' @param fit A model object for which prediction is desired.
@@ -10,6 +53,12 @@
 #' @param bg Character. Background color of plot
 #' @param type For the default method, a single character indicating the type of item to plot. Supported types are: 'p' for points, 's' for spheres, 'l' for lines, 'h' for line segments from z = 0, and 'n' for nothing. For the mesh3d method, one of 'shade', 'wire', or 'dots'. Partial matching is used.
 #' @param radius The size of sphere
+#' @param palette Name of color palette
+#' @param palette.reverse Logical. Whether or not reverse the palette order
+#' @param show.plane Logical. If true, show regression plane
+#' @param plane.color Name of color of regression plane
+#' @param plane.alpha Transparency scale of regression plane
+#' @param show.lines Logical. If true, show regression lines
 #' @param ... additional parameters which will be passed to plot3d
 #'
 #' @importFrom rgl open3d next3d surface3d plot3d lines3d mfrow3d bg3d legend3d
@@ -35,18 +84,18 @@
 #'ggPredict3d(fit,overlay=TRUE)
 ggPredict3d=function (fit, colorn = 20, maxylev=6, se = FALSE,
           show.summary = FALSE, overlay=NULL,
-          show.legend=FALSE,bg=NULL,type="s",radius=1,...)
+          show.legend=FALSE,bg=NULL,type="s",radius=1,palette="Blues",palette.reverse=TRUE,
+          show.plane=TRUE,plane.color="blue",plane.alpha=0.2,show.lines=TRUE,...)
 {
 
    # fit=lm(NTAV~age*HBP,data=radial)
    # colorn = 20; maxylev=6; se = FALSE;
    # show.summary = FALSE; overlay=NULL;
    # show.legend=FALSE;bg=NULL;type="s";radius=1
-   #
-   myseq=function(x,length=20){
+   # palette="Blues";palette.reverse=TRUE
+   # show.plane=TRUE;plane.color="blue";plane.alpha=0.2;show.lines=TRUE
 
-      seq(min(x,na.rm=T),max(x,na.rm=T),length=length)
-   }
+
 
    myradius=radius
    if (show.summary)
@@ -187,27 +236,6 @@ ggPredict3d=function (fit, colorn = 20, maxylev=6, se = FALSE,
    }
 
 
-   myrange=function(x){
-        if(is.numeric(x)) {
-           diff(range(x,na.rm=TRUE))
-        } else{
-           length(unique(x))
-        }
-   }
-
-   rank2group2=function(x,k=4){
-
-      temp=cumsum(prop.table(table(x)))
-      res=c()
-      for(i in 1:(k-1)){
-         result=which.min(abs(temp-(i/k)))
-         res=c(res,result)
-      }
-      res=as.numeric(names(res))
-      res=c(min(x,na.rm=TRUE)-0.01,res,max(x,na.rm=TRUE))
-      temp=cut(x,breaks=res)
-      as.numeric(temp)
-   }
 
    mylim=function(x){
       if(is.character(x)) x=as.numeric(factor(x))
@@ -215,9 +243,6 @@ ggPredict3d=function (fit, colorn = 20, maxylev=6, se = FALSE,
       range(x,na.rm=TRUE)+c(-1,1)*max(min(x,na.rm=TRUE)*0.1,0.2)
 
    }
-
-   # myscale=c(1/myrange(data[[xname]]),1/myrange(data[[colorname]]),1/myrange(data[[yname]]))
-   # par3d(scale=myscale)
 
    myxlim=mylim(data[[xname]])
    myylim=mylim(data[[colorname]])
@@ -227,17 +252,32 @@ ggPredict3d=function (fit, colorn = 20, maxylev=6, se = FALSE,
 
    if(is.null(facetname)) {
          if(is.numeric(data[[colorname]]) && (colorcount>maxylev)) {
-            data$group=rank2group2(data[[colorname]],9)
-            data$color=ggiraphExtra::palette2colors("Blues",reverse=TRUE)[data$group]
+            data$color=rank2colors(data[[colorname]],palette=palette,reverse=palette.reverse)
             plot3d(data[[xname]],data[[colorname]],data[[yname]],col=data$color,
                    type=type,radius=myradius,
                    xlab=xname,ylab=colorname,zlab=yname,xlim=myxlim,ylim=myylim,zlim=myzlim,
                    sub=Reduce(paste0,deparse(fit$call)),...)
+
             newdata2=newdata2[order(newdata2[[colorname]],newdata2[[xname]]),]
             temp= paste0("dcast(newdata2[1:3],",xname,"~",colorname,",value.var='",yname,"')[-1]")
             newdata3=eval(parse(text=temp))
             #surface3d(newx,sort(newcolor),as.matrix(newdata3),col="blue",alpha=.5)
-            surface3d(newx,newcolor,as.matrix(newdata3),col="blue",alpha=.4)
+            if(show.plane) surface3d(newx,newcolor,as.matrix(newdata3),col=plane.color,alpha=plane.alpha)
+
+            if(show.lines) {
+            newdata2$color=rank2colors(newdata2[[colorname]],palette=palette,reverse=palette.reverse)
+
+            for(i in 1:length(newcolor)){
+                newdata4=newdata2[newdata2[[colorname]]==newcolor[i],]
+                lines3d(xyz.coords(as.matrix(newdata4[1:3])),col=newdata4$color,lwd=1)
+            }
+            for(i in 1:length(newx)){
+               newdata4=newdata2[newdata2[[xname]]==newx[i],]
+               lines3d(xyz.coords(as.matrix(newdata4[1:3])),col=newdata4$color,lwd=1)
+            }
+
+            }
+
          } else{
             if(overlay) {
             plot3d(data[[xname]],data[[colorname]],data[[yname]],col=as.numeric(factor(data[[colorname]])),
@@ -247,7 +287,7 @@ ggPredict3d=function (fit, colorn = 20, maxylev=6, se = FALSE,
                     #newdata2=newdata2[order(newdata2[[colorname]],newdata2[[xname]]),]
                     temp= paste0("dcast(newdata2[1:3],",xname,"~",colorname,",value.var='",yname,"')[-1]")
                     newdata3=eval(parse(text=temp))
-                    surface3d(newx,newcolor,as.matrix(newdata3),col="blue",alpha=.4)
+                    if(show.plane) surface3d(newx,newcolor,as.matrix(newdata3),col=plane.color,alpha=plane.alpha)
             }
             # plot3d(data[[xname]],data[[colorname]],data[[yname]],col=as.numeric(factor(data[[colorname]])),
             #        xlab=xname,ylab=colorname,zlab=yname,xlim=myxlim,ylim=myylim,zlim=myzlim)
@@ -280,14 +320,18 @@ ggPredict3d=function (fit, colorn = 20, maxylev=6, se = FALSE,
                }
                df1=df[df[[colorname]]==sort(unique(data[[colorname]]))[i],]
                if(!is.numeric(df1[[colorname]])) df1[[colorname]]=i
+               if(show.lines){
                lines3d(xyz.coords(as.matrix(df1)),col=i,lwd=2)
                if(se) lines3d(xyz.coords(as.matrix(df1[c(1,2,4)])),col=i,lwd=0.5)
                if(se) lines3d(xyz.coords(as.matrix(df1[c(1,2,5)])),col=i,lwd=0.5)
+               }
                newdata2=newdata2[order(newdata2[[colorname]],newdata2[[xname]]),]
                temp= paste0("dcast(newdata2[1:3],",xname,"~",colorname,",value.var='",yname,"')[-1]")
                newdata3=eval(parse(text=temp))
                #surface3d(newx,sort(newcolor),as.matrix(newdata3),col="blue",alpha=.5)
-               if(!overlay) surface3d(newx,newcolor,as.matrix(newdata3),col="blue",alpha=.4)
+               if(!overlay){
+                  if(show.plane) surface3d(newx,newcolor,as.matrix(newdata3),col=plane.color,alpha=plane.alpha)
+               }
             }
 
          }
@@ -308,25 +352,45 @@ ggPredict3d=function (fit, colorn = 20, maxylev=6, se = FALSE,
          temp
          eval(parse(text=temp))
       }
-      result=eval(parse(text=paste0("dlply(newdata2,.(",facetname,"),mysummary)")))
-      for(i in 1:facetcount){
-         if((i>1)&&(!overlay)){
-            next3d()
-            # par3d(scale=myscale)
-            if(!is.null(bg)) bg3d(bg)
-         }
-         if(!overlay) {
+
+         result=eval(parse(text=paste0("dlply(newdata2,.(",facetname,"),mysummary)")))
+         result
+         i=1
+         for(i in 1:facetcount){
+            if((i>1)&&(!overlay)){
+               next3d()
+               # par3d(scale=myscale)
+               if(!is.null(bg)) bg3d(bg)
+            }
+            if(!overlay){
             data1=data[data[[facetname]]==unique(data[[facetname]])[i],]
             plot3d(data1[[xname]],data1[[colorname]],data1[[yname]],
                    xlab=xname,ylab=colorname,zlab=yname,
                    type=type,col=i,radius=myradius,
                    xlim=myxlim,ylim=myylim,zlim=myzlim,
                    sub=paste0(facetname,":",unique(data[[facetname]])[i]),...)
-         }
-         z=as.matrix(result[[as.character(unique(data[[facetname]])[i])]])
-         surface3d(newx,newcolor,z,col=i,alpha=.4)
+            }
+            z=as.matrix(result[[as.character(unique(data[[facetname]])[i])]])
+            if(show.plane) surface3d(newx,newcolor,z,col=i,alpha=plane.alpha)
+            newdata4=newdata2[newdata2[[facetname]]==unique(data[[facetname]])[i],]
+            newdata4
 
-      }
+            if(show.lines) {
+
+               for(j in 1:length(newcolor)){
+                  newdata5=newdata4[newdata4[[colorname]]==newcolor[j],]
+                  lines3d(xyz.coords(as.matrix(newdata5[c(1,2,4)])),col=i,lwd=1,alpha=0.5)
+               }
+               for(j in 1:length(newx)){
+                  newdata5=newdata4[newdata4[[xname]]==newx[j],]
+                  lines3d(xyz.coords(as.matrix(newdata5[c(1,2,4)])),col=i,lwd=1,alpha=0.5)
+               }
+
+            }
+
+
+         }
+
       if(show.legend) legend3d("bottomright",legend=unique(data[[facetname]]),pch=21,pt.bg=1:facetcount,cex=1)
 
    }
