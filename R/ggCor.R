@@ -18,7 +18,7 @@
 #' @importFrom ggiraph geom_tile_interactive
 #' @importFrom  stats na.omit
 #' @importFrom ppcor pcor spcor
-#' @importFrom sjmisc get_label
+#' @importFrom sjlabelled get_label
 #' @export
 #' @examples
 #' require(mycor)

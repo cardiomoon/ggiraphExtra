@@ -146,7 +146,7 @@ model2df=function(model,x=NULL,n=100){
 #'@importFrom mgcv gam
 #'@importFrom plyr dlply splat
 #'@importFrom stats as.formula predict
-#'@importFrom sjmisc get_labels get_label
+#'@importFrom sjlabelled get_labels get_label
 #'@examples
 #'require(ggplot2)
 #'require(ggiraph)

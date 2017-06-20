@@ -269,6 +269,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                 p <- ggiraph(code = print(p), tooltip_extra_css = tooltip_css,
                              tooltip_opacity = 0.75, zoom_max = 10, hover_css = hover_css)
         p
+
 }
 
 
