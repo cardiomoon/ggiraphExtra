@@ -38,4 +38,3 @@ ggCatepillar(acs,aes(Dx,age,color=HBP))
 ggCatepillar(acs,aes(c(Dx,sex),age,color=HBP),interactive=TRUE,flip=TRUE)
 ggCatepillar(acs,aes(age,height,color=sex),errorbar=FALSE,interactive=TRUE)
 }
-

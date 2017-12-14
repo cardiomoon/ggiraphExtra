@@ -16,4 +16,3 @@ unselectNumeric(data, colnames, maxfactorno = 6)
 \description{
 Unselect numeric column of a data.frame
 }
-

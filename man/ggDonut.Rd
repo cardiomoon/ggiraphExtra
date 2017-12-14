@@ -41,4 +41,3 @@ require(ggiraph)
 require(plyr)
 ggDonut(browsers,aes(donuts=version,count=share))
 }
-

@@ -16,4 +16,3 @@ theme_clean2(base_size = 12, xangle = 45, yangle = 0)
 \description{
 Clean theme for ggCor
 }
-

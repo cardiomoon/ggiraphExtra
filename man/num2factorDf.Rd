@@ -16,4 +16,3 @@ num2factorDf(data, colnames, maxfactorno = 6)
 \description{
 Make numeric column of a data.frame to factor
 }
-

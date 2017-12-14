@@ -22,4 +22,3 @@ source: \href{http://rikturr.com/blog/communicating-experimental-results-with-r/
  }
 }
 \keyword{datasets}
-

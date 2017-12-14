@@ -17,4 +17,3 @@ browsers
 A phony dataset measuring browser market share
 }
 \keyword{datasets}
-

@@ -50,4 +50,3 @@ ggPredict(fit1,colorn=100,jitter=FALSE,interactive=TRUE)
 fit2=glm(cens~pnodes*age*horTh,data=GBSG2,family=binomial)
 ggPredict(fit2,colorn=100,jitter=FALSE,interactive=TRUE)
 }
-

@@ -141,7 +141,8 @@ model2df=function(model,x=NULL,n=100){
 #'@param caption The text for plot caption
 #'@param ... other arguments passed on to geom_point
 #'@export
-#'@importFrom ggplot2 ggplot stat_smooth aes aes_string position_jitter facet_wrap labs geom_count scale_color_discrete scale_fill_discrete
+#'@importFrom ggplot2 ggplot geom_point stat_smooth aes aes_string position_jitter facet_wrap labs geom_count scale_color_discrete scale_fill_discrete
+#'
 #'@importFrom ggiraph ggiraph geom_point_interactive geom_path_interactive
 #'@importFrom mgcv gam
 #'@importFrom plyr dlply splat
@@ -262,24 +263,44 @@ ggPoints=function(data,mapping, smooth=TRUE,
     if(method=="glm") {
             if(smooth) p<-p+stat_smooth(method='glm',formula=formula,method.args=list(family='binomial'),se=se,fullrange=fullrange)
             if(is.null(fillname)){
+                    if(nrow(data)<1000){
                          p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),
                                         position=position_jitter(width=0.3,height=0.06),alpha=0.5,...)
+                    } else{
+                            p<-p+geom_point(position=position_jitter(width=0.3,height=0.06),alpha=0.5,...)
+
+                    }
             }
-            else p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),shape=21,
+            else {
+                    if(nrow(data)<1000){
+                    p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),shape=21,
                                              position=position_jitter(width=0.3,height=0.06),alpha=0.5,...)
+                    } else{
+                            p<-p+geom_point(shape=21,position=position_jitter(width=0.3,height=0.06),alpha=0.5,...)
+                    }
+            }
     } else {
             if(smooth) p<-p+ stat_smooth(method=method,formula=formula,se=se,fullrange=fullrange)
             if(is.null(fillname)){
                     if(use.count){
                        p<-p+geom_count(...)
                     } else{
+                            if(nrow(data)<1000){
                        p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),...)
+                            } else{
+                                    p<-p+geom_point(...)
+                            }
+
                     }
             } else {
                     if(use.count){
-                            p<-p+geom_point_interactive(shape=21,...)
+                            p<-p+geom_count(...)
                     } else{
-                    p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),shape=21,...)
+                    if(nrow(data)<1000){
+                            p<-p+geom_point_interactive(aes_string(data_id="id",tooltip="tooltip"),shape=21,...)
+                    } else{
+                            p<-p+geom_point(shape=21,...)
+                    }
                     }
 
             }

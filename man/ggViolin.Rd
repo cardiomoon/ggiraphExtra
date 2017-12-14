@@ -41,4 +41,3 @@ ggViolin(iris,aes(fill=Species),rescale=TRUE)
 ggViolin(mtcars,aes(x=c(mpg,cyl,disp,hp,drat),color=am),rescale=TRUE)
 ggViolin(mtcars,aes(x=c(mpg,cyl,disp,hp,drat)),rescale=TRUE)
 }
-

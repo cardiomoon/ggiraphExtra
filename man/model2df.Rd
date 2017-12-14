@@ -16,4 +16,3 @@ model2df(model, x = NULL, n = 100)
 \description{
 Make a data.fram of yhat with a model
 }
-

@@ -12,4 +12,3 @@ pastecomma(...)
 \description{
 Add comma to vectors
 }
-

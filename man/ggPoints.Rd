@@ -59,4 +59,3 @@ require(plyr)
 ggPoints(aes(x=wt,y=mpg,fill=am),data=mtcars,method="lm",interactive=TRUE)
 ggPoints(aes(x=wt,y=mpg,color=am),data=mtcars,interactive=TRUE)
 }
-

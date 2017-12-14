@@ -12,4 +12,3 @@ pastecolon(...)
 \description{
 Paste character vectors separated by colon
 }
-

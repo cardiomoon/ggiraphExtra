@@ -28,4 +28,3 @@ result=TukeyHSD(fm1, "tension", ordered = TRUE)
 str(result)
 ggHSD(result)
 }
-

@@ -46,4 +46,3 @@ require(moonBook)
 ggPie(data=browsers,aes(pies=browser,count=share))
 ggPie(data=acs,aes(pies=Dx))
 }
-

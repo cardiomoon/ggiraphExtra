@@ -1,7 +1,7 @@
 Package: ggiraphExtra
 Type: Package
 Title: Make Interactive 'ggplot2'. Extension to 'ggplot2' and 'ggiraph'
-Version: 0.2.4.3
+Version: 0.2.4.4
 Authors@R: person("Keon-Woong", "Moon", email = "cardiomoon@gmail.com",
                   role = c("aut", "cre"))
 Maintainer: Keon-Woong Moon <cardiomoon@gmail.com>
@@ -36,5 +36,5 @@ Description: Collection of functions to enhance 'ggplot2' and 'ggiraph'. Provide
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 VignetteBuilder: knitr

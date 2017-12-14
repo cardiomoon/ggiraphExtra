@@ -14,4 +14,3 @@ palette2colors(name, reverse = FALSE)
 \description{
 Extract colors from a palette
 }
-

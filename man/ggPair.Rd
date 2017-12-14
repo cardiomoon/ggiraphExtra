@@ -49,4 +49,3 @@ ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length),color=Species),horizo
 ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),horizontal=TRUE,interactive=TRUE)
 ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),horizontal=TRUE,interactive=TRUE)
 }
-

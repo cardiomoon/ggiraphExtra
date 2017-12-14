@@ -16,4 +16,3 @@ coord_radar(theta = "x", start = 0, direction = 1)
 \description{
 The radar coordinate system is a modification of polar coordinate system, commly used for radar chart
 }
-

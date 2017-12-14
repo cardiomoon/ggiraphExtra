@@ -14,4 +14,3 @@ addLabelDf(data, mapping = NULL)
 \description{
 Add value labels to the data.frame
 }
-

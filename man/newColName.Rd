@@ -12,4 +12,3 @@ newColName(df)
 \description{
 find new column name
 }
-

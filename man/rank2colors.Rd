@@ -16,4 +16,3 @@ rank2colors(x, palette = "Blues", reverse = TRUE)
 \description{
 Rank a numeric vector using proportional table and returns character vactor of names of color using palette
 }
-

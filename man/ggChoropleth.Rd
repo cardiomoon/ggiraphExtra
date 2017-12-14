@@ -44,4 +44,3 @@ Draw an interactive choropleth map
 #ggChoropleth(crimes,aes(fill=c(Murder,Rape),map_id=state),map=states_map,interactive=TRUE)
 #ggChoropleth(crimes,aes(map_id=state),map=states_map,palette="OrRd",interactive=TRUE)
 }
-

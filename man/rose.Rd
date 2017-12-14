@@ -20,4 +20,3 @@ A phony dataset representing rose sales
  }
 }
 \keyword{datasets}
-

@@ -14,4 +14,3 @@ myseq(x, length = 20)
 \description{
 Generate regular sequences of desired length between minimum and maximal values
 }
-

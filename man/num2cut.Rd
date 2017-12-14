@@ -15,4 +15,3 @@ A list contains a factor and a numeric vector
 \description{
 Computing breaks for make a histogram of a continuous variable
 }
-

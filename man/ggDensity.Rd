@@ -32,4 +32,3 @@ ggDensity(acs,aes(x=age,color=sex,fill=sex))
 ggDensity(acs,aes(x=age,fill=sex),addhist=FALSE)
 ggDensity(acs,aes(x=age,color=sex))
 }
-

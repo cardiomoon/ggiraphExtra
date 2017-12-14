@@ -12,4 +12,3 @@ theme_clean(base_size = 12)
 \description{
 Clean theme for PieDonut plot
 }
-

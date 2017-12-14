@@ -42,4 +42,3 @@ ggBoxplot(mtcars,aes(x=c(mpg,cyl,disp,hp,drat)),rescale=TRUE)
 ggBoxplot(mtcars,rescale=TRUE,interactive=TRUE)
 ggBoxplot(mtcars,horizontal=TRUE,interactive=TRUE)
 }
-

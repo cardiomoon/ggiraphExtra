@@ -67,4 +67,3 @@ ggPredict3d(fit)
 fit=glm(cens~pnodes+age+horTh,data=GBSG2,family=binomial)
 ggPredict3d(fit,overlay=TRUE)
 }
-

@@ -12,4 +12,3 @@ p2chr(x)
 \description{
 Convert p values to character
 }
-

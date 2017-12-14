@@ -26,4 +26,3 @@ A data.frame summarized a continuous variable by groups with mean, sd and SE
 \description{
 Summarize a continuous variable by groups with mean, sd and SE
 }
-

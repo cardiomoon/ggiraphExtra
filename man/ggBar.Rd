@@ -61,4 +61,3 @@ ggBar(acs,aes(x=Dx,fill=smoking),position="fill",addlabel=TRUE)
 ggBar(rose,aes(x=Month,fill=group,y=value),stat="identity",polar=TRUE,palette="Reds",width=1,
       color="black",size=0.1,reverse=TRUE,interactive=TRUE)
 }
-

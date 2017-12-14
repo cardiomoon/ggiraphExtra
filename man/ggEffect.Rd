@@ -59,6 +59,7 @@ Visualize the effect of interaction between two continuous independent variables
 
 \item \code{lm}: Visualize the effect of interaction between two continuous independent variables on a response variable
 }}
+
 \examples{
 require(ggplot2)
 require(ggiraph)
@@ -76,4 +77,3 @@ fit=lm(age~sex*smoking,data=acs)
 ggEffect(fit,interactive=TRUE)
 ggEffect(radial,aes(x=age,y=NTAV,group=smoking))
 }
-

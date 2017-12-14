@@ -56,4 +56,3 @@ ggHeatmap(rose,aes(x=Month,y=group,fill=value),stat="identity",addlabel=TRUE)
 ggHeatmap(rose,aes(x=Month,y=group,fill=value),addlabel=TRUE)
 ggHeatmap(taco,aes(x=AgeGroup,y=Filling,fill=Rating,facet=ShellType),color="grey50",stat="identity")
 }
-

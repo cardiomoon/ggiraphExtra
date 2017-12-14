@@ -14,4 +14,3 @@ rank2group2(x, k = 4)
 \description{
 Rank a numeric vector using proportional table and returns a new ordinal vector
 }
-

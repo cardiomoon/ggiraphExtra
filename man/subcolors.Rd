@@ -16,4 +16,3 @@ subcolors(.dta, main, mainCol)
 \description{
 Make a subcolors according to the mainCol
 }
-

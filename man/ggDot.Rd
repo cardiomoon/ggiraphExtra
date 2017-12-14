@@ -50,4 +50,3 @@ ggDot(radial,aes(x=height,fill=sex),binwidth=1)
 ggDot(acs,aes(x=sex,y=age,color=sex))
 ggDot(acs,aes(x=Dx,y=age,color=Dx))
 }
-

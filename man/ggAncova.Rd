@@ -47,6 +47,7 @@ Make an interactive plot for an ANCOVA model
 
 \item \code{lm}: Make an interactive plot for an ANCOVA model
 }}
+
 \examples{
 require(moonBook)
 require(ggplot2)
@@ -56,4 +57,3 @@ fit=lm(NTAV~age+HBP,data=radial)
 ggAncova(fit,interactive=TRUE)
 ggAncova(NTAV~age+DM,data=radial)
 }
-

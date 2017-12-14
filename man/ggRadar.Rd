@@ -52,4 +52,3 @@ ggRadar(data=mtcars,aes(colour=am,facet=cyl),interactive=TRUE)
 ggRadar(data=acs,aes(colour=Dx,facet=Dx))
 ggRadar(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width)))
 }
-

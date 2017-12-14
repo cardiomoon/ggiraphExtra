@@ -50,4 +50,3 @@ ggCor(mtcars,interactive=TRUE)
 ggCor(mtcars,mode=2,interactive=TRUE)
 ggCor(iris,method="pearson",interactive=TRUE)
 }
-

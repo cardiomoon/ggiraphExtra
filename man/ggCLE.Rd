@@ -42,4 +42,3 @@ if(requireNamespace("gcookbook",quietly=TRUE)){
    ggCLE(data=tophitters2001,aes(x=avg,y=name,color=lg,facet=lg),no=30,interactive=TRUE)
 }
 }
-

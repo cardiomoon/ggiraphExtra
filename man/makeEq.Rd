@@ -14,4 +14,3 @@ makeEq(model, digits = 2)
 \description{
 Make a regression equation of a model
 }
-

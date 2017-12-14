@@ -69,4 +69,3 @@ ggSpine(data=acs,aes(x=sex,fill=Dx),addlabel=TRUE,interactive=TRUE)
 ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge",addlabel=TRUE,interactive=TRUE)
 ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE,interactive=TRUE)
 }
-

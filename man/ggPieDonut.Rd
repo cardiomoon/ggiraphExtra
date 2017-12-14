@@ -52,4 +52,3 @@ ggPieDonut(acs,aes(pies=smoking))
 ggPieDonut(browsers,aes(pies=browser,donuts=version,count=share))
 ggPieDonut(browsers,aes(x=c(browser,version),y=share),interactive=TRUE)
 }
-

@@ -35,4 +35,3 @@ require(gcookbook)
 require(ggplot2)
 ggArea(uspopage,aes(x=Year,y=Thousands,fill=AgeGroup))
 }
-

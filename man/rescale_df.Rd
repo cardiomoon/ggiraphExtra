@@ -17,4 +17,3 @@ A rescaled data.frame
 \description{
 Rescale all numeric variables of a data.frame except grouping variable
 }
-

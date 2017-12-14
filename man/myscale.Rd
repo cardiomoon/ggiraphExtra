@@ -12,4 +12,3 @@ myscale(x)
 \description{
 Rescale a vector with which minimum value 0 and maximum value 1
 }
-
