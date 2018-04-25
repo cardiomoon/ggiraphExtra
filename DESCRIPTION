@@ -15,16 +15,15 @@ Imports:
     plyr,
     mycor,
     ppcor,
-    XML,
     grid,
     mgcv,
-    mapproj,
     sjlabelled,
     sjmisc,
-    RColorBrewer,
-    moonBook
+    webshot,
+    RColorBrewer
 Suggests: 
     TH.data,
+    moonBook,
     maps,
     gcookbook,
     knitr,
