@@ -6,7 +6,10 @@
 \usage{
 ggDonut(data, mapping, addDonutLabel = TRUE, showRatio = TRUE,
   polar = TRUE, labelposition = 1, title = "", use.label = TRUE,
-  use.labels = TRUE, interactive = FALSE)
+  use.labels = TRUE, interactive = FALSE, palette = NULL,
+  reverse = FALSE, xmin = 3, xmax = 4, start = 3 * pi/2,
+  direction = 1, colour = "white", explode = NULL, explodePos = 0.5,
+  ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -28,6 +31,26 @@ ggDonut(data, mapping, addDonutLabel = TRUE, showRatio = TRUE,
 \item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
 \item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
+
+\item{palette}{A character string indicating the color palette}
+
+\item{reverse}{If true, reverse palette colors}
+
+\item{xmin}{minimum x position}
+
+\item{xmax}{maximum x position}
+
+\item{start}{offset of starting point from 12 o'clock in radians}
+
+\item{direction}{1, clockwise; -1, counterclockwise}
+
+\item{colour}{colour of geom_rect}
+
+\item{explode}{number of donuts to explode}
+
+\item{explodePos}{explode position}
+
+\item{...}{further arguments to be passed to geom_rect_interactive}
 }
 \value{
 An interactive Pie and Donut plot
@@ -40,4 +63,5 @@ require(ggplot2)
 require(ggiraph)
 require(plyr)
 ggDonut(browsers,aes(donuts=version,count=share))
+ggDonut(browsers,aes(donuts=version,count=share),palette="Blues",explode=c(2,4,6),labelposition=0)
 }

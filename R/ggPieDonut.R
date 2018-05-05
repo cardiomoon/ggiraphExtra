@@ -212,6 +212,16 @@ ggPieDonut=function(data,mapping,
 #'@param use.label Logical. Whether or not use column label in case of labelled data
 #'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
+#'@param palette A character string indicating the color palette
+#'@param reverse If true, reverse palette colors
+#'@param xmin minimum x position
+#'@param xmax maximum x position
+#'@param start offset of starting point from 12 o'clock in radians
+#'@param direction 1, clockwise; -1, counterclockwise
+#'@param colour colour of geom_rect
+#'@param explode number of donuts to explode
+#'@param explodePos explode position
+#'@param ... further arguments to be passed to geom_rect_interactive
 #'@importFrom ggplot2 xlim geom_segment
 #'@importFrom grDevices rainbow
 #'@export
@@ -221,21 +231,33 @@ ggPieDonut=function(data,mapping,
 #'require(ggiraph)
 #'require(plyr)
 #'ggDonut(browsers,aes(donuts=version,count=share))
+#'ggDonut(browsers,aes(donuts=version,count=share),palette="Blues",explode=c(2,4,6),labelposition=0)
 ggDonut=function(data,mapping,
 
                  addDonutLabel=TRUE,showRatio=TRUE,
                  polar=TRUE,labelposition=1,title="",
                  use.label=TRUE,use.labels=TRUE,
-                 interactive=FALSE){
+                 interactive=FALSE,palette=NULL,reverse=FALSE,
+                 xmin=3,xmax=4,
+                 start=3*pi/2,
+                 direction=1,
+                 colour="white",
+                 explode=NULL,
+                 explodePos=0.5,...){
 
-        # (cols=colnames(data))
         if(use.labels) data=addLabelDf(data,mapping)
 
         donuts<-count<-NULL
-        if("y" %in% names(mapping)) count<-paste(mapping[["y"]])
-        else if("count" %in% names(mapping)) count<-paste(mapping[["count"]])
-        if("donuts" %in% names(mapping)) donuts<-paste(mapping[["donuts"]])
-        else if("x" %in% names(mapping)) donuts<-paste(mapping[["x"]])
+        if("y" %in% names(mapping)){
+                count<-paste(mapping[["y"]])
+        } else {
+                if("count" %in% names(mapping)) count<-paste(mapping[["count"]])
+        }
+        if("donuts" %in% names(mapping)) {
+                donuts<-paste(mapping[["donuts"]])
+        } else {
+                if("x" %in% names(mapping)) donuts<-paste(mapping[["x"]])
+        }
 
 
         if(is.null(count)){
@@ -252,13 +274,42 @@ ggDonut=function(data,mapping,
         dat1$cumratio=dat1$ypos*100/sum(dat1$n)
         dat1$hjust=ifelse((dat1$cumratio>25 & dat1$cumratio<75),0,1)
         dat1$label=paste0(dat1[[donuts]],"<br>",dat1$n,"(",round(dat1$ratio,1),"%)")
+        dat1$xmax=xmax
+        dat1$xmin=xmin
 
-        mainCol=rainbow(nrow(dat1))
+        if(!is.null(explode)) {
+                if(is.numeric(explode)) explode=dat1[[donuts]][explode]
+
+                dat1$xmax[dat1[[donuts]] %in% explode]=dat1$xmax[dat1[[donuts]] %in% explode]+explodePos
+                dat1$xmin[dat1[[donuts]] %in% explode]=dat1$xmin[dat1[[donuts]] %in% explode]+explodePos
+
+        }
+        if(labelposition==1) {
+                dat1$labelpos=dat1$xmax+0.3
+                dat1$segxstart=dat1$xmax
+                #dat1$segxstart[dat1[[donuts]]==explode]=dat1$segxstart[dat1[[donuts]]==explode]+0.3
+                dat1$segxend=dat1$xmax+0.2
+        } else {
+                dat1$labelpos=dat1$xmax-0.5
+        }
+
+        dat1
+        labelposition
+        if(is.null(palette)) {
+                mainCol=rainbow(nrow(dat1))
+        } else{
+                mycolors=palette2colors(palette,reverse=reverse)
+                if(length(mycolors)<nrow(dat1)) {
+                        mycolors=rep(mycolors,nrow(dat1) %/% length(mycolors) + 1)
+                }
+                mainCol=mycolors[1:nrow(dat1)]
+        }
+
         p<-ggplot(dat1) +
-                geom_rect_interactive(aes_string( ymax="ymax", ymin="ymin", xmax="4", xmin="3",
-                                                  tooltip="label",data_id=donuts),fill=mainCol,colour="white",alpha=0.7)+
-                coord_polar(theta="y",start=3*pi/2)+
-                xlim(0,4+labelposition)+
+                geom_rect_interactive(aes_string( ymax="ymax", ymin="ymin", xmax="xmax", xmin="xmin",
+                                                  tooltip="label",data_id=donuts),fill=mainCol,alpha=0.7,colour=colour,...)+
+                coord_polar(theta="y",start=start, direction=direction)+
+                xlim(0,xmax+labelposition+ifelse(is.null(explode),0,max(0,explodePos)))+
                 theme_clean()
 
         donutlabel=dat1[[donuts]]
@@ -266,10 +317,10 @@ ggDonut=function(data,mapping,
                 donutlabel=paste0(donutlabel,"\n(",round(dat1$ratio,1),"%)")
 
         if(labelposition==1) {
-                p<- p+ geom_text(aes_string(label="donutlabel",x="4.3",y="ypos",hjust="hjust"),size=3)+
-                        geom_segment(aes_string(x="4",xend="4.2",y="ypos",yend="ypos"))
+                p<- p+ geom_text(aes_string(label="donutlabel",x="labelpos",y="ypos",hjust="hjust"),size=3)+
+                        geom_segment(aes_string(x="segxstart",xend="segxend",y="ypos",yend="ypos"))
         }  else{
-                p<- p+ geom_text(aes_string(label="donutlabel",x="3.5",y="ypos"),size=3)
+                p<- p+ geom_text(aes_string(label="donutlabel",x="labelpos",y="ypos"),size=3)
         }
         if(title!="") p<-p+ggtitle(title)
         # if(use.label){
