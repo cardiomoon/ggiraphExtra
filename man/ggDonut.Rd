@@ -6,7 +6,7 @@
 \usage{
 ggDonut(data, mapping, addDonutLabel = TRUE, showRatio = TRUE,
   polar = TRUE, labelposition = 1, title = "", use.label = TRUE,
-  use.labels = TRUE, interactive = FALSE, palette = NULL,
+  use.labels = TRUE, alpha = 0.7, interactive = FALSE, palette = NULL,
   reverse = FALSE, xmin = 3, xmax = 4, start = 3 * pi/2,
   direction = 1, colour = "white", explode = NULL, explodePos = 0.5,
   ...)
@@ -29,6 +29,8 @@ ggDonut(data, mapping, addDonutLabel = TRUE, showRatio = TRUE,
 \item{use.label}{Logical. Whether or not use column label in case of labelled data}
 
 \item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
+
+\item{alpha}{transparency of geom_rect}
 
 \item{interactive}{A logical value. If TRUE, an interactive plot will be returned}
 
@@ -63,5 +65,5 @@ require(ggplot2)
 require(ggiraph)
 require(plyr)
 ggDonut(browsers,aes(donuts=version,count=share))
-ggDonut(browsers,aes(donuts=version,count=share),palette="Blues",explode=c(2,4,6),labelposition=0)
+ggDonut(browsers,aes(donuts=version,count=share),palette="Reds",explode=c(2,4,6),labelposition=0)
 }

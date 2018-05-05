@@ -211,6 +211,7 @@ ggPieDonut=function(data,mapping,
 #'@param title Plot title
 #'@param use.label Logical. Whether or not use column label in case of labelled data
 #'@param use.labels Logical. Whether or not use value labels in case of labelled data
+#'@param alpha transparency of geom_rect
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
 #'@param palette A character string indicating the color palette
 #'@param reverse If true, reverse palette colors
@@ -231,12 +232,13 @@ ggPieDonut=function(data,mapping,
 #'require(ggiraph)
 #'require(plyr)
 #'ggDonut(browsers,aes(donuts=version,count=share))
-#'ggDonut(browsers,aes(donuts=version,count=share),palette="Blues",explode=c(2,4,6),labelposition=0)
+#'ggDonut(browsers,aes(donuts=version,count=share),palette="Reds",explode=c(2,4,6),labelposition=0)
 ggDonut=function(data,mapping,
 
                  addDonutLabel=TRUE,showRatio=TRUE,
                  polar=TRUE,labelposition=1,title="",
                  use.label=TRUE,use.labels=TRUE,
+                 alpha=0.7,
                  interactive=FALSE,palette=NULL,reverse=FALSE,
                  xmin=3,xmax=4,
                  start=3*pi/2,
@@ -307,7 +309,7 @@ ggDonut=function(data,mapping,
 
         p<-ggplot(dat1) +
                 geom_rect_interactive(aes_string( ymax="ymax", ymin="ymin", xmax="xmax", xmin="xmin",
-                                                  tooltip="label",data_id=donuts),fill=mainCol,alpha=0.7,colour=colour,...)+
+                                                  tooltip="label",data_id=donuts),fill=mainCol,alpha=alpha,colour=colour,...)+
                 coord_polar(theta="y",start=start, direction=direction)+
                 xlim(0,xmax+labelposition+ifelse(is.null(explode),0,max(0,explodePos)))+
                 theme_clean()
