@@ -18,6 +18,7 @@
 ggArea=function(data,mapping,palette="Blues",reverse=TRUE,alpha=0.4,size=0.3,use.label=TRUE,use.labels=TRUE){
 
         # data=uspopage;mapping=aes(x=Year,y=Thousands,fill=AgeGroup)
+        # palette="Blues";reverse=TRUE;alpha=0.4;size=0.3;use.label=TRUE;use.labels=TRUE
         fillvar<-xvar<-yvar<-NULL
         name=names(mapping)
         xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
@@ -25,10 +26,10 @@ ggArea=function(data,mapping,palette="Blues",reverse=TRUE,alpha=0.4,size=0.3,use
                 (varname=paste0(name[i],"var"))
                 labname=paste0(name[i],"lab")
                 labelsname=paste0(name[i],"labels")
-                assign(varname,paste(mapping[[name[i]]]))
+                assign(varname,getMapping(mapping,name[i]))
                 x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
-                assign(labname,attr(x,"label"))
-                assign(labelsname,get_labels(x))
+                assign(labname,attr(x,"label",exact = TRUE))
+                assign(labelsname,sjlabelled::get_labels(x))
         }
         direction=ifelse(reverse,-1,1)
         p<-ggplot(data,aes_string(x=xvar,y=yvar,fill=fillvar))+

@@ -45,21 +45,21 @@ ggPieDonut=function(data,mapping,
 
         count<-NULL
         if("y" %in% names(mapping)){
-                count<-paste(mapping[["y"]])
+                count<-getMapping(mapping,"y")
         } else {
-                if("count" %in% names(mapping)) count<-paste(mapping[["count"]])
+                if("count" %in% names(mapping)) count<-getMapping(mapping,"count")
         }
         count
-        (pies=paste0(mapping[["pies"]]))
-        if(length(pies)==0) pies<-NULL
-        (donuts=paste0(mapping[["donuts"]]))
-        if(length(donuts)==0) donuts<-NULL
+        (pies=getMapping(mapping,"pies"))
+
+        (donuts=getMapping(mapping,"donuts"))
+
         if((length(pies)+length(donuts))!=2){
-                (xvar=paste0(mapping[["x"]]))
-                xvar=paste0(mapping[["x"]])
+                (xvar=getMapping(mapping,"x"))
+
                 #if(length(xvar)<2) warning("Two variables are required")
                 if(length(xvar)>1) {
-                        xvar<-xvar[-1]
+                        # xvar<-xvar[-1]
                         pies=xvar[1]
                         donuts=xvar[2]
                 }
@@ -251,14 +251,14 @@ ggDonut=function(data,mapping,
 
         donuts<-count<-NULL
         if("y" %in% names(mapping)){
-                count<-paste(mapping[["y"]])
+                count<-getMapping(mapping,"y")
         } else {
-                if("count" %in% names(mapping)) count<-paste(mapping[["count"]])
+                if("count" %in% names(mapping)) count<-getMapping(mapping,"count")
         }
         if("donuts" %in% names(mapping)) {
-                donuts<-paste(mapping[["donuts"]])
+                donuts<-getMapping(mapping,"donuts")
         } else {
-                if("x" %in% names(mapping)) donuts<-paste(mapping[["x"]])
+                if("x" %in% names(mapping)) donuts<-getMapping(mapping,"x")
         }
 
 
@@ -409,14 +409,14 @@ ggPie=function(data,mapping,
 
         count<-NULL
         if("y" %in% names(mapping)){
-                count<-paste(mapping[["y"]])
+                count<-getMapping(mapping,"y")
         } else {
-                if("count" %in% names(mapping)) count<-paste(mapping[["count"]])
+                if("count" %in% names(mapping)) count<-getMapping(mapping,"count")
         }
 
-        (pies=paste0(mapping[["pies"]]))
-        if(length(pies)!=1){
-                (xvar=paste0(mapping[["x"]]))
+        (pies=getMapping(mapping,"pies"))
+        if(is.null(pies)){
+                (xvar=getMapping(mapping,"x"))
                 pies=xvar[1]
 
         }

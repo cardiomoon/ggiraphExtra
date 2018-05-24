@@ -33,7 +33,7 @@ ggBoxplot=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,interactive=
         if(length(groupname)==0) {
                 groupvar<-NULL
         } else {
-                (groupvar=paste(mapping[groupname]))
+                (groupvar=getMapping(mapping,groupname))
         }
         if(length(groupvar)>1) warning("Only one grouping variable is allowed")
 
@@ -44,8 +44,8 @@ ggBoxplot=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,interactive=
                         (varname=paste0(name[i],"var"))
                         (labname=paste0(name[i],"lab"))
                         (labelsname=paste0(name[i],"labels"))
-                        temp=paste(mapping[[name[i]]])
-                        if(length(temp)>1) temp=temp[-1]
+                        temp=getMapping(mapping,name[i])
+                        # if(length(temp)>1) temp=temp[-1]
                         assign(varname,temp)
                         x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
                         assign(labname,attr(x,"label"))
@@ -64,8 +64,8 @@ ggBoxplot=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,interactive=
         if(length(paste0(mapping[["x"]]))==0) {
                 xvars=colnames(data)[select]
         } else {
-                xvars=paste0(mapping[["x"]])
-                if(length(xvars)>1) xvars<-xvars[-1]
+                xvars=getMapping(mapping,"x")
+                # if(length(xvars)>1) xvars<-xvars[-1]
                 if(length(xvars)<3) warning("At least three variables are required")
         }
 

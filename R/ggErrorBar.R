@@ -19,14 +19,20 @@
 ggErrorBar=function(data,mapping,interactive=FALSE,digits=1,mode=2,errorbar="se",
                     use.label=TRUE,use.labels=TRUE){
 
+    # data=mpg;mapping=aes(x=drv,y=cty);interactive=FALSE;digits=1;mode=2;errorbar="se"
+    # use.label=TRUE;use.labels=TRUE
     df<-data
 
-    yvar=paste(mapping[["y"]])
-    xvar=paste(mapping[["x"]])
+    yvar=getMapping(mapping,"y")
+    xvar=getMapping(mapping,"x")
     if(is.numeric(data[[xvar]])) data[[xvar]]=factor(data[[xvar]])
+    groupvar<-NULL
     (groupname=setdiff(names(mapping),c("x","y")))
-    (groupvar=paste(mapping[groupname]))
-    if(length(groupvar)==0) groupvar<-NULL
+    length(groupname)
+    if(length(groupname)>0){
+         groupvar=getMapping(mapping,groupname)
+    }
+
 
     name=names(mapping)
     xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
@@ -34,7 +40,7 @@ ggErrorBar=function(data,mapping,interactive=FALSE,digits=1,mode=2,errorbar="se"
             (varname=paste0(name[i],"var"))
             labname=paste0(name[i],"lab")
             labelsname=paste0(name[i],"labels")
-            assign(varname,paste(mapping[[name[i]]]))
+            assign(varname,getMapping(mapping,name[i]))
             x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
             assign(labname,attr(x,"label"))
             assign(labelsname,get_labels(x))

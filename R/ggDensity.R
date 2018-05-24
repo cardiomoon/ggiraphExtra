@@ -39,8 +39,8 @@ ggDensity=function(data,mapping,linecolor="red",addhist=TRUE,use.label=TRUE,use.
                 (varname=paste0(name[i],"var"))
                 (labname=paste0(name[i],"lab"))
                 (labelsname=paste0(name[i],"labels"))
-                temp=paste(mapping[[name[i]]])
-                if(length(temp)>1) temp=temp[-1]
+                temp=getMapping(mapping,name[i])
+                # if(length(temp)>1) temp=temp[-1]
                 assign(varname,temp)
                 x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
                 assign(labname,attr(x,"label"))

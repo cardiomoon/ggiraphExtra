@@ -87,13 +87,13 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
 
         xvar <- fillvar <- facetvar <- yvar <- NULL
         if ("x" %in% names(mapping))
-                xvar <- paste(mapping[["x"]])
+                xvar <- getMapping(mapping,"x")
         if ("y" %in% names(mapping))
-                yvar <- paste(mapping[["y"]])
+                yvar <- getMapping(mapping,"y")
         if ("fill" %in% names(mapping))
-                fillvar <- paste(mapping[["fill"]])
+                fillvar <- getMapping(mapping,"fill")
         if ("facet" %in% names(mapping))
-                facetvar <- paste(mapping[["facet"]])
+                facetvar <- getMapping(mapping,"facet")
         contmode = 0
 
         (xlab=attr(data[[xvar]],"label"))
@@ -284,8 +284,8 @@ addLabelDf=function(data,mapping=NULL){
                 (mapnames=names(mapping))
                 cols=c()
                 for(i in 1:length(mapnames)) {
-                        temp=paste(mapping[[mapnames[i]]])
-                        if(length(temp)>1) temp=temp[-1]
+                        temp=getMapping(mapping,mapnames[i])
+                        # if(length(temp)>1) temp=temp[-1]
                         cols=c(cols,temp)
                 }
                 cols=unique(cols)

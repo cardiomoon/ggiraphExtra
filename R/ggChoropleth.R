@@ -39,11 +39,16 @@ ggChoropleth=function(data,mapping,map,
                       palette="OrRd",reverse=FALSE,color="grey50",
                       title="",digits=1,interactive=FALSE,...){
 
+    # crimes <- data.frame(state = tolower(rownames(USArrests)), USArrests)
+    # states_map <- map_data("state")
+    # data=crimes;mapping=aes(fill=c(Murder,Rape),map_id=state);map=states_map;interactive=TRUE
+
+
         mapidvar<-fillvar<-facetvar<-tooltip<-NULL
-        if("map_id" %in% names(mapping)) mapidvar<-paste(mapping[["map_id"]])
-        if("fill" %in% names(mapping)) fillvar<-paste(mapping[["fill"]])
-        if("facet" %in% names(mapping)) facetvar<-paste(mapping[["facet"]])
-        if("tooltip" %in% names(mapping)) tooltip<-paste(mapping[["tooltip"]])
+        if("map_id" %in% names(mapping)) mapidvar<-getMapping(mapping,"map_id")
+        if("fill" %in% names(mapping)) fillvar<-getMapping(mapping,"fill")
+        if("facet" %in% names(mapping)) facetvar<-getMapping(mapping,"facet")
+        if("tooltip" %in% names(mapping)) tooltip<-getMapping(mapping,"tooltip")
         #if(is.null(fillvar)) warning("Aestheic mapping to 'fill' is required.")
         if(is.null(mapidvar)) warning("Aestheic mapping to 'map_id' is required.")
 
@@ -54,9 +59,9 @@ ggChoropleth=function(data,mapping,map,
                 (fillvar=colnames(data)[select])
                 longdata=TRUE
         } else {
-                fillvar=paste0(mapping[["fill"]])
+                fillvar=getMapping(mapping,"fill")
                 if(length(fillvar)>1) {
-                        fillvar<-fillvar[-1]
+
                         longdata=TRUE
                 }
         }

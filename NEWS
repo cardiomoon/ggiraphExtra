@@ -1,3 +1,9 @@
+# ggiraphExtra 0.2.7
+====================
+(2018-5-24)
+
+* compatible with both released and developmental version of ggplot2
+
 # ggiraphExtra 0.2.6
 ====================
 (2018-5-6)

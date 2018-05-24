@@ -46,11 +46,11 @@ ggBar=function(data,mapping,
 
         xvar <- fillvar <- facetvar <- yvar <- NULL
         if ("x" %in% names(mapping))
-                xvar <- paste(mapping[["x"]])
+                xvar <- getMapping(mapping,"x")
         if ("y" %in% names(mapping))
-                yvar <- paste(mapping[["y"]])
+                yvar <- getMapping(mapping,"y")
         if ("fill" %in% names(mapping))
-                (fillvar <- paste(mapping[["fill"]]))
+                (fillvar <- getMapping(mapping,"fill"))
 
         (xlab=attr(data[[xvar]],"label"))
         if(is.null(xlab)) xlab=xvar

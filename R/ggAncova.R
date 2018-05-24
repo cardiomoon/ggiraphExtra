@@ -20,16 +20,21 @@ ggAncova=function(x,...) UseMethod("ggAncova")
 #'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@export
 ggAncova.default=function(x,mapping,use.label=TRUE,use.labels=TRUE,...){
+    # x=radial
+    # mapping=aes(age,NTAV,color=sex)
+    # interactive=TRUE
+
     data<-x
 
     xvar<-yvar<-groupvar<-NULL
     name=names(mapping)
+    name
     xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
     for(i in 1:length(name)){
             (varname=paste0(name[i],"var"))
             (labname=paste0(name[i],"lab"))
             (labelsname=paste0(name[i],"labels"))
-            temp=paste(mapping[[name[i]]])
+            temp=getMapping(mapping,name[i])
             if(length(temp)>1) temp=temp[-1]
             assign(varname,temp)
             tempx=eval(parse(text=paste0("x$",eval(parse(text=varname)))))
@@ -39,7 +44,7 @@ ggAncova.default=function(x,mapping,use.label=TRUE,use.labels=TRUE,...){
 
     if(is.null(xvar)|is.null(yvar)) warning("Both x and y aesthetics are should be mapped")
     (groupname=setdiff(names(mapping),c("x","y")))
-    if(length(groupname)>0) (groupvar=paste(mapping[groupname]))
+    if(length(groupname)>0) (groupvar=getMapping(mapping,groupname))
 
     A=groupvar[1]
     formula=as.formula(paste(yvar,"~",xvar,"+",A))

@@ -46,7 +46,7 @@ ggHeatmap=function(data,mapping,
                 (varname=paste0(name[i],"var"))
                 labname=paste0(name[i],"lab")
                 labelsname=paste0(name[i],"labels")
-                assign(varname,paste(mapping[[name[i]]]))
+                assign(varname,getMapping(mapping,name[i]))
                 x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
                 assign(labname,attr(x,"label"))
                 assign(labelsname,get_labels(x))

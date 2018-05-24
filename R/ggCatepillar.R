@@ -24,18 +24,19 @@ pastecolon=function(...){
 #'require(ggiraph)
 #'require(ggplot2)
 #'ggCatepillar(acs,aes(Dx,age,color=HBP))
-#'ggCatepillar(acs,aes(c(Dx,sex),age,color=HBP),interactive=TRUE,flip=TRUE)
+#'ggCatepillar(acs,aes(c(Dx,sex),age,color=HBP),interactive=TRUE,flip=TRUE,use.labels=FALSE)
 #'ggCatepillar(acs,aes(age,height,color=sex),errorbar=FALSE,interactive=TRUE)
 ggCatepillar=function(data,mapping,errorbar="se",interactive=FALSE,digits=1,flip=FALSE,use.label=TRUE,use.labels=TRUE){
 
-        #data=acs;mapping=aes(c(Dx,sex),height,color=HBP);interactive=FALSE;digits=1;errorbar="se";flip=TRUE
+        # data=acs;mapping=aes(c(Dx,sex),age,color=HBP);interactive=FALSE;digits=1;errorbar="se";flip=TRUE
+        # use.label=TRUE;use.labels=TRUE
         xvar<-yvar<-groupvar<-colourvar<-NULL
-        (xvar=paste(mapping[["x"]]))
-        yvar=paste(mapping[["y"]])
+        xvar=getMapping(mapping,"x")
+        yvar=getMapping(mapping,"y")
 
         if(is.null(xvar)|is.null(yvar)) warning("Both x and y aesthetics are should be mapped")
         (groupname=setdiff(names(mapping),c("x","y")))
-        if(length(groupname)>0) (groupvar=paste(mapping[groupname]))
+        if(length(groupname)>0) (groupvar=getMapping(mapping,groupname))
         name=names(mapping)
 
         xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
@@ -44,16 +45,15 @@ ggCatepillar=function(data,mapping,errorbar="se",interactive=FALSE,digits=1,flip
                 labname=paste0(name[i],"lab")
                 labelsname=paste0(name[i],"labels")
 
-                temp=paste(mapping[[name[i]]])
-                if(length(temp)>1) temp=temp[-1]
+                temp=getMapping(mapping,name[i])
+                # if(length(temp)>1) temp=temp[-1]
                 assign(varname,temp)
                 x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
                 assign(labname,attr(x,"label"))
-                assign(labelsname,get_labels(x))
+                assign(labelsname,sjlabelled::get_labels(x))
         }
 
-
-        if(length(xvar)>1) xvar<-xvar[-1]
+        # if(length(xvar)>1) xvar<-xvar[-1]
 
         df<-data
         A=yvar
@@ -63,19 +63,25 @@ ggCatepillar=function(data,mapping,errorbar="se",interactive=FALSE,digits=1,flip
         if(is.null(B)){
                 dat=summarySE(df,A,C)
                 dat$tooltip="all"
-                if(length(C)==1) dat$label=paste0(C,": ",dat[[C]],"<br>",A,": ",round(dat[[A]],digits),
+                if(length(C)==1) {
+                        dat$label=paste0(C,": ",dat[[C]],"<br>",A,": ",round(dat[[A]],digits),
                                  "<br>sd: ",round(dat$sd,digits),"<br>se: ",round(dat$se,digits))
-                else dat$label=paste0(A,": ",round(dat[[A]],digits),
+                } else {
+                        dat$label=paste0(A,": ",round(dat[[A]],digits),
                                  "<br>sd: ",round(dat$sd,digits),"<br>se: ",round(dat$se,digits))
+                }
 
         } else {
                 dat=summarySE(df,A,c(B,C))
                 dat[[B]]=factor(dat[[B]])
                 dat$tooltip=dat[[B]]
-                if(length(C)==1) dat$label=paste0(B,": ",dat[[B]],"<br>",C,":",dat[[C]],"<br>",A,": ",round(dat[[A]],digits),
+                if(length(C)==1) {
+                        dat$label=paste0(B,": ",dat[[B]],"<br>",C,":",dat[[C]],"<br>",A,": ",round(dat[[A]],digits),
                                   "<br>sd: ",round(dat$sd,digits),"<br>se: ",round(dat$se,digits))
-                else dat$label=paste0(B,": ",dat[[B]],"<br>",A,": ",round(dat[[A]],digits),
+                } else {
+                        dat$label=paste0(B,": ",dat[[B]],"<br>",A,": ",round(dat[[A]],digits),
                                       "<br>sd: ",round(dat$sd,digits),"<br>se: ",round(dat$se,digits))
+                }
 
         }
         if(length(C)>1){
@@ -111,10 +117,13 @@ ggCatepillar=function(data,mapping,errorbar="se",interactive=FALSE,digits=1,flip
                                     A,"+",errorbar,"),width=",mywidth,",
                                     position=position_dodge(width=mywidth))")))
         if(flip) p<-p+coord_flip()
+
         if(use.labels) {
+                if(length(xvar)==1){
                 if(!is.null(xlabels)) {
                         if(is.numeric(data[[xvar[1]]])) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
                         else p<-p+scale_x_discrete(labels=xlabels)
+                }
                 }
                 if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
                 if(!is.null(filllabels)) p=p+scale_fill_discrete(labels=filllabels)

@@ -27,11 +27,11 @@ ggEffect.default <-function(x,mapping,use.label=TRUE,use.labels=TRUE,...) {
         # use.label=TRUE;use.labels=TRUE
         x=as.data.frame(x)
         xvar<-yvar<-groupvar<-NULL
-        (xvar=paste(mapping[["x"]]))
-        yvar=paste(mapping[["y"]])
+        (xvar=getMapping(mapping,"x"))
+        yvar=getMapping(mapping,"y")
         if(is.null(xvar)|is.null(yvar)) warning("Both x and y aesthetics are should be mapped")
         (groupname=setdiff(names(mapping),c("x","y")))
-        if(length(groupname)==1) (groupvar=paste(mapping[groupname]))
+        if(length(groupname)==1) (groupvar=getMapping(mapping,groupname))
         else warning("Only one grouping variable is required")
 
         name=names(mapping)
@@ -40,8 +40,8 @@ ggEffect.default <-function(x,mapping,use.label=TRUE,use.labels=TRUE,...) {
                 (varname=paste0(name[i],"var"))
                 (labname=paste0(name[i],"lab"))
                 (labelsname=paste0(name[i],"labels"))
-                temp=paste(mapping[[name[i]]])
-                if(length(temp)>1) temp=temp[-1]
+                temp=getMapping(mapping,name[i])
+                # if(length(temp)>1) temp=temp[-1]
                 assign(varname,temp)
                 tempx=eval(parse(text=paste0("x$",eval(parse(text=varname)))))
                 assign(labname,attr(tempx,"label"))

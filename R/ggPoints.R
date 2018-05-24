@@ -152,6 +152,8 @@ model2df=function(model,x=NULL,n=100){
 #'require(ggplot2)
 #'require(ggiraph)
 #'require(plyr)
+#'ggPoints(aes(x=wt,y=mpg,fill=am),data=mtcars)
+#'ggPoints(aes(x=wt,y=mpg),data=mtcars)
 #'ggPoints(aes(x=wt,y=mpg,fill=am),data=mtcars,method="lm",interactive=TRUE)
 #'ggPoints(aes(x=wt,y=mpg,color=am),data=mtcars,interactive=TRUE)
 ggPoints=function(data,mapping, smooth=TRUE,
@@ -162,7 +164,7 @@ ggPoints=function(data,mapping, smooth=TRUE,
                   tooltip=NULL,interactive=FALSE,...) {
 
 
-          # data=mtcars;mapping=aes(x=wt,y=mpg,fill=am);smooth=TRUE
+          # data=mtcars;mapping=aes(x=wt,y=mpg);smooth=TRUE
           # se=TRUE;method="lm";formula=y~x; fullrange=FALSE;level=0.95;
           # maxfactorno=3;digits=2;
           # tooltip=NULL;interactive=TRUE;
@@ -183,15 +185,15 @@ ggPoints=function(data,mapping, smooth=TRUE,
     #str(mapping)
         xname <- fillname <- facetname <- colorname<-yname <- NULL
         if ("x" %in% names(mapping))
-                xname <- paste(mapping[["x"]])
+                xname <- getMapping(mapping,"x")
         if ("y" %in% names(mapping))
-                yname <- paste(mapping[["y"]])
+                yname <- getMapping(mapping,"y")
         if ("fill" %in% names(mapping))
-                fillname <- paste(mapping[["fill"]])
+                fillname <- getMapping(mapping,"fill")
         if ("colour" %in% names(mapping))
-                colorname <- paste(mapping[["colour"]])
+                colorname <- getMapping(mapping,"colour")
         if ("facet" %in% names(mapping))
-                facetname <- paste(mapping[["facet"]])
+                facetname <- getMapping(mapping,"facet")
 
         name=names(mapping)
         xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
@@ -199,7 +201,7 @@ ggPoints=function(data,mapping, smooth=TRUE,
                 (varname=paste0(name[i],"var"))
                 labname=paste0(name[i],"lab")
                 labelsname=paste0(name[i],"labels")
-                assign(varname,paste(mapping[[name[i]]]))
+                assign(varname,getMapping(mapping,name[i]))
                 x=eval(parse(text=paste0("data$",eval(parse(text=varname)))))
                 assign(labname,attr(x,"label"))
                 assign(labelsname,get_labels(x))
@@ -243,10 +245,11 @@ ggPoints=function(data,mapping, smooth=TRUE,
     (grepModel=eval(parse(text=temp)))
 
 
+    groupvar<-NULL
     (groupname=setdiff(names(mapping),c("x","y")))
 
-    (groupvar=paste(mapping[groupname]))
-    if(length(groupvar)>0)  {
+    if(length(groupname)>0) (groupvar=getMapping(mapping,groupname))
+    if(!is.null(groupvar))  {
             data=num2factorDf(data,groupvar,maxfactorno=maxfactorno)
             groupvar=unselectNumeric(data,groupvar,maxfactorno=maxfactorno)
             if(!is.null(facetname)) groupvar=c(groupvar,facetname)
@@ -409,6 +412,7 @@ ggPoints=function(data,mapping, smooth=TRUE,
                    zoom_max=10,hover_css=hover_css,selected_css=selected_css)
     }
    p
+
 }
 
 

@@ -1,5 +1,6 @@
 #' Rescale a vector with which minimum value 0 and maximum value 1
 #' @param x A numeric vector
+#' @export
 myscale=function(x){
         if(is.character(x)) x=as.numeric(factor(x))
         if(is.factor(x)) x=as.numeric(x)
@@ -11,6 +12,7 @@ myscale=function(x){
 #' @param x A numeric vector
 #' @param minx The minimun value
 #' @param maxx The maximum value
+#' @export
 myscale2=function(x,minx=0,maxx=1){
         if(is.factor(x)) {
                 x=as.numeric(x)
@@ -40,40 +42,36 @@ myscale2=function(x,minx=0,maxx=1){
 #' require(moonBook)
 #' ggPair(iris,rescale=TRUE)
 #' ggPair(iris,rescale=TRUE,horizontal=TRUE)
-#' ggPair(acs,aes(color=smoking),horizontal=TRUE,rescale=TRUE)
+#' ggPair(acs,aes(colour=smoking),horizontal=TRUE,rescale=TRUE)
 #' ggPair(radial,aes(color=male),horizontal=TRUE,rescale=TRUE)
 #' ggPair(mtcars,horizontal=TRUE,rescale=TRUE)
 #' ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
-#' ggPair(iris,aes(color=Species),horizontal=TRUE,rescale=TRUE)
+#' ggPair(iris,aes(colour=Species),horizontal=TRUE,rescale=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length),color=Species),horizontal=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),horizontal=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),horizontal=TRUE,interactive=TRUE)
 ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=FALSE,
                 use.labels=TRUE,includeFactor=TRUE,includeAll=FALSE,interactive=FALSE) {
-
-          # data=iris;mapping=aes(x=c(Sepal.Length,Sepal.Width),color=Species);
-          # data=iris;mapping=NULL
-          # rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
-          # use.labels=TRUE;interactive=FALSE;includeFactor=FALSE;includeAll=FALSE
+#
+#                 data=iris;mapping=aes(color=Species);
+# # #             # # data=iris;mapping=NULL
+#                 rescale=TRUE;idcolor=TRUE;horizontal=TRUE;use.label=TRUE;
+#                use.labels=TRUE;interactive=FALSE;includeFactor=FALSE;includeAll=FALSE
 
         df=as.data.frame(data)
-
-        (colorvar<-paste0(mapping[["colour"]]))
+        mapping
+        (colorvar<-getMapping(mapping,"colour"))
         if(length(colorvar)==0) colorvar<-NULL
         if(!is.null(colorvar)){
                 if(is.numeric(df[[colorvar]])) df[[colorvar]]=factor(df[[colorvar]])
         }
-        (xvars=paste0(mapping[["x"]]))
-        xvarlength=length(xvars)
         select=sapply(df,is.numeric)
         minx=min(df[select],na.rm=T)
         maxx=max(df[select],na.rm=T)
-        if(includeFactor){
-                select1=sapply(df,is.factor)
-                (select=select|select1)
-        }
-        if(length(paste0(mapping[["x"]]))==0) {
+        (xvars=getMapping(mapping,"x"))
+
+        if(is.null(xvars)) {
 
                 if(includeAll){
                         xvars=colnames(df)
@@ -81,10 +79,18 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
                         xvars=union(colnames(df)[select],colorvar)
                 }
         } else {
-                xvars=paste0(mapping[["x"]])
-                if(length(xvars)>1) xvars<-xvars[-1]
+                xvars=getMapping(mapping,"x")
+                # if(length(xvars)>1) xvars<-xvars[-1]
                 if(length(xvars)<2) warning("At least two variables are required")
         }
+        xvars
+        xvarlength=length(xvars)
+
+        if(includeFactor){
+                select1=sapply(df,is.factor)
+                (select=select|select1)
+        }
+
         if(horizontal) (xvars=union(xvars,colorvar))
         #if(!is.null(colorvar)) df1[[colorvar]]=df[[colorvar]]
         df1<-df[union(xvars,colorvar)]
@@ -116,7 +122,7 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         colorvar
         summary(longdf)
         if(!is.null(colorvar)) {
-                colorlabels=get_labels(data[[colorvar]])
+                colorlabels=sjlabelled::get_labels(data[[colorvar]])
                 colorlabels
                 if(!is.null(colorlabels)) longdf[[colorvar]]=factor(longdf[[colorvar]],labels=colorlabels)
         }
@@ -163,12 +169,12 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
                 cols=colnames(df[xvars])
                 for(i in 1:length(xvars)){
                         temp=NULL
-                        if(use.label) temp=get_label(data[[xvars[i]]])
+                        if(use.label) temp=sjlabelled::get_label(data[[xvars[i]]])
                         labels=c(labels,ifelse(is.null(temp),cols[i],temp))
                 }
                 p<-p+scale_x_discrete(labels=labels)
        if(use.label){
-                colorlab=get_label(data[[colorvar]])
+                colorlab=sjlabelled::get_label(data[[colorvar]])
                 if(!is.null(colorlab)) p<-p+labs(colour=colorlab)
         }
         # if(use.labels){

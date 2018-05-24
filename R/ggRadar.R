@@ -39,6 +39,42 @@ rescale_df=function(data,groupvar=NULL){
 }
 
 
+#' extract variable name from mapping, aes
+#' @param mapping aesthetic mapping
+#' @param varname variable name to extract
+#' @return variable name in character
+#' @importFrom stringr str_replace_all str_detect str_split fixed
+#' @importFrom utils packageVersion
+#' @export
+#' @examples
+#' require(ggplot2)
+#' mapping=aes(colour=sex)
+#' mapping=aes(x=c(Sepal.Length,Sepal.Width,Petal.Length,Petal.Width))
+#' getMapping(mapping,"colour")
+#' getMapping(mapping,"x")
+getMapping=function(mapping,varname) {
+
+        # mapping=aes(colour=sex)
+        # varname="x"
+        if(is.null(mapping)) return(NULL)
+        result=paste(mapping[varname])
+        if(result=="NULL") result<-NULL
+        if(!is.null(result)){
+                if(packageVersion("ggplot2") > "2.2.1") {
+                        result=stringr::str_replace_all(result,"~","")
+                }
+                        result=stringr::str_replace_all(result,stringr::fixed("c("),"")
+                        result=stringr::str_replace_all(result,stringr::fixed(")"),"")
+                        result=stringr::str_replace_all(result," ","")
+                        if(stringr::str_detect(result,",")) {
+                                result=unlist(stringr::str_split(result,","))
+                        }
+
+        }
+        result
+}
+
+
 #'Draw a radar chart
 #'
 #'@param data A data.frame
@@ -57,6 +93,7 @@ rescale_df=function(data,groupvar=NULL){
 #'@importFrom plyr ddply summarize
 #'@importFrom ggiraph geom_polygon_interactive geom_point_interactive
 #'@importFrom ggplot2 expand_limits theme xlab ylab
+#'@importFrom stringr str_replace
 #'@return An interactive radar plot
 #'@export
 #'@examples
@@ -82,30 +119,20 @@ ggRadar=function(data,mapping=NULL,
                  use.label=FALSE,
                  interactive=FALSE,...){
 
-        # mapping=aes(x=c(q33a01w1,q33a02w1,q33a03w1),color=sexw1)
 
-        # data=acs
-        # mapping=aes(color=Dx,facet=Dx)
-        # rescale=TRUE
-        # legend.position="top"
-        # colour="red"
-        # alpha=0.3
-        # size=3
-        # ylim=NULL
-        # use.label=TRUE
-        # interactive=FALSE
 
         data=as.data.frame(data)
         (groupname=setdiff(names(mapping),c("x","y")))
         #length(groupname)
         if(length(groupname)==0) {
-                (groupvar<-NULL)
+                groupvar<-NULL
         } else {
-                (groupvar=paste(mapping[groupname]))
+                groupvar=getMapping(mapping,groupname)
         }
         facetname<-colorname<-NULL
-        if ("facet" %in% names(mapping))
-                (facetname <- paste(mapping[["facet"]]))
+        if ("facet" %in% names(mapping)){
+                facetname <- getMapping(mapping,"facet")
+        }
         (colorname=setdiff(groupvar,facetname))
 
         if((length(colorname)==0) &!is.null(facetname)) colorname<-facetname
@@ -114,19 +141,19 @@ ggRadar=function(data,mapping=NULL,
 
         (select=sapply(data,is.numeric))
 
-        if(length(paste0(mapping[["x"]]))==0) {
-                xvars=colnames(data)[select]
-        } else {
-                xvars=paste0(mapping[["x"]])
+        if("x" %in% names(mapping)) {
+                xvars=getMapping(mapping,"x")
                 xvars
-                if(length(xvars)>1) xvars<-xvars[-1]
+                #if(length(xvars)>1) xvars<-xvars[-1]
                 if(length(xvars)<3) warning("At least three variables are required")
+
+        } else {
+                xvars=colnames(data)[select]
         }
 
         (xvars=setdiff(xvars,groupvar))
 
-
-        if(rescale) data=rescale_df(data,groupvar)
+if(rescale) data=rescale_df(data,groupvar)
 
         temp=get_label(data)
         cols=ifelse(temp=="",colnames(data),temp)
