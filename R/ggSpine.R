@@ -52,6 +52,7 @@ num2cut=function(x){
 #'@param colour Bar colour
 #'@param size Bar size
 #'@param addlabel A logical value. If TRUE, label will be added to the plot
+#'@param labelsize label size
 #'@param hide.legend A logical value. If TRUE, the legend is removed and y labels are recreated
 #'@param xangle  angle of axis label
 #'@param yangle angle of axis label
@@ -74,7 +75,7 @@ num2cut=function(x){
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE,interactive=TRUE)
 ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "Blues",
                   interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,maxylev=6,
-                  digits = 1, colour = "black", size = 0.2, addlabel = FALSE, hide.legend=TRUE,
+                  digits = 1, colour = "black", size = 0.2, addlabel = FALSE, labelsize=5,hide.legend=TRUE,
                   use.label=TRUE,use.labels=TRUE,
                   xangle=NULL,yangle=NULL,...)
 {
@@ -248,7 +249,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                                            direction = direction)
         }
         if (addlabel)
-                p = p + geom_text(aes(x = x, y = y, label = df2$label))
+                p = p + geom_text(aes(x = x, y = y, label = df2$label),size=labelsize)
 
         if(is.null(xangle)){
                 if(max(nchar(colnames(df2)))>10) xangle=20

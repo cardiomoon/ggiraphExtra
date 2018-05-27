@@ -11,6 +11,7 @@
 #'@param xangle An integer. The value will be used adjust the angle of axis.text.x
 #'@param maxylev integer indicating threshold of unique value to be treated as a categorical variable
 #'@param addlabel A logical value. If TRUE, label will be added to the plot
+#'@param labelsize label size
 #'@param polar A logical value. If TRUE, coord_polar() function will be added
 #'@param reverse If true, reverse palette colors
 #'@param use.label Logical. Whether or not use column label in case of labelled data
@@ -36,7 +37,7 @@
 ggBar=function(data,mapping,
                stat="count",position="stack",palette=NULL,
                horizontal=FALSE,yangle=0,xangle=0,maxylev=6,
-               addlabel=FALSE,polar=FALSE,reverse=FALSE,
+               addlabel=FALSE,labelsize=5,polar=FALSE,reverse=FALSE,
                use.label=TRUE,use.labels=TRUE,
                interactive=FALSE,...){
         # data=acs;mapping=aes(x=Dx,fill=smoking)
@@ -116,16 +117,19 @@ ggBar=function(data,mapping,
 
         if(addlabel) {
                 if(position=="stack")
-                        p=p+geom_text(aes_string(label=yvar),position=position_stack(vjust=0.5))
+                        p=p+geom_text(aes_string(label=yvar),
+                                      position=position_stack(vjust=0.5),size=labelsize)
                 else if(position=="dodge"){
                         if(horizontal){
-                                p=p+geom_text(aes_string(label=yvar),position=position_dodge(0.9),hjust=-0.5)
+                                p=p+geom_text(aes_string(label=yvar),
+                                              position=position_dodge(0.9),hjust=-0.5,size=labelsize)
                         } else{
-                                p=p+geom_text(aes_string(label=yvar),position=position_dodge(0.9),vjust=-0.5)
+                                p=p+geom_text(aes_string(label=yvar),
+                                              position=position_dodge(0.9),vjust=-0.5,size=labelsize)
                         }
                 } else{
                         p=p+geom_text(data=res,aes_string(label="percent",y="ratio"),
-                                      position=position_fill(vjust=0.5))
+                                      position=position_fill(vjust=0.5),size=labelsize)
 
                 }
         }

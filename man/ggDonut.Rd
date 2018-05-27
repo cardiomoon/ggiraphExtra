@@ -5,11 +5,11 @@
 \title{Draw a Donut plot}
 \usage{
 ggDonut(data, mapping, addDonutLabel = TRUE, showRatio = TRUE,
-  polar = TRUE, labelposition = 1, title = "", use.label = TRUE,
-  use.labels = TRUE, alpha = 0.7, interactive = FALSE, palette = NULL,
-  reverse = FALSE, xmin = 3, xmax = 4, start = 3 * pi/2,
-  direction = 1, colour = "white", explode = NULL, explodePos = 0.5,
-  ...)
+  polar = TRUE, labelposition = 1, labelsize = 3, title = "",
+  use.label = TRUE, use.labels = TRUE, alpha = 0.7, interactive = FALSE,
+  palette = NULL, reverse = FALSE, xmin = 3, xmax = 4, start = 3 *
+  pi/2, direction = 1, colour = "white", explode = NULL,
+  explodePos = 0.5, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -23,6 +23,8 @@ ggDonut(data, mapping, addDonutLabel = TRUE, showRatio = TRUE,
 \item{polar}{A logical value. If TRUE, coord_polar() function will be added}
 
 \item{labelposition}{A number indicating the label position}
+
+\item{labelsize}{label size. default value is 3}
 
 \item{title}{Plot title}
 

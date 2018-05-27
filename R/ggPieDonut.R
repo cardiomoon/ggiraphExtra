@@ -208,6 +208,7 @@ ggPieDonut=function(data,mapping,
 #'@param showRatio A logical value. If TRUE, Ratios are added to the DonutLabels
 #'@param polar A logical value. If TRUE, coord_polar() function will be added
 #'@param labelposition A number indicating the label position
+#'@param labelsize label size. default value is 3
 #'@param title Plot title
 #'@param use.label Logical. Whether or not use column label in case of labelled data
 #'@param use.labels Logical. Whether or not use value labels in case of labelled data
@@ -236,7 +237,8 @@ ggPieDonut=function(data,mapping,
 ggDonut=function(data,mapping,
 
                  addDonutLabel=TRUE,showRatio=TRUE,
-                 polar=TRUE,labelposition=1,title="",
+                 polar=TRUE,labelposition=1,labelsize=3,
+                 title="",
                  use.label=TRUE,use.labels=TRUE,
                  alpha=0.7,
                  interactive=FALSE,palette=NULL,reverse=FALSE,
@@ -319,10 +321,11 @@ ggDonut=function(data,mapping,
                 donutlabel=paste0(donutlabel,"\n(",round(dat1$ratio,1),"%)")
 
         if(labelposition==1) {
-                p<- p+ geom_text(aes_string(label="donutlabel",x="labelpos",y="ypos",hjust="hjust"),size=3)+
+                p<- p+ geom_text(aes_string(label="donutlabel",x="labelpos",y="ypos",hjust="hjust"),
+                                 size=labelsize)+
                         geom_segment(aes_string(x="segxstart",xend="segxend",y="ypos",yend="ypos"))
         }  else{
-                p<- p+ geom_text(aes_string(label="donutlabel",x="labelpos",y="ypos"),size=3)
+                p<- p+ geom_text(aes_string(label="donutlabel",x="labelpos",y="ypos"),size=labelsize)
         }
         if(title!="") p<-p+ggtitle(title)
         # if(use.label){

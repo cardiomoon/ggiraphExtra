@@ -6,8 +6,8 @@
 \usage{
 ggBar(data, mapping, stat = "count", position = "stack", palette = NULL,
   horizontal = FALSE, yangle = 0, xangle = 0, maxylev = 6,
-  addlabel = FALSE, polar = FALSE, reverse = FALSE, use.label = TRUE,
-  use.labels = TRUE, interactive = FALSE, ...)
+  addlabel = FALSE, labelsize = 5, polar = FALSE, reverse = FALSE,
+  use.label = TRUE, use.labels = TRUE, interactive = FALSE, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -30,6 +30,8 @@ c("count","identity")}
 \item{maxylev}{integer indicating threshold of unique value to be treated as a categorical variable}
 
 \item{addlabel}{A logical value. If TRUE, label will be added to the plot}
+
+\item{labelsize}{label size}
 
 \item{polar}{A logical value. If TRUE, coord_polar() function will be added}
 

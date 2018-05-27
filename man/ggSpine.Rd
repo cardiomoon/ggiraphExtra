@@ -7,9 +7,9 @@
 ggSpine(data, mapping, stat = "count", position = "fill",
   palette = "Blues", interactive = FALSE, polar = FALSE,
   reverse = FALSE, width = NULL, maxylev = 6, digits = 1,
-  colour = "black", size = 0.2, addlabel = FALSE, hide.legend = TRUE,
-  use.label = TRUE, use.labels = TRUE, xangle = NULL, yangle = NULL,
-  ...)
+  colour = "black", size = 0.2, addlabel = FALSE, labelsize = 5,
+  hide.legend = TRUE, use.label = TRUE, use.labels = TRUE,
+  xangle = NULL, yangle = NULL, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -40,6 +40,8 @@ c("count","identity")}
 \item{size}{Bar size}
 
 \item{addlabel}{A logical value. If TRUE, label will be added to the plot}
+
+\item{labelsize}{label size}
 
 \item{hide.legend}{A logical value. If TRUE, the legend is removed and y labels are recreated}
 
