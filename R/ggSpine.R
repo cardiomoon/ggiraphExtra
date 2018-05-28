@@ -53,6 +53,8 @@ num2cut=function(x){
 #'@param size Bar size
 #'@param addlabel A logical value. If TRUE, label will be added to the plot
 #'@param labelsize label size
+#'@param minlabelgroup minimal threshold of label group. Default is 0.04
+#'@param minlabel minimal threshold of label. Default is 2
 #'@param hide.legend A logical value. If TRUE, the legend is removed and y labels are recreated
 #'@param xangle  angle of axis label
 #'@param yangle angle of axis label
@@ -75,7 +77,8 @@ num2cut=function(x){
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE,interactive=TRUE)
 ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "Blues",
                   interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,maxylev=6,
-                  digits = 1, colour = "black", size = 0.2, addlabel = FALSE, labelsize=5,minlabel=2,
+                  digits = 1, colour = "black", size = 0.2, addlabel = FALSE, labelsize=5,
+                  minlabelgroup=0.04,minlabel=2,
                   hide.legend=TRUE,
                   use.label=TRUE,use.labels=TRUE,
                   xangle=NULL,yangle=NULL,...)
@@ -198,16 +201,16 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         df2$data_id = as.character(1:nrow(df2))
         df2$tooltip = paste0(df2[[xvar]], "<br>", df2[[fillvar]],
                              "<br>", df2$nrow)
-        df2$label = ifelse((df2$csum/total) > 0.04, df2$nrow, "")
+        df2$label = ifelse((df2$csum/total) > minlabelgroup, df2$nrow, "")
         df2$tooltip = paste0(df2$tooltip, "(", df2$ratio, "%)")
         if (position == "fill") {
-                df2$label = ifelse((df2$csum/total) > 0.04,
+                df2$label = ifelse((df2$csum/total) > minlabelgroup,
                                    ifelse(df2$ratio>minlabel,percent(df2$ratio/100),""),"")
         }
         if (contmode) {
                 xlabels = breaks[2:length(breaks)]
                 xlabels
-                xlabels[csum/total < 0.04] = ""
+                xlabels[csum/total < minlabelgroup] = ""
         } else xlabels = levels(factor(df[[1]]))
         ylabels = levels(factor(df[[2]]))
         if (contmode) {
