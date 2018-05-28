@@ -75,7 +75,8 @@ num2cut=function(x){
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE,interactive=TRUE)
 ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "Blues",
                   interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,maxylev=6,
-                  digits = 1, colour = "black", size = 0.2, addlabel = FALSE, labelsize=5,hide.legend=TRUE,
+                  digits = 1, colour = "black", size = 0.2, addlabel = FALSE, labelsize=5,minlabel=2,
+                  hide.legend=TRUE,
                   use.label=TRUE,use.labels=TRUE,
                   xangle=NULL,yangle=NULL,...)
 {
@@ -200,7 +201,8 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         df2$label = ifelse((df2$csum/total) > 0.04, df2$nrow, "")
         df2$tooltip = paste0(df2$tooltip, "(", df2$ratio, "%)")
         if (position == "fill") {
-                df2$label = ifelse((df2$csum/total) > 0.04, percent(df2$ratio/100),"")
+                df2$label = ifelse((df2$csum/total) > 0.04,
+                                   ifelse(df2$ratio>minlabel,percent(df2$ratio/100),""),"")
         }
         if (contmode) {
                 xlabels = breaks[2:length(breaks)]
