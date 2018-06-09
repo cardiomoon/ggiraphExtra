@@ -9,8 +9,8 @@ ggSpine(data, mapping, stat = "count", position = "fill",
   reverse = FALSE, width = NULL, maxylev = 6, digits = 1,
   colour = "black", size = 0.2, addlabel = FALSE, labelsize = 5,
   minlabelgroup = 0.04, minlabel = 2, hide.legend = TRUE,
-  use.label = TRUE, use.labels = TRUE, xangle = NULL, yangle = NULL,
-  ...)
+  use.label = TRUE, use.labels = TRUE, labeller = NULL,
+  facetbycol = TRUE, xangle = NULL, yangle = NULL, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -54,6 +54,10 @@ c("count","identity")}
 
 \item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
 
+\item{labeller}{A function that takes one data frame of labels and returns a list or data frame of character vectors.}
+
+\item{facetbycol}{Logical. If TRUE, facet by column.}
+
 \item{xangle}{angle of axis label}
 
 \item{yangle}{angle of axis label}
@@ -70,9 +74,16 @@ Draw an interactive spinogram
 require(moonBook)
 require(ggplot2)
 require(ggiraph)
-require(scales)
-ggSpine(data=acs,aes(x=age,fill=sex))
-ggSpine(data=acs,aes(x=sex,fill=Dx),addlabel=TRUE,interactive=TRUE)
-ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge",addlabel=TRUE,interactive=TRUE)
-ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE,interactive=TRUE)
+acs$Dx=factor(acs$Dx,levels=c("Unstable Angina","NSTEMI","STEMI"))
+ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),palette="Reds",addlabel=TRUE)
+ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),palette="Reds",addlabel=TRUE,facetbycol=FALSE)
+ggSpine(data=acs,aes(x=age,fill=Dx),palette="Reds",addlabel=TRUE)
+ggSpine(data=acs,aes(x=DM,fill=Dx,facet=sex),addlabel=TRUE,palette="Reds")
+ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),addlabel=TRUE)
+ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),addlabel=TRUE,facetbycol=FALSE)
+ggSpine(data=acs,aes(x=Dx,fill=smoking),addlabel=TRUE)
+ggSpine(data=rose,aes(x=Month,fill=group,y=value),stat="identity",addlabel=TRUE)
+ggSpine(data=acs,aes(x=age,fill=Dx,facet=DM),addlabel=TRUE)
+ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge",addlabel=TRUE)
+ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE)
 }

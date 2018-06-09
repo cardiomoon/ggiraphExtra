@@ -1,40 +1,3 @@
-#'Clean theme for PieDonut plot
-#'@param base_size An interger, default 12.
-#'@importFrom ggplot2 theme_grey %+replace%
-#'@importFrom grid unit
-#'@export
-theme_clean=function(base_size=12){
-        theme_grey(base_size) %+replace%
-                theme(
-                        axis.title=element_blank(),
-                        axis.text=element_blank(),
-                        panel.background=element_blank(),
-                        panel.grid=element_blank(),
-                        axis.ticks.length=unit(0,"cm"),
-                        axis.ticks.margin=unit(0,"cm"),
-                        panel.margin=unit(0,"lines"),
-                        plot.margin=unit(c(0,0,0,0),"lines"),
-                        complete=TRUE
-                )
-}
-#'Computing breaks for make a histogram of a continuous variable
-#'
-#'@param x A continuous variables
-#'@export
-#'@return A list contains a factor and a numeric vector
-#'
-num2cut=function(x){
-        breaks=list()
-        breaks <- c(list(x = x), breaks)
-        breaks <- list(x = x)
-        breaks$plot <- FALSE
-        breaks <- do.call("hist", breaks)$breaks
-        x1 <- cut(x, breaks = breaks, include.lowest = TRUE)
-        result=list(x1=x1,breaks=breaks)
-        result
-}
-
-
 #'Draw an interactive spinogram
 #'
 #'@param data A data.frame
@@ -56,39 +19,59 @@ num2cut=function(x){
 #'@param minlabelgroup minimal threshold of label group. Default is 0.04
 #'@param minlabel minimal threshold of label. Default is 2
 #'@param hide.legend A logical value. If TRUE, the legend is removed and y labels are recreated
-#'@param xangle  angle of axis label
-#'@param yangle angle of axis label
 #'@param use.label Logical. Whether or not use column label in case of labelled data
 #'@param use.labels Logical. Whether or not use value labels in case of labelled data
+#'@param labeller A function that takes one data frame of labels and returns a list or data frame of character vectors.
+#'@param facetbycol Logical. If TRUE, facet by column.
+#'@param xangle  angle of axis label
+#'@param yangle angle of axis label
 #'@param ... other arguments passed on to geom_rect_interactive.
 #'@importFrom ggplot2 coord_polar scale_y_continuous guide_legend
 #'@importFrom ggiraph geom_rect_interactive
+#'@importFrom dplyr lag group_by n
+#'@importFrom magrittr '%>%'
 #'@importFrom scales percent
+#'@importFrom tidyr spread
+#'@importFrom dplyr select arrange
+#'@importFrom plyr '.'
+#'@importFrom purrr map_df
 #'@export
 #'@return An interactive spinogram
 #'@examples
 #'require(moonBook)
 #'require(ggplot2)
 #'require(ggiraph)
-#'require(scales)
-#'ggSpine(data=acs,aes(x=age,fill=sex))
-#'ggSpine(data=acs,aes(x=sex,fill=Dx),addlabel=TRUE,interactive=TRUE)
-#'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge",addlabel=TRUE,interactive=TRUE)
-#'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE,interactive=TRUE)
+#'acs$Dx=factor(acs$Dx,levels=c("Unstable Angina","NSTEMI","STEMI"))
+#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),palette="Reds",addlabel=TRUE)
+#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),palette="Reds",addlabel=TRUE,facetbycol=FALSE)
+#'ggSpine(data=acs,aes(x=age,fill=Dx),palette="Reds",addlabel=TRUE)
+#'ggSpine(data=acs,aes(x=DM,fill=Dx,facet=sex),addlabel=TRUE,palette="Reds")
+#'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),addlabel=TRUE)
+#'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),addlabel=TRUE,facetbycol=FALSE)
+#'ggSpine(data=acs,aes(x=Dx,fill=smoking),addlabel=TRUE)
+#'ggSpine(data=rose,aes(x=Month,fill=group,y=value),stat="identity")
+#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=DM),addlabel=TRUE)
+#'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge",addlabel=TRUE)
+#'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE)
 ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "Blues",
                   interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,maxylev=6,
                   digits = 1, colour = "black", size = 0.2, addlabel = FALSE, labelsize=5,
                   minlabelgroup=0.04,minlabel=2,
                   hide.legend=TRUE,
-                  use.label=TRUE,use.labels=TRUE,
+                  use.label=TRUE,use.labels=TRUE,labeller=NULL,facetbycol=TRUE,
                   xangle=NULL,yangle=NULL,...)
 {
-        # data=acs;mapping=aes(x=age,fill=sex)
-        # stat = "count"; position = "fill"; palette = "Blues";
-        # interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;maxylev=6;
-        # digits = 1; colour = "black"; size = 0.2; addlabel = FALSE; hide.legend=TRUE
-        # use.label=TRUE;use.labels=TRUE;
-        # xangle=NULL;yangle=NULL
+
+       # data=acs;mapping=aes(x=smoking,fill=Dx,facet=sex)
+       # palette="Reds";addlabel=TRUE
+       # stat = "count"; position = "fill"; palette = "Blues";
+       # interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;maxylev=6
+       # digits = 1; colour = "black"; size = 0.2; addlabel = FALSE; hide.legend=FALSE
+       # use.label=TRUE;use.labels=TRUE;labeller=NULL;facetbycol=FALSE
+       # xangle=NULL;yangle=NULL
+       # df=acs %>% group_by(sex,Dx,smoking) %>% summarize(n=n())
+       # data=acs
+       # mapping=aes(x=age,fill=Dx,facet=sex)
 
         xvar <- fillvar <- facetvar <- yvar <- NULL
         if ("x" %in% names(mapping))
@@ -101,170 +84,231 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                 facetvar <- getMapping(mapping,"facet")
         contmode = 0
 
+
         (xlab=attr(data[[xvar]],"label"))
         if(is.null(xlab)) xlab=xvar
         if(!use.label) xlab=xvar
         (filllab=attr(data[[fillvar]],"label"))
         if(is.null(filllab)) filllab=fillvar
         if(!use.label) filllab=fillvar
-        if(use.labels) data=addLabelDf(data,mapping)
+        if(use.labels) data=addLabelDf(data,mapping=mapping)
+
+
 
         if (is.numeric(data[[xvar]])&(length(unique(data[[xvar]]))>maxylev)) {
                 if (is.null(width)) width = 1
                 width
-                result = num2cut(data[[xvar]])
-                b = result$x1
-                breaks = result$breaks
-                a = table(data[[fillvar]], b)
-                a
-                df = reshape2::melt(a)
-                df = df[c(2, 1, 3)]
-                colnames(df) = c(xvar, fillvar, "nrow")
-                df
                 contmode = 1
-        } else if ((stat == "identity") & (!is.null(yvar))) {
-                df = data[c(xvar, fillvar, yvar)]
-                df =df[order(df[[xvar]],df[[fillvar]]),]
-                colnames(df)[3] = "nrow"
-                myformula = as.formula(paste(fillvar, "~", xvar))
-                myformula
-                b = reshape2::dcast(df, myformula, value = nrow)
-                b
-                a = b[, -1]
-                rownames(a) = b[[1]]
-                a = as.matrix(a)
-                a
-        } else {
-                data = data[c(xvar, fillvar, yvar)]
-                data=na.omit(data)
-                df = plyr::ddply(data, c(xvar, fillvar), "nrow",.drop=FALSE)
+                if(is.null(facetvar)){
 
-                a = table(data[[fillvar]], data[[xvar]])
-        }
-        df
-        if (is.null(width)) width = 0.9
-        #(df$xno = as.numeric(factor(df[[1]])))
+                    df2<-num2cutData(data,xvar,fillvar,width,position,digits,facetbycol,
+                                     minlabelgroup=minlabelgroup,minlabel=minlabel)
 
-        a
-        nrow(a)
-        df
-        df$xno=rep(1:(nrow(df)/nrow(a)),each=nrow(a))
-        (df$yno = as.numeric(factor(df[[2]])))
-        (total = sum(a))
-        (csum = colSums(a))
-        (rsum = rowSums(a))
-        (xmax = cumsum(csum))
-        (xmin = cumsum(csum) - csum)
-        (x = (xmax + xmin)/2)
-        (width = csum * width)
-        (xmax = x + width/2)
-        (xmin = x - width/2)
-        df$xmin = df$xmax = df$x = df$csum = df$width = 0
-        df$xno
-        nrow(df)
-        df
-
-        df$csum = rep(csum,each=nrow(a))
-        df$xmin = rep(xmin,each=nrow(a))
-        df$xmax = rep(xmax,each=nrow(a))
-        df$x = rep(x,each=nrow(a))
-        df$width = rep(width,each=nrow(a))
-        count = max(df$xno,na.rm=TRUE)
-        df
-        if (position == "dodge") {
-                df$ymax = df$nrow
-                df$ymin = 0
-                df$y = (df$ymax + df$ymin)/2
-                ycount = max(df$yno,na.rm=TRUE)
-                df$xmin2 = df$xmin + (df$yno - 1) * (df$width/ycount)
-                df$xmax2 = df$xmin2 + (df$width/ycount)
-                df$xmin = df$xmin2
-                df$xmax = df$xmax2
-                df$x = (df$xmax + df$xmin)/2
-                df2 = df
-        } else {
-                for (i in 1:count) {
-                        dfsub = df[df$xno == i, ]
-                        dfsub$ratio = round(dfsub$nrow * 100/csum[i], digits)
-                        dfsub$ymax = cumsum(dfsub$nrow)
-                        dfsub$ymin = dfsub$ymax - dfsub$nrow
-                        if (position == "fill") {
-                                dfsub$ymax = dfsub$ymax * 100/csum[i]
-                                dfsub$ymin = dfsub$ymin * 100/csum[i]
-                        }
-                        dfsub$y = (dfsub$ymin + dfsub$ymax)/2
-                        if (i == 1)
-                                df2 = dfsub
-                        else df2 = rbind(df2, dfsub)
+                } else{
+                df1<-data %>% split(.[[`facetvar`]]) %>%
+                    lapply(num2cutData,xvar,fillvar,width,position,digits,facetbycol,
+                           minlabelgroup,minlabel)
+                for(i in 1:length(df1)) {
+                    df1[[i]][[facetvar]]=names(df1)[[i]]
                 }
+                df2<-map_df(df1,rbind)
+                }
+
+                if(is.factor(data[[fillvar]])){
+                    df2[[fillvar]]=factor(df2[[fillvar]],levels=levels(data[[fillvar]]))
+                }
+
+
+        } else if ((stat == "identity") & (!is.null(yvar))) {
+                if(is.null(width)) width=0.9
+
+                # data<-acs %>% group_by(sex,Dx,HBP) %>% summarize(n=n())
+                # mapping=aes(facet=sex,fill=Dx,y=n,x=HBP)
+                # position="fill";digits=1;facetbycol=TRUE;facetvar="sex";width=0.9
+
+                data=data.frame(data)
+                # data
+                my_summarize_n2=function(data,mapping,width,position,digits,facetbycol,minlabelgroup,minlabel){
+                   df = data %>%
+                     select(!!mapping$x,!!mapping$fill,!!mapping$y) %>%
+                     arrange(!!mapping$x,!!mapping$fill)
+
+                   colnames(df)[ncol(df)] = "n"
+                   df1 <- df %>% tidyr::spread(!!mapping$x,n)
+
+                   # df =df[order(df[[xvar]],df[[fillvar]]),]
+                   # colnames(df)[3] = "n"
+                   #
+                   # df1<-df %>% spread(!!mapping$x,n)
+                   df1=data.frame(df1)
+                   rownames(df1)=df1[[1]]
+                   df1<-df1[-1]
+                   a=as.matrix(df1)
+
+                   my_sumSub(df,a,width=width,position=position,digits=digits,facetbycol,
+                             minlabelgroup=minlabelgroup,minlabel=minlabel)
+
+                }
+
+                if(is.null(facetvar)){
+
+
+                   df2=my_summarize_n2(data,mapping,width,position,digits,facetbycol,
+                                       minlabelgroup=minlabelgroup,minlabel=minlabel)
+
+                } else{
+                  df1<-data %>% split(.[[`facetvar`]]) %>%
+                    lapply(my_summarize_n2,mapping,width,position,digits,facetbycol,
+                           minlabelgroup=minlabelgroup,minlabel=minlabel)
+                  for(i in 1:length(df1)) {
+                     df1[[i]][[facetvar]]=names(df1)[[i]]
+                  }
+                  df2<-map_df(df1,rbind)
+                  df2
+                }
+
+        } else {
+
+                if(is.null(width)) width=0.9
+                if(is.null(facetvar)){
+                   df2=my_summarize_n(data,mapping,
+                                      width=width,position=position,digits=digits,facetbycol=facetbycol,
+                                      minlabelgroup=minlabelgroup,minlabel=minlabel)
+                } else{
+                df1<-data %>% split(.[[`facetvar`]]) %>%
+                    lapply(my_summarize_n,mapping,
+                           width=width,position=position,digits=digits,facetbycol=facetbycol,
+                           minlabelgroup=minlabelgroup,minlabel=minlabel)
+                for(i in 1:length(df1)) {
+                    df1[[i]][[facetvar]]=names(df1)[[i]]
+                }
+                df2<-map_df(df1,rbind)
+                }
+                df2
+
         }
-        df2$data_id = as.character(1:nrow(df2))
-        df2$tooltip = paste0(df2[[xvar]], "<br>", df2[[fillvar]],
-                             "<br>", df2$nrow)
-        df2$label = ifelse((df2$csum/total) > minlabelgroup, df2$nrow, "")
-        df2$tooltip = paste0(df2$tooltip, "(", df2$ratio, "%)")
-        if (position == "fill") {
-                df2$label = ifelse((df2$csum/total) > minlabelgroup,
-                                   ifelse(df2$ratio>minlabel,percent(df2$ratio/100),""),"")
-        }
+
+        xlabels = levels(factor(df2[[1]]))
+        xlabels
+        ylabels = levels(factor(data[[fillvar]]))
+
         if (contmode) {
-                xlabels = breaks[2:length(breaks)]
-                xlabels
-                xlabels[csum/total < minlabelgroup] = ""
-        } else xlabels = levels(factor(df[[1]]))
-        ylabels = levels(factor(df[[2]]))
-        if (contmode) {
+                total=nrow(data)
                 ycount = length(ylabels)
                 (pos = 1:ycount)
                 y = (100/ycount) * (pos - 1) + (100/ycount)/2
-        } else y = df2[df2$xno == 1, "y"]
-        y
-        ylabels
-        df2
-        if (is.numeric(df2[[fillvar]]))
+                if(facetbycol==FALSE) y=y*(total/100)
+        } else {
+
+
+                y=rowMeans(matrix(unique(df2$y),nrow=length(ylabels)))
+        }
+
+    if(!is.null(facetvar)){
+        if(facetbycol==FALSE) hide.legend=FALSE
+    }
+    if (is.numeric(df2[[fillvar]]))
                 df2[[fillvar]] = factor(df2[[fillvar]])
+        df2
         p <- ggplot(mapping = aes_string(xmin = "xmin", xmax = "xmax",
                                          ymin = "ymin", ymax = "ymax", fill = fillvar), data = df2)
         p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
                                                  data_id = "data_id"), size = size, colour = colour,...)
-         p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
-                                                  data_id = "data_id"), size = size, colour = colour)
+           # p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
+           #                                          data_id = "data_id"), size = size, colour = colour)
+         if(!is.null(facetvar)) {
+
+             addNumber<-function(string){
+                 if ((stat == "identity") & (!is.null(yvar))){
+                     result=sapply(string,function(x){paste0(facetvar,":",x,"\nN=",
+                                                             sum(data[data[[facetvar]]==x,"n"]) )})
+                 } else{
+                 result=sapply(string,function(x){paste0(facetvar,":",x,"\nN=",nrow(data[data[[facetvar]]==x,]))})
+                 }
+                 result
+             }
+             if(is.null(labeller)){
+                 if(facetbycol){
+             p<-p+eval(parse(text=paste0("facet_grid(.~",facetvar,",scales='free_x',space='free',labeller=labeller(.default=addNumber))")))
+                 } else{
+                  p<-p+eval(parse(text=paste0("facet_grid(",facetvar,"~.,scales='free_y',space='free_y',switch='y',labeller=labeller(.default=addNumber))")))
+
+                  }
+             } else{
+
+                 if(facetbycol){
+                     p<-p+eval(parse(text=paste0("facet_grid(.~",facetvar,",scales='free_x',space='free',labeller=",labeller,")")))
+                 } else{
+                     p<-p+eval(parse(text=paste0("facet_grid(",facetvar,"~.,scales='free_y',space='free_y',switch='y',labeller=",labeller,")")))
+
+                 }
+             }
+         }
 
         p
-        if (contmode) {
-                p <- p + scale_x_continuous(breaks = xmax, labels = xlabels,name=xlab,
-                                            limits = c(0, total))
-        }else {
-                #if(length(x)!=length(xlabels)) xlabels=c(xlabels,NA)
-                p <- p + scale_x_continuous(breaks = x, labels = xlabels, name=xlab,
-                                            limits = c(0, total))
-        }
-        p
+         # x=rowMeans(matrix(unique(df2$x),nrow=length(xlabels)))
+
+        # if (contmode) {
+        #         p <- p + scale_x_continuous(breaks = xmax, labels = xlabels,name=xlab,
+        #                                     limits = c(0, total))
+        # }else {
+        #         #if(length(x)!=length(xlabels)) xlabels=c(xlabels,NA)
+        #         p<-p + scale_x_continuous(breaks = NULL, labels = NULL, name=xlab)
+        # }
+        p<-p + scale_x_continuous(breaks = NULL, labels = NULL, name=xlab)
+
         direction = ifelse(reverse, -1, 1)
 
+
         if ((position != "dodge") & hide.legend ){
-                p <- p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab) +
-                        scale_fill_brewer(palette = palette, direction = direction,
+                p <- p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab)
+
+                p<- p+ scale_fill_brewer(palette = palette, direction = direction,
                                           guide = FALSE) + ylab("")
-        }
-        else{
+        } else{
                 p <- p + ylab("count")+guides(fill=guide_legend(reverse=TRUE))
 
                 p <- p + scale_fill_brewer(palette = palette,
                                            direction = direction)
         }
+        p
         if (addlabel)
-                p = p + geom_text(aes(x = x, y = y, label = df2$label),size=labelsize)
+                p = p + geom_text(aes_string(x = "x", y = "y", label = "label"),size=labelsize)
 
         if(is.null(xangle)){
                 if(max(nchar(colnames(df2)))>10) xangle=20
                 else xangle=0
         }
-        p
+
+
         p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
         if(is.null(yangle)) yangle=90
         p <- p  + theme(axis.text.y = element_text(angle = yangle),
                         axis.ticks.y = element_blank())
+
+
+        df3=df2[df2$yno==1,]
+        vjust=ifelse(facetbycol,1.8,1)
+        if(contmode){
+        total=nrow(data)
+        df3$ratio1=df3$width/total
+        df3$label=stringr::str_extract(substr(df3$age,2,nchar(df3$age)),"^[^,]+")
+
+        df3$ratio2=lag(df3$ratio1)
+        df3$ratio2[1]=df3$ratio1[1]
+        df3$label[(df3$ratio1<minlabelgroup)&(df3$ratio2<minlabelgroup)]=""
+
+        p<-p + geom_text(aes_string(x = "xmin", y = "0", label = "label"),data=df3,vjust=vjust)
+        } else{
+        p<-p + geom_text(aes_string(x = "x", y = "0", label = xvar),data=df3,vjust=vjust)
+        }
+
+        if(facetbycol==FALSE){
+           p<-p + scale_y_continuous(breaks = NULL, labels = NULL,name=NULL) +
+               theme(legend.position="bottom")
+        }
+
+        if(!is.null(facetvar)) p<-p+theme(strip.placement = "outside")
         if (polar == TRUE)
                 p <- p + coord_polar()
         tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
@@ -279,33 +323,125 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
 }
 
 
-#' Add value labels to the data.frame
-#'@param data A data.frame
-#'@param mapping Set of aesthetic mappings created by aes or aes_.
-#'@importFrom sjmisc to_label
-#'@export
-addLabelDf=function(data,mapping=NULL){
+num2cutData=function(data,xvar,fillvar,width=0.9,position="fill",digits=1,facetbycol=TRUE,
+                     minlabelgroup=0.04,minlabel=2){
+    result = num2cut(data[[xvar]])
+    result
+    b = result$x1
+    breaks = result$breaks
+    a = table(data[[fillvar]], b)
+    a
+    df=as.data.frame(a,stringsAsFactors = FALSE)
+    # df = reshape2::melt(a)
+    df = df[c(2, 1, 3)]
+    colnames(df) = c(xvar, fillvar, "n")
+    df
+    a
+    my_sumSub(df,a,width=width,position=position,digits=digits,facetbycol=facetbycol,
+              minlabelgroup=minlabelgroup,minlabel=minlabel)
 
-        if(!is.null(mapping)) {
-                (mapnames=names(mapping))
-                cols=c()
-                for(i in 1:length(mapnames)) {
-                        temp=getMapping(mapping,mapnames[i])
-                        # if(length(temp)>1) temp=temp[-1]
-                        cols=c(cols,temp)
-                }
-                cols=unique(cols)
-                data[cols]=lapply(data[cols],function(x) to_label(x,add.non.labelled=TRUE))
-                # for(i in 1:length(cols)){
-                #
-                #         data[[cols[[i]]]]=to_label(data[[cols[i]]],add.non.labelled=TRUE)
-                # }
-        } else{
-                # cols=colnames(data)
-                # for(i in 1:length(cols)){
-                #         data[[cols[[i]]]]=to_label(data[[cols[i]]],add.non.labelled=TRUE)
-                # }
-                data=lapply(data,function(x) to_label(x,add.non.labelled=TRUE))
-        }
-        data
 }
+
+
+my_sumSub=function(df,a,width=0.9,position="fill",digits=1,facetbycol=TRUE,minlabelgroup=0.04,minlabel=2){
+        # acs$Dx=factor(acs$Dx,levels=c("Unstable Angina","NSTEMI","STEMI"))
+        # df=acs %>% group_by(Dx,smoking) %>%summarize(n=n())
+        # a=table(acs$smoking,acs$Dx)
+        # width=0.9;position="fill";digits=1;facetbycol=TRUE;
+        # minlabelgroup=0.04,minlabel=2
+        #
+        # str(df)
+        # str(a)
+        (total = sum(a))
+        (csum = colSums(a))
+        (rsum = rowSums(a))
+        (xmax = cumsum(csum))
+        (xmin = cumsum(csum) - csum)
+        (x = (xmax + xmin)/2)
+        (width = csum * width)
+        (xmax = x + width/2)
+        (xmin = x - width/2)
+
+        df$xno=rep(1:ncol(a),each=nrow(a))
+        df$yno=rep(1:nrow(a),ncol(a))
+        df=as.data.frame(df)
+        df
+        df$csum = rep(csum,each=nrow(a))
+        df$xmin = rep(xmin,each=nrow(a))
+        df$xmax = rep(xmax,each=nrow(a))
+        df$x = rep(x,each=nrow(a))
+        df$width = rep(width,each=nrow(a))
+        count = max(df$xno,na.rm=TRUE)
+        df
+        count
+        if (position == "dodge") {
+                df$ymax = df$n
+                df$ymin = 0
+                df
+                df$y = (df$ymax + df$ymin)/2
+                ycount = max(df$yno,na.rm=TRUE)
+                df$xmin2 = df$xmin + (df$yno - 1) * (df$width/ycount)
+                df$xmax2 = df$xmin2 + (df$width/ycount)
+                df$xmin = df$xmin2
+                df$xmax = df$xmax2
+                df$x = (df$xmax + df$xmin)/2
+                df2 = df
+        } else {
+                for (i in 1:count) {
+                        dfsub = df[df$xno == i, ]
+                        dfsub$ratio = round(dfsub$n * 100/csum[i], digits)
+                        dfsub$ymax = cumsum(dfsub$n)
+                        dfsub$ymin = dfsub$ymax - dfsub$n
+                        if (position == "fill") {
+                                dfsub$ymax = dfsub$ymax * 100/csum[i]
+                                dfsub$ymin = dfsub$ymin * 100/csum[i]
+                        }
+                        dfsub$y = (dfsub$ymin + dfsub$ymax)/2
+                        if (i == 1) {
+                                df2 = dfsub
+                        } else {
+                            df2 = rbind(df2, dfsub)
+                        }
+                        df2
+                }
+        }
+        df2$data_id = as.character(1:nrow(df2))
+
+        df2$tooltip = paste0(df2[[2]], "<br>", df2[[1]],
+                             "<br>", df2$nrow)
+        df2$label = ifelse((df2$csum/total) >= minlabelgroup, df2$n, "")
+        df2$tooltip = paste0(df2$tooltip, "(", df2$ratio, "%)")
+        if (position == "fill") {
+                df2$label = ifelse((df2$csum/total) >= minlabelgroup,
+                                   ifelse(df2$ratio >= minlabel,percent(df2$ratio/100),""),"")
+        }
+        df2
+        if(facetbycol==FALSE){
+            df2$xmin=df2$xmin/total
+            df2$xmax=df2$xmax/total
+            df2$x=df2$x/total
+            df2$ymin=df2$ymin*(total/100)
+            df2$ymax=df2$ymax*(total/100)
+            df2$y=df2$y*(total/100)
+        }
+        df2
+}
+
+
+
+my_summarize_n=function(data,mapping,width=0.9,position="fill",digits=1,facetbycol=TRUE,
+                        minlabelgroup=0.04,minlabel=2){
+
+        df<-data %>%
+                group_by( !!mapping$x,!!mapping$fill) %>%
+                dplyr::summarize(n=n())
+
+        df=data.frame(df)
+        a=table(data[[colnames(df)[2]]],data[[colnames(df)[1]]])
+        my_sumSub(df,a,width=width,position=position,digits=digits,facetbycol=facetbycol,
+                  minlabelgroup=minlabelgroup,minlabel=minlabel)
+
+}
+
+
+
