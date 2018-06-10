@@ -42,20 +42,21 @@
 #'require(ggplot2)
 #'require(ggiraph)
 #'acs$Dx=factor(acs$Dx,levels=c("Unstable Angina","NSTEMI","STEMI"))
-#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),palette="Reds",addlabel=TRUE)
-#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),palette="Reds",addlabel=TRUE,facetbycol=FALSE)
-#'ggSpine(data=acs,aes(x=age,fill=Dx),palette="Reds",addlabel=TRUE)
-#'ggSpine(data=acs,aes(x=DM,fill=Dx,facet=sex),addlabel=TRUE,palette="Reds")
-#'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),addlabel=TRUE)
-#'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),addlabel=TRUE,facetbycol=FALSE)
-#'ggSpine(data=acs,aes(x=Dx,fill=smoking),addlabel=TRUE)
+#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),palette="Reds")
+#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),facetbycol=FALSE,minlabelgroup=0.02)
+#'ggSpine(data=acs,aes(x=age,fill=Dx),palette="Reds")
+#'ggSpine(data=acs,aes(x=smoking,fill=Dx),palette="Reds")
+#'ggSpine(data=acs,aes(x=DM,fill=Dx,facet=sex),palette="Reds")
+#'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx))
+#'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),facetbycol=FALSE)
+#'ggSpine(data=acs,aes(x=Dx,fill=smoking))
 #'ggSpine(data=rose,aes(x=Month,fill=group,y=value),stat="identity")
-#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=DM),addlabel=TRUE)
-#'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge",addlabel=TRUE)
-#'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack",addlabel=TRUE)
+#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=DM))
+#'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge")
+#'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack")
 ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "Blues",
                   interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,maxylev=6,
-                  digits = 1, colour = "black", size = 0.2, addlabel = FALSE, labelsize=5,
+                  digits = 1, colour = "black", size = 0.2, addlabel = TRUE, labelsize=5,
                   minlabelgroup=0.04,minlabel=2,
                   hide.legend=TRUE,
                   use.label=TRUE,use.labels=TRUE,labeller=NULL,facetbycol=TRUE,
@@ -255,7 +256,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         #         #if(length(x)!=length(xlabels)) xlabels=c(xlabels,NA)
         #         p<-p + scale_x_continuous(breaks = NULL, labels = NULL, name=xlab)
         # }
-        p<-p + scale_x_continuous(breaks = NULL, labels = NULL, name=xlab)
+        if(!is.null(facetvar)) p<-p + scale_x_continuous(breaks = NULL, labels = NULL, name=xlab)
 
         direction = ifelse(reverse, -1, 1)
 
@@ -297,10 +298,18 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         df3$ratio2=lag(df3$ratio1)
         df3$ratio2[1]=df3$ratio1[1]
         df3$label[(df3$ratio1<minlabelgroup)&(df3$ratio2<minlabelgroup)]=""
-
-        p<-p + geom_text(aes_string(x = "xmin", y = "0", label = "label"),data=df3,vjust=vjust)
+        if(is.null(facetvar)){
+                p<-p + scale_x_continuous(breaks = df3$xmin,labels = df3$label,name=xlab)
         } else{
-        p<-p + geom_text(aes_string(x = "x", y = "0", label = xvar),data=df3,vjust=vjust)
+            p<-p + geom_text(aes_string(x = "xmin", y = "0", label = "label"),data=df3,vjust=vjust)
+        }
+        } else{
+                if(is.null(facetvar)){
+                        p<-p + scale_x_continuous(breaks = df3$x,labels = df3[[xvar]],name=xlab)
+                } else{
+                        p<-p + geom_text(aes_string(x = "x", y = "0", label = xvar),
+                                         data=df3,vjust=vjust)
+                }
         }
 
         if(facetbycol==FALSE){
