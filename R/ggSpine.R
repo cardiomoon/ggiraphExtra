@@ -19,6 +19,8 @@
 #'@param minlabelgroup minimal threshold of label group. Default is 0.04
 #'@param minlabel minimal threshold of label. Default is 2
 #'@param hide.legend A logical value. If TRUE, the legend is removed and y labels are recreated
+#'@param ylabelMean Logical. If TRUE, y axis labels are positioned at mean value.
+#'@param sec.y.axis Logical. If TRUE, secondary y axis is shown at the right side.
 #'@param use.label Logical. Whether or not use column label in case of labelled data
 #'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param labeller A function that takes one data frame of labels and returns a list or data frame of character vectors.
@@ -26,12 +28,12 @@
 #'@param xangle  angle of axis label
 #'@param yangle angle of axis label
 #'@param ... other arguments passed on to geom_rect_interactive.
-#'@importFrom ggplot2 coord_polar scale_y_continuous guide_legend
+#'@importFrom ggplot2 coord_polar scale_y_continuous guide_legend sec_axis
 #'@importFrom ggiraph geom_rect_interactive
 #'@importFrom dplyr lag group_by n
 #'@importFrom magrittr '%>%'
 #'@importFrom scales percent
-#'@importFrom tidyr spread
+#'@importFrom tidyr spread complete
 #'@importFrom dplyr select arrange
 #'@importFrom plyr '.'
 #'@importFrom purrr map_df
@@ -47,10 +49,9 @@
 #'ggSpine(data=acs,aes(x=age,fill=Dx),palette="Reds")
 #'ggSpine(data=acs,aes(x=smoking,fill=Dx),palette="Reds")
 #'ggSpine(data=acs,aes(x=DM,fill=Dx,facet=sex),palette="Reds")
-#'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx))
+#'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),sec.y.axis=TRUE)
 #'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),facetbycol=FALSE)
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking))
-#'ggSpine(data=rose,aes(x=Month,fill=group,y=value),stat="identity")
 #'ggSpine(data=acs,aes(x=age,fill=Dx,facet=DM))
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge")
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack")
@@ -58,21 +59,22 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                   interactive = FALSE, polar = FALSE, reverse = FALSE, width = NULL,maxylev=6,
                   digits = 1, colour = "black", size = 0.2, addlabel = TRUE, labelsize=5,
                   minlabelgroup=0.04,minlabel=2,
-                  hide.legend=TRUE,
+                  hide.legend=TRUE,ylabelMean=FALSE,sec.y.axis=FALSE,
                   use.label=TRUE,use.labels=TRUE,labeller=NULL,facetbycol=TRUE,
                   xangle=NULL,yangle=NULL,...)
 {
 
-       # data=acs;mapping=aes(x=smoking,fill=Dx,facet=sex)
+       # data=mtcars;mapping=aes(x=gear,fill=carb,facet=am)
+       # data=acs;mapping=aes(x=DM,fill=Dx,facet=sex)
        # palette="Reds";addlabel=TRUE
        # stat = "count"; position = "fill"; palette = "Blues";
        # interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;maxylev=6
-       # digits = 1; colour = "black"; size = 0.2; addlabel = FALSE; hide.legend=FALSE
-       # use.label=TRUE;use.labels=TRUE;labeller=NULL;facetbycol=FALSE
-       # xangle=NULL;yangle=NULL
-       # df=acs %>% group_by(sex,Dx,smoking) %>% summarize(n=n())
-       # data=acs
-       # mapping=aes(x=age,fill=Dx,facet=sex)
+       # digits = 1; colour = "black"; size = 0.2; addlabel = FALSE; hide.legend=TRUE
+       # use.label=TRUE;use.labels=TRUE;labeller=NULL;facetbycol=TRUE;sec.y.axis=FALSE
+       # xangle=NULL;yangle=NULL;minlabelgroup=0.04;minlabel=2;labelsize=5;ylabelMean=FALSE
+       #  df=mtcars %>% group_by(gear,carb,am) %>% summarize(n=n())
+       #  data=df;mapping=aes(x=gear,fill=carb,y=n,facet=am);stat="identity"
+
 
         xvar <- fillvar <- facetvar <- yvar <- NULL
         if ("x" %in% names(mapping))
@@ -123,19 +125,39 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         } else if ((stat == "identity") & (!is.null(yvar))) {
                 if(is.null(width)) width=0.9
 
-                # data<-acs %>% group_by(sex,Dx,HBP) %>% summarize(n=n())
-                # mapping=aes(facet=sex,fill=Dx,y=n,x=HBP)
-                # position="fill";digits=1;facetbycol=TRUE;facetvar="sex";width=0.9
+                # data<-mtcars%>% group_by(gear,carb,am) %>% summarize(n=n())
+                # mapping=aes(facet=am,fill=gear,y=n,x=carb)
+                # position="fill";digits=1;facetbycol=TRUE;facetvar="am";width=0.9
 
                 data=data.frame(data)
-                # data
+                data
+
+                if(!is.null(facetvar)){
+                     data<-data %>% complete(!!mapping$x,!!mapping$fill,!!mapping$facet)
+                     data[[yvar]][is.na(data[[yvar]])]=0
+                     data=data.frame(data)
+                }
+
                 my_summarize_n2=function(data,mapping,width,position,digits,facetbycol,minlabelgroup,minlabel){
+
+                         # df=acs %>% group_by(Dx,sex) %>% summarize(n=n())
+                         # data=df;mapping=aes(x=Dx,fill=sex,y=n);stat="identity"
+                         # position="fill";digits=1;facetbycol=TRUE;width=0.9;minlabelgroup=0.04;minlabel=2
+
                    df = data %>%
                      select(!!mapping$x,!!mapping$fill,!!mapping$y) %>%
                      arrange(!!mapping$x,!!mapping$fill)
 
+                   df
                    colnames(df)[ncol(df)] = "n"
+                   df=data.frame(df)
+                   df <- df %>% complete(!!mapping$x,!!mapping$fill,fill=list(n=0))
+                   df
+
+
                    df1 <- df %>% tidyr::spread(!!mapping$x,n)
+
+                   df1
 
                    # df =df[order(df[[xvar]],df[[fillvar]]),]
                    # colnames(df)[3] = "n"
@@ -145,9 +167,11 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                    rownames(df1)=df1[[1]]
                    df1<-df1[-1]
                    a=as.matrix(df1)
+                   a
 
                    my_sumSub(df,a,width=width,position=position,digits=digits,facetbycol,
-                             minlabelgroup=minlabelgroup,minlabel=minlabel)
+                              minlabelgroup=minlabelgroup,minlabel=minlabel)
+
 
                 }
 
@@ -158,6 +182,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                                        minlabelgroup=minlabelgroup,minlabel=minlabel)
 
                 } else{
+
                   df1<-data %>% split(.[[`facetvar`]]) %>%
                     lapply(my_summarize_n2,mapping,width,position,digits,facetbycol,
                            minlabelgroup=minlabelgroup,minlabel=minlabel)
@@ -176,14 +201,21 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                                       width=width,position=position,digits=digits,facetbycol=facetbycol,
                                       minlabelgroup=minlabelgroup,minlabel=minlabel)
                 } else{
+                        if(!is.factor(data[[fillvar]])) data[[fillvar]]=factor(data[[fillvar]])
+                        # str(data)
+
                 df1<-data %>% split(.[[`facetvar`]]) %>%
                     lapply(my_summarize_n,mapping,
                            width=width,position=position,digits=digits,facetbycol=facetbycol,
                            minlabelgroup=minlabelgroup,minlabel=minlabel)
+                df1
                 for(i in 1:length(df1)) {
                     df1[[i]][[facetvar]]=names(df1)[[i]]
                 }
                 df2<-map_df(df1,rbind)
+                df3<-df2 %>%complete(!!mapping$fill,fill=list(n=0,ratio=0,label=""))
+                df3<-data.frame(df3)
+                df3
                 }
                 df2
 
@@ -192,6 +224,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         xlabels = levels(factor(df2[[1]]))
         xlabels
         ylabels = levels(factor(data[[fillvar]]))
+        ylabels
 
         if (contmode) {
                 total=nrow(data)
@@ -202,7 +235,28 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         } else {
 
 
-                y=rowMeans(matrix(unique(df2$y),nrow=length(ylabels)))
+                if(ylabelMean){
+                y=rowMeans(matrix(df2$y,nrow=length(ylabels)))
+                } else{
+                        df2
+                        if(is.null(facetvar)){
+                                y=df2$y[df2$xno==1]
+                                y[which(df2$ratio[df2$xno==1]==0)]=NA
+                                if(any(is.na(y))) sec.y.axis=TRUE
+                                yend=df2$y[df2$xno==max(df2$xno)]
+                                yend[which(df2$ratio[df2$xno==max(df2$xno)]==0)]=NA
+                        } else{
+                                condition=(df2$xno==1)&(df2[[facetvar]]==unique(df2[[facetvar]])[1])
+                                y=df2$y[condition]
+                                y[which(df2$ratio[condition]==0)]=NA
+                                if(any(is.na(y))) sec.y.axis=TRUE
+                                condition1=(df2$xno==max(df2$xno))&
+                                        (df2[[facetvar]]==unique(df2[[facetvar]])[length(unique(df2[[facetvar]]))])
+                                yend=df2$y[condition1]
+                                yend[which(df2$ratio[condition1]==0)]=NA
+                        }
+
+                }
         }
 
     if(!is.null(facetvar)){
@@ -262,7 +316,14 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
 
 
         if ((position != "dodge") & hide.legend ){
-                p <- p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab)
+
+                if(sec.y.axis){
+                        p <- p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab,
+                                                    sec.axis=sec_axis(trans=~.,breaks = yend, labels = ylabels,name=filllab))
+                } else{
+
+                        p<-p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab)
+                }
 
                 p<- p+ scale_fill_brewer(palette = palette, direction = direction,
                                           guide = FALSE) + ylab("")
@@ -290,11 +351,19 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
 
         df3=df2[df2$yno==1,]
         vjust=ifelse(facetbycol,1.8,1)
+
         if(contmode){
         total=nrow(data)
+        df3
         df3$ratio1=df3$width/total
-        df3$label=stringr::str_extract(substr(df3$age,2,nchar(df3$age)),"^[^,]+")
-
+        df3$label=stringr::str_extract(substr(df3[[xvar]],2,nchar(df3[[xvar]])),"^[^,]+")
+        if(mean(as.numeric(df3$label))>1e+9) {
+                df3$label=paste0(as.numeric(df3$label)/1e+9,"T")
+        } else if(mean(as.numeric(df3$label))>1e+6) {
+                df3$label=paste0(as.numeric(df3$label)/1e+6,"M")
+        } else if(mean(as.numeric(df3$label))>1e+3) {
+                df3$label=paste0(as.numeric(df3$label)/1e+3,"K")
+        }
         df3$ratio2=lag(df3$ratio1)
         df3$ratio2[1]=df3$ratio1[1]
         df3$label[(df3$ratio1<minlabelgroup)&(df3$ratio2<minlabelgroup)]=""
@@ -307,8 +376,11 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                 if(is.null(facetvar)){
                         p<-p + scale_x_continuous(breaks = df3$x,labels = df3[[xvar]],name=xlab)
                 } else{
-                        p<-p + geom_text(aes_string(x = "x", y = "0", label = xvar),
+                        df3$label2=ifelse(df3$ratio>=0,df3[[xvar]],"")
+                        df3
+                        p<-p + geom_text(aes_string(x = "x", y = "0", label = "label2"),
                                          data=df3,vjust=vjust)
+
                 }
         }
 
@@ -316,6 +388,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
            p<-p + scale_y_continuous(breaks = NULL, labels = NULL,name=NULL) +
                theme(legend.position="bottom")
         }
+        p
 
         if(!is.null(facetvar)) p<-p+theme(strip.placement = "outside")
         if (polar == TRUE)
@@ -441,13 +514,28 @@ my_sumSub=function(df,a,width=0.9,position="fill",digits=1,facetbycol=TRUE,minla
 my_summarize_n=function(data,mapping,width=0.9,position="fill",digits=1,facetbycol=TRUE,
                         minlabelgroup=0.04,minlabel=2){
 
-        df<-data %>%
-                group_by( !!mapping$x,!!mapping$fill) %>%
-                dplyr::summarize(n=n())
+        # data=mtcars;mapping=aes(x=carb,fill=gear)
+        # width=0.9;position="fill";digits=1;facetbycol=TRUE
+        # minlabelgroup=0.04;minlabel=2
+        #
+        # data[[mapping$fill]]=factor(data[[mapping$fill]])
+        #
+        # df<-data %>%
+        #         group_by( !!mapping$x,!!mapping$fill) %>%
+        #         dplyr::summarize(n=n()) %>%
+        #         tidyr::complete(!!mapping$fill,fill=list(n=0))
+        # df=data.frame(df)
+        # df
 
-        df=data.frame(df)
-        a=table(data[[colnames(df)[2]]],data[[colnames(df)[1]]])
-        my_sumSub(df,a,width=width,position=position,digits=digits,facetbycol=facetbycol,
+        a=table(data[[mapping$x]],data[[mapping$fill]])
+        a
+        df=data.frame(a)
+        xvar=as.character(mapping$x)
+        fillvar=as.character(mapping$fill)
+        colnames(df)=c(xvar,fillvar,"n")
+        df<-df %>% arrange(!!mapping$x,!!mapping$fill)
+
+        my_sumSub(df,t(a),width=width,position=position,digits=digits,facetbycol=facetbycol,
                   minlabelgroup=minlabelgroup,minlabel=minlabel)
 
 }

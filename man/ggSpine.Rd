@@ -9,8 +9,9 @@ ggSpine(data, mapping, stat = "count", position = "fill",
   reverse = FALSE, width = NULL, maxylev = 6, digits = 1,
   colour = "black", size = 0.2, addlabel = TRUE, labelsize = 5,
   minlabelgroup = 0.04, minlabel = 2, hide.legend = TRUE,
-  use.label = TRUE, use.labels = TRUE, labeller = NULL,
-  facetbycol = TRUE, xangle = NULL, yangle = NULL, ...)
+  ylabelMean = FALSE, sec.y.axis = FALSE, use.label = TRUE,
+  use.labels = TRUE, labeller = NULL, facetbycol = TRUE, xangle = NULL,
+  yangle = NULL, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -50,6 +51,10 @@ c("count","identity")}
 
 \item{hide.legend}{A logical value. If TRUE, the legend is removed and y labels are recreated}
 
+\item{ylabelMean}{Logical. If TRUE, y axis labels are positioned at mean value.}
+
+\item{sec.y.axis}{Logical. If TRUE, secondary y axis is shown at the right side.}
+
 \item{use.label}{Logical. Whether or not use column label in case of labelled data}
 
 \item{use.labels}{Logical. Whether or not use value labels in case of labelled data}
@@ -80,10 +85,9 @@ ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),facetbycol=FALSE,minlabelgroup=0.0
 ggSpine(data=acs,aes(x=age,fill=Dx),palette="Reds")
 ggSpine(data=acs,aes(x=smoking,fill=Dx),palette="Reds")
 ggSpine(data=acs,aes(x=DM,fill=Dx,facet=sex),palette="Reds")
-ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx))
+ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),sec.y.axis=TRUE)
 ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),facetbycol=FALSE)
 ggSpine(data=acs,aes(x=Dx,fill=smoking))
-ggSpine(data=rose,aes(x=Month,fill=group,y=value),stat="identity")
 ggSpine(data=acs,aes(x=age,fill=Dx,facet=DM))
 ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge")
 ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack")
