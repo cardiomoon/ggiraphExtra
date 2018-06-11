@@ -51,8 +51,8 @@
 #'ggSpine(data=acs,aes(x=DM,fill=Dx,facet=sex),palette="Reds")
 #'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),sec.y.axis=TRUE)
 #'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),facetbycol=FALSE)
-#'ggSpine(data=acs,aes(x=Dx,fill=smoking))
-#'ggSpine(data=acs,aes(x=age,fill=Dx,facet=DM))
+#'ggSpine(mtcars,aes(x=gear,fill=carb))
+#'ggSpine(mtcars,aes(x=gear,fill=carb,facet=am))
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge")
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack")
 ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "Blues",
@@ -527,11 +527,12 @@ my_summarize_n=function(data,mapping,width=0.9,position="fill",digits=1,facetbyc
         # df=data.frame(df)
         # df
 
-        a=table(data[[mapping$x]],data[[mapping$fill]])
-        a
+        xvar=getMapping(mapping,"x")
+        fillvar=getMapping(mapping,"fill")
+        a=table(data[[xvar]],data[[fillvar]])
+
         df=data.frame(a)
-        xvar=as.character(mapping$x)
-        fillvar=as.character(mapping$fill)
+
         colnames(df)=c(xvar,fillvar,"n")
         df<-df %>% arrange(!!mapping$x,!!mapping$fill)
 
