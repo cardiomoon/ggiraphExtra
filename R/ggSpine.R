@@ -49,6 +49,7 @@
 #'ggSpine(data=acs,aes(x=age,fill=Dx),palette="Reds")
 #'ggSpine(data=acs,aes(x=smoking,fill=Dx),palette="Reds")
 #'ggSpine(data=acs,aes(x=DM,fill=Dx,facet=sex),palette="Reds")
+#'ggSpine(data=acs,aes(x=Dx,fill=smoking,facet=sex),palette="Reds")
 #'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),sec.y.axis=TRUE)
 #'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),facetbycol=FALSE)
 #'ggSpine(mtcars,aes(x=gear,fill=carb))
@@ -376,8 +377,8 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                 if(is.null(facetvar)){
                         p<-p + scale_x_continuous(breaks = df3$x,labels = df3[[xvar]],name=xlab)
                 } else{
-                        df3$label2=ifelse(df3$ratio>=0,df3[[xvar]],"")
-                        df3
+                        df3$label2=ifelse(df3$ratio>=0,levels(df3[[xvar]]),"")
+
                         p<-p + geom_text(aes_string(x = "x", y = "0", label = "label2"),
                                          data=df3,vjust=vjust)
 
