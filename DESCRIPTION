@@ -25,6 +25,8 @@ Imports:
     purrr,
     dplyr,
     magrittr,
+    ggforce,
+    ztable,
     RColorBrewer
 Suggests: 
     TH.data,

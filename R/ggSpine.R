@@ -42,7 +42,6 @@
 #'@examples
 #'require(moonBook)
 #'require(ggplot2)
-#'require(ggiraph)
 #'acs$Dx=factor(acs$Dx,levels=c("Unstable Angina","NSTEMI","STEMI"))
 #'ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),palette="Reds")
 #'ggSpine(data=acs,aes(x=age,fill=Dx,facet=sex),facetbycol=FALSE,minlabelgroup=0.02)
@@ -65,17 +64,28 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                   xangle=NULL,yangle=NULL,...)
 {
 
-       # data=mtcars;mapping=aes(x=gear,fill=carb,facet=am)
-       # data=acs;mapping=aes(x=DM,fill=Dx,facet=sex)
-       # palette="Reds";addlabel=TRUE
-       # stat = "count"; position = "fill"; palette = "Blues";
-       # interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;maxylev=6
-       # digits = 1; colour = "black"; size = 0.2; addlabel = FALSE; hide.legend=TRUE
-       # use.label=TRUE;use.labels=TRUE;labeller=NULL;facetbycol=TRUE;sec.y.axis=FALSE
-       # xangle=NULL;yangle=NULL;minlabelgroup=0.04;minlabel=2;labelsize=5;ylabelMean=FALSE
-       #  df=mtcars %>% group_by(gear,carb,am) %>% summarize(n=n())
+    # data=mtcars;mapping=aes(x=gear,fill=carb,facet=am)
+    # stat = "count"; position = "fill"; palette = "Blues"
+    # interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;maxylev=6
+    # digits = 1; colour = "black"; size = 0.2; addlabel = TRUE; labelsize=5
+    # minlabelgroup=0.04;minlabel=2
+    # hide.legend=TRUE;ylabelMean=FALSE;sec.y.axis=FALSE
+    # use.label=TRUE;use.labels=TRUE;labeller=NULL;facetbycol=TRUE
+    # xangle=NULL;yangle=NULL
+    #
+        # data=acs;mapping=aes(x=DM,fill=Dx,facet=sex)
+        # palette="Reds";addlabel=TRUE
+        #   stat = "count"; position = "fill"; palette = "Blues";
+        #  interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;maxylev=6
+        #  digits = 1; colour = "black"; size = 0.2; addlabel = FALSE; hide.legend=TRUE
+        #  use.label=TRUE;use.labels=TRUE;labeller=NULL;facetbycol=TRUE;sec.y.axis=FALSE
+        #  xangle=NULL;yangle=NULL;minlabelgroup=0.04;minlabel=2;labelsize=5;ylabelMean=FALSE
+         # df=mtcars %>% group_by(gear,carb,am) %>% summarize(n=n())
+         # ggSpine(df,aes(x=gear,fill=carb,y=n,facet=am),stat="identity")
        #  data=df;mapping=aes(x=gear,fill=carb,y=n,facet=am);stat="identity"
-
+    # require(scales)
+    # require(purrr)
+    # require(tidyverse)
 
         xvar <- fillvar <- facetvar <- yvar <- NULL
         if ("x" %in% names(mapping))
@@ -368,6 +378,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         df3$ratio2=lag(df3$ratio1)
         df3$ratio2[1]=df3$ratio1[1]
         df3$label[(df3$ratio1<minlabelgroup)&(df3$ratio2<minlabelgroup)]=""
+        p
         if(is.null(facetvar)){
                 p<-p + scale_x_continuous(breaks = df3$xmin,labels = df3$label,name=xlab)
         } else{
@@ -377,6 +388,8 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                 if(is.null(facetvar)){
                         p<-p + scale_x_continuous(breaks = df3$x,labels = df3[[xvar]],name=xlab)
                 } else{
+
+                        if(!is.factor(df3[[xvar]])) df3[[xvar]]=factor(df3[[xvar]])
                         df3$label2=ifelse(df3$ratio>=0,levels(df3[[xvar]]),"")
 
                         p<-p + geom_text(aes_string(x = "x", y = "0", label = "label2"),
@@ -384,6 +397,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
 
                 }
         }
+        p
 
         if(facetbycol==FALSE){
            p<-p + scale_y_continuous(breaks = NULL, labels = NULL,name=NULL) +
