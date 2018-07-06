@@ -19,8 +19,14 @@
 #'ggArea(uspopage,aes(x=Year,y=Thousands,fill=AgeGroup),position="fill")
 ggArea=function(data,mapping,position="stack",palette="Blues",reverse=TRUE,alpha=0.4,size=0.3,use.label=TRUE,use.labels=TRUE){
 
-          # data=uspopage;mapping=aes(x=Year,y=Thousands,fill=AgeGroup)
-          # palette="Blues";reverse=TRUE;alpha=0.4;size=0.3;use.label=TRUE;use.labels=TRUE
+         # data=uspopage;mapping=aes(x=Year,y=Thousands,fill=AgeGroup)
+        # palette="Blues";reverse=TRUE;alpha=0.4;size=0.3;use.label=TRUE;use.labels=TRUE
+        # df=uspopage
+        # df$Year[df$Year==1900]="0-1900"
+        # data=df;mapping=aes(x=Year,y=Thousands,fill=AgeGroup)
+        # position="stack";palette="Blues";
+        # reverse=TRUE;alpha=0.4;size=0.3;use.label=TRUE;use.labels=TRUE
+
         fillvar<-xvar<-yvar<-NULL
         name=names(mapping)
         xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
@@ -43,23 +49,39 @@ ggArea=function(data,mapping,position="stack",palette="Blues",reverse=TRUE,alpha
                 }
         }
         data
+        # str(data)
+        # p<-ggplot(data,aes(x=Year,y=Thousands,fill=AgeGroup,group=AgeGroup))+
+        #         geom_area(alpha=alpha)+
+        #         geom_line(position="stack",size=size)+
+        #         scale_fill_brewer(palette=palette,direction=direction,labels=filllabels)
+        # p
 
         if(position=="stack"){
-        p<-ggplot(data,aes_string(x=xvar,y=yvar,fill=fillvar))+
+        p<-ggplot(data,aes_string(x=xvar,y=yvar,fill=fillvar,group=fillvar))+
                 geom_area(alpha=alpha)+
                 geom_line(position="stack",size=size)+
                 scale_fill_brewer(palette=palette,direction=direction,labels=filllabels)
+        p
         } else if(position=="fill"){
-                df<-data %>% group_by(!!mapping$x) %>% dplyr::mutate(ratio=!!mapping$y/sum(!!mapping$y))
 
-                p<-ggplot(df,aes_string(x=xvar,y="ratio",fill=fillvar))+
+           # require(dplyr)
+                 data<-data %>% group_by(!!mapping$x) %>% dplyr::mutate(ratio=!!mapping$y/sum(!!mapping$y))
+
+                #  ggplot(df,aes(x=Year,y=ratio,fill=AgeGroup,color=AgeGroup))+geom_point()
+                # ggplot(df,aes(x=Year,y=ratio,fill=AgeGroup,color=AgeGroup))+
+                #         geom_area()+
+                #         geom_line()
+                #
+                p<-ggplot(data,aes_string(x=xvar,y="ratio",fill=fillvar,group=fillvar))+
                         geom_area(alpha=alpha)+
                         geom_line(position="stack",size=size)+
                         scale_fill_brewer(palette=palette,direction=direction,labels=filllabels)
                 p
         }
         if(use.labels) {
+                if(is.numeric(data[[xvar]])){
                 if(!is.null(xlabels)) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
+                }
                 if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
                 # if(!is.null(filllabels)) p=p+scale_fill_brewer(palette=palette,direction=direction,
                 #                                                labels=filllabels)
