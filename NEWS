@@ -1,3 +1,10 @@
+# ggiraphExtra 0.2.9
+====================
+(2018-7-6)
+
+* ggSpine function support xreverse and yreverse arguments
+
+
 # ggiraphExtra 0.2.8
 ====================
 (2018-6-10)

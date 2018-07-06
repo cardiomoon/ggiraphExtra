@@ -27,8 +27,10 @@
 #'@param facetbycol Logical. If TRUE, facet by column.
 #'@param xangle  angle of axis label
 #'@param yangle angle of axis label
+#'@param xreverse Logical. Whether or not reverse x-axis
+#'@param yreverse Logical. Whether or not reverse y-axis
 #'@param ... other arguments passed on to geom_rect_interactive.
-#'@importFrom ggplot2 coord_polar scale_y_continuous guide_legend sec_axis
+#'@importFrom ggplot2 coord_polar scale_y_continuous guide_legend sec_axis scale_x_reverse scale_y_reverse
 #'@importFrom ggiraph geom_rect_interactive
 #'@importFrom dplyr lag group_by n
 #'@importFrom magrittr '%>%'
@@ -61,7 +63,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                   minlabelgroup=0.04,minlabel=2,
                   hide.legend=TRUE,ylabelMean=FALSE,sec.y.axis=FALSE,
                   use.label=TRUE,use.labels=TRUE,labeller=NULL,facetbycol=TRUE,
-                  xangle=NULL,yangle=NULL,...)
+                  xangle=NULL,yangle=NULL, xreverse=FALSE, yreverse=FALSE,...)
 {
 
     # data=mtcars;mapping=aes(x=gear,fill=carb,facet=am)
@@ -73,349 +75,391 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
     # use.label=TRUE;use.labels=TRUE;labeller=NULL;facetbycol=TRUE
     # xangle=NULL;yangle=NULL
     #
-        # data=acs;mapping=aes(x=DM,fill=Dx,facet=sex)
-        # palette="Reds";addlabel=TRUE
-        #   stat = "count"; position = "fill"; palette = "Blues";
-        #  interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;maxylev=6
-        #  digits = 1; colour = "black"; size = 0.2; addlabel = FALSE; hide.legend=TRUE
-        #  use.label=TRUE;use.labels=TRUE;labeller=NULL;facetbycol=TRUE;sec.y.axis=FALSE
-        #  xangle=NULL;yangle=NULL;minlabelgroup=0.04;minlabel=2;labelsize=5;ylabelMean=FALSE
-         # df=mtcars %>% group_by(gear,carb,am) %>% summarize(n=n())
-         # ggSpine(df,aes(x=gear,fill=carb,y=n,facet=am),stat="identity")
-       #  data=df;mapping=aes(x=gear,fill=carb,y=n,facet=am);stat="identity"
+    # data=acs;mapping=aes(x=DM,fill=Dx,facet=sex)
+    # palette="Reds";addlabel=TRUE
+    #   stat = "count"; position = "fill"; palette = "Blues";
+    #  interactive = FALSE; polar = FALSE; reverse = FALSE; width = NULL;maxylev=6
+    #  digits = 1; colour = "black"; size = 0.2; addlabel = FALSE; hide.legend=TRUE
+    #  use.label=TRUE;use.labels=TRUE;labeller=NULL;facetbycol=TRUE;sec.y.axis=FALSE
+    #  xangle=NULL;yangle=NULL;minlabelgroup=0.04;minlabel=2;labelsize=5;ylabelMean=FALSE
+    #  df=mtcars %>% group_by(gear,carb,am) %>% summarize(n=n())
+    #  ggSpine(df,aes(x=gear,fill=carb,y=n,facet=am),stat="identity")
+    #  data=df;mapping=aes(x=gear,fill=carb,y=n,facet=am);stat="identity"
+    # data
     # require(scales)
     # require(purrr)
     # require(tidyverse)
 
-        xvar <- fillvar <- facetvar <- yvar <- NULL
-        if ("x" %in% names(mapping))
-                xvar <- getMapping(mapping,"x")
-        if ("y" %in% names(mapping))
-                yvar <- getMapping(mapping,"y")
-        if ("fill" %in% names(mapping))
-                fillvar <- getMapping(mapping,"fill")
-        if ("facet" %in% names(mapping))
-                facetvar <- getMapping(mapping,"facet")
-        contmode = 0
+
+    xvar <- fillvar <- facetvar <- yvar <- NULL
+    if ("x" %in% names(mapping))
+        xvar <- getMapping(mapping,"x")
+    if ("y" %in% names(mapping))
+        yvar <- getMapping(mapping,"y")
+    if ("fill" %in% names(mapping))
+        fillvar <- getMapping(mapping,"fill")
+    if ("facet" %in% names(mapping))
+        facetvar <- getMapping(mapping,"facet")
+    contmode = 0
 
 
-        (xlab=attr(data[[xvar]],"label"))
-        if(is.null(xlab)) xlab=xvar
-        if(!use.label) xlab=xvar
-        (filllab=attr(data[[fillvar]],"label"))
-        if(is.null(filllab)) filllab=fillvar
-        if(!use.label) filllab=fillvar
-        if(use.labels) data=addLabelDf(data,mapping=mapping)
+    (xlab=attr(data[[xvar]],"label"))
+    if(is.null(xlab)) xlab=xvar
+    if(!use.label) xlab=xvar
+    (filllab=attr(data[[fillvar]],"label"))
+    if(is.null(filllab)) filllab=fillvar
+    if(!use.label) filllab=fillvar
+    if(use.labels) data=addLabelDf(data,mapping=mapping)
 
 
 
-        if (is.numeric(data[[xvar]])&(length(unique(data[[xvar]]))>maxylev)) {
-                if (is.null(width)) width = 1
-                width
-                contmode = 1
-                if(is.null(facetvar)){
+    if (is.numeric(data[[xvar]])&(length(unique(data[[xvar]]))>maxylev)) {
+        if (is.null(width)) width = 1
+        width
+        contmode = 1
+        if(is.null(facetvar)){
 
-                    df2<-num2cutData(data,xvar,fillvar,width,position,digits,facetbycol,
-                                     minlabelgroup=minlabelgroup,minlabel=minlabel)
+            df2<-num2cutData(data,xvar,fillvar,width,position,digits,facetbycol,
+                             minlabelgroup=minlabelgroup,minlabel=minlabel)
 
-                } else{
-                df1<-data %>% split(.[[`facetvar`]]) %>%
-                    lapply(num2cutData,xvar,fillvar,width,position,digits,facetbycol,
-                           minlabelgroup,minlabel)
-                for(i in 1:length(df1)) {
-                    df1[[i]][[facetvar]]=names(df1)[[i]]
-                }
-                df2<-map_df(df1,rbind)
-                }
+        } else{
+            df1<-data %>% split(.[[`facetvar`]]) %>%
+                lapply(num2cutData,xvar,fillvar,width,position,digits,facetbycol,
+                       minlabelgroup,minlabel)
+            for(i in 1:length(df1)) {
+                df1[[i]][[facetvar]]=names(df1)[[i]]
+            }
+            df2<-map_df(df1,rbind)
+        }
 
-                if(is.factor(data[[fillvar]])){
-                    df2[[fillvar]]=factor(df2[[fillvar]],levels=levels(data[[fillvar]]))
-                }
-
-
-        } else if ((stat == "identity") & (!is.null(yvar))) {
-                if(is.null(width)) width=0.9
-
-                # data<-mtcars%>% group_by(gear,carb,am) %>% summarize(n=n())
-                # mapping=aes(facet=am,fill=gear,y=n,x=carb)
-                # position="fill";digits=1;facetbycol=TRUE;facetvar="am";width=0.9
-
-                data=data.frame(data)
-                data
-
-                if(!is.null(facetvar)){
-                     data<-data %>% complete(!!mapping$x,!!mapping$fill,!!mapping$facet)
-                     data[[yvar]][is.na(data[[yvar]])]=0
-                     data=data.frame(data)
-                }
-
-                my_summarize_n2=function(data,mapping,width,position,digits,facetbycol,minlabelgroup,minlabel){
-
-                         # df=acs %>% group_by(Dx,sex) %>% summarize(n=n())
-                         # data=df;mapping=aes(x=Dx,fill=sex,y=n);stat="identity"
-                         # position="fill";digits=1;facetbycol=TRUE;width=0.9;minlabelgroup=0.04;minlabel=2
-
-                   df = data %>%
-                     select(!!mapping$x,!!mapping$fill,!!mapping$y) %>%
-                     arrange(!!mapping$x,!!mapping$fill)
-
-                   df
-                   colnames(df)[ncol(df)] = "n"
-                   df=data.frame(df)
-                   df <- df %>% complete(!!mapping$x,!!mapping$fill,fill=list(n=0))
-                   df
+        if(is.factor(data[[fillvar]])){
+            df2[[fillvar]]=factor(df2[[fillvar]],levels=levels(data[[fillvar]]))
+        }
 
 
-                   df1 <- df %>% tidyr::spread(!!mapping$x,n)
+    } else if ((stat == "identity") & (!is.null(yvar))) {
+        if(is.null(width)) width=0.9
 
-                   df1
+        # data<-mtcars%>% group_by(gear,carb,am) %>% summarize(n=n())
+        # mapping=aes(facet=am,fill=gear,y=n,x=carb)
+        # position="fill";digits=1;facetbycol=TRUE;facetvar="am";width=0.9
 
-                   # df =df[order(df[[xvar]],df[[fillvar]]),]
-                   # colnames(df)[3] = "n"
-                   #
-                   # df1<-df %>% spread(!!mapping$x,n)
-                   df1=data.frame(df1)
-                   rownames(df1)=df1[[1]]
-                   df1<-df1[-1]
-                   a=as.matrix(df1)
-                   a
+        data=data.frame(data)
+        data
 
-                   my_sumSub(df,a,width=width,position=position,digits=digits,facetbycol,
-                              minlabelgroup=minlabelgroup,minlabel=minlabel)
+        if(!is.null(facetvar)){
+            data<-data %>% complete(!!mapping$x,!!mapping$fill,!!mapping$facet)
+            data[[yvar]][is.na(data[[yvar]])]=0
+            data=data.frame(data)
+        }
+
+        my_summarize_n2=function(data,mapping,width,position,digits,facetbycol,minlabelgroup,minlabel){
+
+            # df=acs %>% group_by(Dx,sex) %>% summarize(n=n())
+            # data=df;mapping=aes(x=Dx,fill=sex,y=n);stat="identity"
+            # position="fill";digits=1;facetbycol=TRUE;width=0.9;minlabelgroup=0.04;minlabel=2
+
+            df = data %>%
+                select(!!mapping$x,!!mapping$fill,!!mapping$y) %>%
+                arrange(!!mapping$x,!!mapping$fill)
+
+            df
+            colnames(df)[ncol(df)] = "n"
+            df=data.frame(df)
+            df <- df %>% complete(!!mapping$x,!!mapping$fill,fill=list(n=0))
+            df
 
 
-                }
+            df1 <- df %>% tidyr::spread(!!mapping$x,n)
 
-                if(is.null(facetvar)){
+            df1
 
+            # df =df[order(df[[xvar]],df[[fillvar]]),]
+            # colnames(df)[3] = "n"
+            #
+            # df1<-df %>% spread(!!mapping$x,n)
+            df1=data.frame(df1)
+            rownames(df1)=df1[[1]]
+            df1<-df1[-1]
+            a=as.matrix(df1)
+            a
 
-                   df2=my_summarize_n2(data,mapping,width,position,digits,facetbycol,
-                                       minlabelgroup=minlabelgroup,minlabel=minlabel)
+            my_sumSub(df,a,width=width,position=position,digits=digits,facetbycol,
+                      minlabelgroup=minlabelgroup,minlabel=minlabel)
 
-                } else{
-
-                  df1<-data %>% split(.[[`facetvar`]]) %>%
-                    lapply(my_summarize_n2,mapping,width,position,digits,facetbycol,
-                           minlabelgroup=minlabelgroup,minlabel=minlabel)
-                  for(i in 1:length(df1)) {
-                     df1[[i]][[facetvar]]=names(df1)[[i]]
-                  }
-                  df2<-map_df(df1,rbind)
-                  df2
-                }
-
-        } else {
-
-                if(is.null(width)) width=0.9
-                if(is.null(facetvar)){
-                   df2=my_summarize_n(data,mapping,
-                                      width=width,position=position,digits=digits,facetbycol=facetbycol,
-                                      minlabelgroup=minlabelgroup,minlabel=minlabel)
-                } else{
-                        if(!is.factor(data[[fillvar]])) data[[fillvar]]=factor(data[[fillvar]])
-                        # str(data)
-
-                df1<-data %>% split(.[[`facetvar`]]) %>%
-                    lapply(my_summarize_n,mapping,
-                           width=width,position=position,digits=digits,facetbycol=facetbycol,
-                           minlabelgroup=minlabelgroup,minlabel=minlabel)
-                df1
-                for(i in 1:length(df1)) {
-                    df1[[i]][[facetvar]]=names(df1)[[i]]
-                }
-                df2<-map_df(df1,rbind)
-                df3<-df2 %>%complete(!!mapping$fill,fill=list(n=0,ratio=0,label=""))
-                df3<-data.frame(df3)
-                df3
-                }
-                df2
 
         }
 
-        xlabels = levels(factor(df2[[1]]))
-        xlabels
-        ylabels = levels(factor(data[[fillvar]]))
-        ylabels
-
-        if (contmode) {
-                total=nrow(data)
-                ycount = length(ylabels)
-                (pos = 1:ycount)
-                y = (100/ycount) * (pos - 1) + (100/ycount)/2
-                if(facetbycol==FALSE) y=y*(total/100)
-        } else {
+        if(is.null(facetvar)){
 
 
-                if(ylabelMean){
-                y=rowMeans(matrix(df2$y,nrow=length(ylabels)))
-                } else{
-                        df2
-                        if(is.null(facetvar)){
-                                y=df2$y[df2$xno==1]
-                                y[which(df2$ratio[df2$xno==1]==0)]=NA
-                                if(any(is.na(y))) sec.y.axis=TRUE
-                                yend=df2$y[df2$xno==max(df2$xno)]
-                                yend[which(df2$ratio[df2$xno==max(df2$xno)]==0)]=NA
-                        } else{
-                                condition=(df2$xno==1)&(df2[[facetvar]]==unique(df2[[facetvar]])[1])
-                                y=df2$y[condition]
-                                y[which(df2$ratio[condition]==0)]=NA
-                                if(any(is.na(y))) sec.y.axis=TRUE
-                                condition1=(df2$xno==max(df2$xno))&
-                                        (df2[[facetvar]]==unique(df2[[facetvar]])[length(unique(df2[[facetvar]]))])
-                                yend=df2$y[condition1]
-                                yend[which(df2$ratio[condition1]==0)]=NA
-                        }
+            df2=my_summarize_n2(data,mapping,width,position,digits,facetbycol,
+                                minlabelgroup=minlabelgroup,minlabel=minlabel)
 
-                }
+        } else{
+
+            df1<-data %>% split(.[[`facetvar`]]) %>%
+                lapply(my_summarize_n2,mapping,width,position,digits,facetbycol,
+                       minlabelgroup=minlabelgroup,minlabel=minlabel)
+            for(i in 1:length(df1)) {
+                df1[[i]][[facetvar]]=names(df1)[[i]]
+            }
+            df2<-map_df(df1,rbind)
+            df2
         }
+
+    } else {
+
+        if(is.null(width)) width=0.9
+        if(is.null(facetvar)){
+            df2=my_summarize_n(data,mapping,
+                               width=width,position=position,digits=digits,facetbycol=facetbycol,
+                               minlabelgroup=minlabelgroup,minlabel=minlabel)
+        } else{
+            if(!is.factor(data[[fillvar]])) data[[fillvar]]=factor(data[[fillvar]])
+            # str(data)
+
+            df1<-data %>% split(.[[`facetvar`]]) %>%
+                lapply(my_summarize_n,mapping,
+                       width=width,position=position,digits=digits,facetbycol=facetbycol,
+                       minlabelgroup=minlabelgroup,minlabel=minlabel)
+            df1
+            for(i in 1:length(df1)) {
+                df1[[i]][[facetvar]]=names(df1)[[i]]
+            }
+            df2<-map_df(df1,rbind)
+            df3<-df2 %>%complete(!!mapping$fill,fill=list(n=0,ratio=0,label=""))
+            df3<-data.frame(df3)
+            df3
+        }
+        df2
+
+    }
+
+    xlabels = levels(factor(df2[[1]]))
+    xlabels
+    ylabels = levels(factor(data[[fillvar]]))
+    ylabels
+
+    if (contmode) {
+        total=nrow(data)
+        ycount = length(ylabels)
+        (pos = 1:ycount)
+        y = (100/ycount) * (pos - 1) + (100/ycount)/2
+        if(facetbycol==FALSE) y=y*(total/100)
+    } else {
+
+
+        if(ylabelMean){
+            y=rowMeans(matrix(df2$y,nrow=length(ylabels)))
+        } else{
+            df2
+            if(is.null(facetvar)){
+
+                y=df2$y[df2$xno==1]
+                y[which(df2$ratio[df2$xno==1]==0)]=NA
+                yend=df2$y[df2$xno==max(df2$xno)]
+                yend[which(df2$ratio[df2$xno==max(df2$xno)]==0)]=NA
+
+                if(xreverse){
+                   ytemp=y
+                   y=yend
+                   yend=ytemp
+                }
+                if(any(is.na(y))) sec.y.axis=TRUE
+
+            } else{
+                condition=(df2$xno==1)&(df2[[facetvar]]==unique(df2[[facetvar]])[1])
+                y=df2$y[condition]
+                y[which(df2$ratio[condition]==0)]=NA
+                condition1=(df2$xno==max(df2$xno))&
+                    (df2[[facetvar]]==unique(df2[[facetvar]])[length(unique(df2[[facetvar]]))])
+                yend=df2$y[condition1]
+                yend[which(df2$ratio[condition1]==0)]=NA
+                if(xreverse){
+                    ytemp=y
+                    y=yend
+                    yend=ytemp
+                }
+                if(any(is.na(y))) sec.y.axis=TRUE
+            }
+
+        }
+    }
 
     if(!is.null(facetvar)){
         if(facetbycol==FALSE) hide.legend=FALSE
     }
     if (is.numeric(df2[[fillvar]]))
-                df2[[fillvar]] = factor(df2[[fillvar]])
-        df2
-        p <- ggplot(mapping = aes_string(xmin = "xmin", xmax = "xmax",
-                                         ymin = "ymin", ymax = "ymax", fill = fillvar), data = df2)
-        p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
-                                                 data_id = "data_id"), size = size, colour = colour,...)
-           # p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
-           #                                          data_id = "data_id"), size = size, colour = colour)
-         if(!is.null(facetvar)) {
+        df2[[fillvar]] = factor(df2[[fillvar]])
+    print(df2)
+    p <- ggplot(mapping = aes_string(xmin = "xmin", xmax = "xmax",
+                                     ymin = "ymin", ymax = "ymax", fill = fillvar), data = df2)
+    p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
+                                             data_id = "data_id"), size = size, colour = colour,...)
+    # p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
+    #                                          data_id = "data_id"), size = size, colour = colour)
+    # p
+    if(!is.null(facetvar)) {
 
-             addNumber<-function(string){
-                 if ((stat == "identity") & (!is.null(yvar))){
-                     result=sapply(string,function(x){paste0(facetvar,":",x,"\nN=",
-                                                             sum(data[data[[facetvar]]==x,"n"]) )})
-                 } else{
-                 result=sapply(string,function(x){paste0(facetvar,":",x,"\nN=",nrow(data[data[[facetvar]]==x,]))})
-                 }
-                 result
-             }
-             if(is.null(labeller)){
-                 if(facetbycol){
-             p<-p+eval(parse(text=paste0("facet_grid(.~",facetvar,",scales='free_x',space='free',labeller=labeller(.default=addNumber))")))
-                 } else{
-                  p<-p+eval(parse(text=paste0("facet_grid(",facetvar,"~.,scales='free_y',space='free_y',switch='y',labeller=labeller(.default=addNumber))")))
+        addNumber<-function(string){
+            if ((stat == "identity") & (!is.null(yvar))){
+                result=sapply(string,function(x){paste0(facetvar,":",x,"\nN=",
+                                                        sum(data[data[[facetvar]]==x,"n"]) )})
+            } else{
+                result=sapply(string,function(x){paste0(facetvar,":",x,"\nN=",nrow(data[data[[facetvar]]==x,]))})
+            }
+            result
+        }
+        if(is.null(labeller)){
+            if(facetbycol){
+                p<-p+eval(parse(text=paste0("facet_grid(.~",facetvar,",scales='free_x',space='free',labeller=labeller(.default=addNumber))")))
+            } else{
+                p<-p+eval(parse(text=paste0("facet_grid(",facetvar,"~.,scales='free_y',space='free_y',switch='y',labeller=labeller(.default=addNumber))")))
 
-                  }
-             } else{
-
-                 if(facetbycol){
-                     p<-p+eval(parse(text=paste0("facet_grid(.~",facetvar,",scales='free_x',space='free',labeller=",labeller,")")))
-                 } else{
-                     p<-p+eval(parse(text=paste0("facet_grid(",facetvar,"~.,scales='free_y',space='free_y',switch='y',labeller=",labeller,")")))
-
-                 }
-             }
-         }
-
-        p
-         # x=rowMeans(matrix(unique(df2$x),nrow=length(xlabels)))
-
-        # if (contmode) {
-        #         p <- p + scale_x_continuous(breaks = xmax, labels = xlabels,name=xlab,
-        #                                     limits = c(0, total))
-        # }else {
-        #         #if(length(x)!=length(xlabels)) xlabels=c(xlabels,NA)
-        #         p<-p + scale_x_continuous(breaks = NULL, labels = NULL, name=xlab)
-        # }
-        if(!is.null(facetvar)) p<-p + scale_x_continuous(breaks = NULL, labels = NULL, name=xlab)
-
-        direction = ifelse(reverse, -1, 1)
-
-
-        if ((position != "dodge") & hide.legend ){
-
-                if(sec.y.axis){
-                        p <- p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab,
-                                                    sec.axis=sec_axis(trans=~.,breaks = yend, labels = ylabels,name=filllab))
-                } else{
-
-                        p<-p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab)
-                }
-
-                p<- p+ scale_fill_brewer(palette = palette, direction = direction,
-                                          guide = FALSE) + ylab("")
+            }
         } else{
-                p <- p + ylab("count")+guides(fill=guide_legend(reverse=TRUE))
 
-                p <- p + scale_fill_brewer(palette = palette,
-                                           direction = direction)
+            if(facetbycol){
+                p<-p+eval(parse(text=paste0("facet_grid(.~",facetvar,",scales='free_x',space='free',labeller=",labeller,")")))
+            } else{
+                p<-p+eval(parse(text=paste0("facet_grid(",facetvar,"~.,scales='free_y',space='free_y',switch='y',labeller=",labeller,")")))
+
+            }
         }
-        p
-        if (addlabel)
-                p = p + geom_text(aes_string(x = "x", y = "y", label = "label"),size=labelsize)
+    }
 
-        if(is.null(xangle)){
-                if(max(nchar(colnames(df2)))>10) xangle=20
-                else xangle=0
+    p
+    # x=rowMeans(matrix(unique(df2$x),nrow=length(xlabels)))
+
+    # if (contmode) {
+    #         p <- p + scale_x_continuous(breaks = xmax, labels = xlabels,name=xlab,
+    #                                     limits = c(0, total))
+    # }else {
+    #         #if(length(x)!=length(xlabels)) xlabels=c(xlabels,NA)
+    #         p<-p + scale_x_continuous(breaks = NULL, labels = NULL, name=xlab)
+    # }
+    if(!is.null(facetvar)) p<-p + scale_x_continuous(breaks = NULL, labels = NULL, name=xlab)
+
+    direction = ifelse(reverse, -1, 1)
+
+
+    if ((position != "dodge") & hide.legend ){
+
+        if(sec.y.axis){
+
+            if(yreverse){
+                p <- p + scale_y_reverse(breaks = y, labels = ylabels,name=filllab,
+                                            sec.axis=sec_axis(trans=~.,breaks = yend, labels = ylabels,name=filllab))
+            } else{
+                  p <- p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab,
+                                        sec.axis=sec_axis(trans=~.,breaks = yend, labels = ylabels,name=filllab))
+            }
+
+        } else{
+
+            if(yreverse){
+                p<-p + scale_y_reverse(breaks = y, labels = ylabels,name=filllab)
+            } else{
+               p<-p + scale_y_continuous(breaks = y, labels = ylabels,name=filllab)
+            }
         }
 
+        p<- p+ scale_fill_brewer(palette = palette, direction = direction,
+                                 guide = FALSE) + ylab("")
+    } else{
+        p <- p + ylab("count")+guides(fill=guide_legend(reverse=TRUE))
 
-        p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
-        if(is.null(yangle)) yangle=90
-        p <- p  + theme(axis.text.y = element_text(angle = yangle),
-                        axis.ticks.y = element_blank())
+        p <- p + scale_fill_brewer(palette = palette,
+                                   direction = direction)
+    }
+    p
+    if (addlabel)
+        p = p + geom_text(aes_string(x = "x", y = "y", label = "label"),size=labelsize)
+
+    if(is.null(xangle)){
+        if(max(nchar(colnames(df2)))>10) xangle=20
+        else xangle=0
+    }
 
 
-        df3=df2[df2$yno==1,]
-        vjust=ifelse(facetbycol,1.8,1)
+    p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
+    if(is.null(yangle)) yangle=90
+    p <- p  + theme(axis.text.y = element_text(angle = yangle),
+                    axis.text.y.right = element_text(angle = -yangle),
+                    axis.ticks.y = element_blank())
 
-        if(contmode){
+
+    df3=df2[df2$yno==1,]
+    vjust=ifelse(facetbycol,1.8,1)
+    if(yreverse) vjust=ifelse(facetbycol,-1,-0.1)
+
+
+    if(contmode){
         total=nrow(data)
         df3
         df3$ratio1=df3$width/total
         df3$label=stringr::str_extract(substr(df3[[xvar]],2,nchar(df3[[xvar]])),"^[^,]+")
         if(mean(as.numeric(df3$label))>1e+9) {
-                df3$label=paste0(as.numeric(df3$label)/1e+9,"T")
+            df3$label=paste0(as.numeric(df3$label)/1e+9,"T")
         } else if(mean(as.numeric(df3$label))>1e+6) {
-                df3$label=paste0(as.numeric(df3$label)/1e+6,"M")
+            df3$label=paste0(as.numeric(df3$label)/1e+6,"M")
         } else if(mean(as.numeric(df3$label))>1e+3) {
-                df3$label=paste0(as.numeric(df3$label)/1e+3,"K")
+            df3$label=paste0(as.numeric(df3$label)/1e+3,"K")
         }
         df3$ratio2=lag(df3$ratio1)
         df3$ratio2[1]=df3$ratio1[1]
         df3$label[(df3$ratio1<minlabelgroup)&(df3$ratio2<minlabelgroup)]=""
         p
         if(is.null(facetvar)){
-                p<-p + scale_x_continuous(breaks = df3$xmin,labels = df3$label,name=xlab)
+            if(xreverse){
+                p<-p + scale_x_reverse(breaks = df3$xmin,labels = df3$label,name=xlab)
+            } else{
+                 p<-p + scale_x_continuous(breaks = df3$xmin,labels = df3$label,name=xlab)
+            }
         } else{
             p<-p + geom_text(aes_string(x = "xmin", y = "0", label = "label"),data=df3,vjust=vjust)
         }
+    } else{
+        if(is.null(facetvar)){
+            if(xreverse){
+                p<-p + scale_x_reverse(breaks = df3$x,labels = df3[[xvar]],name=xlab)
+            } else{
+                p<-p + scale_x_continuous(breaks = df3$x,labels = df3[[xvar]],name=xlab)
+            }
         } else{
-                if(is.null(facetvar)){
-                        p<-p + scale_x_continuous(breaks = df3$x,labels = df3[[xvar]],name=xlab)
-                } else{
 
-                        if(!is.factor(df3[[xvar]])) df3[[xvar]]=factor(df3[[xvar]])
-                        df3$label2=ifelse(df3$ratio>=0,levels(df3[[xvar]]),"")
+            if(!is.factor(df3[[xvar]])) df3[[xvar]]=factor(df3[[xvar]])
+            df3$label2=ifelse(df3$ratio>=0,levels(df3[[xvar]]),"")
 
-                        p<-p + geom_text(aes_string(x = "x", y = "0", label = "label2"),
-                                         data=df3,vjust=vjust)
+            p<-p + geom_text(aes_string(x = "x", y = ifelse(yreverse,"100","0"), label = "label2"),
+                             data=df3,vjust=vjust)
 
-                }
         }
-        p
+    }
+    p
 
-        if(facetbycol==FALSE){
-           p<-p + scale_y_continuous(breaks = NULL, labels = NULL,name=NULL) +
-               theme(legend.position="bottom")
+    if(facetbycol==FALSE){
+        if(yreverse){
+            p<-p + scale_y_reverse(breaks = NULL, labels = NULL,name=NULL)
+        } else{
+            p<-p + scale_y_continuous(breaks = NULL, labels = NULL,name=NULL)
         }
-        p
+        p <- p + theme(legend.position="bottom")
+    }
+    p
 
-        if(!is.null(facetvar)) p<-p+theme(strip.placement = "outside")
-        if (polar == TRUE)
-                p <- p + coord_polar()
-        tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
-        hover_css = "fill-opacity=.3;cursor:pointer;stroke:gold;"
+    if(!is.null(facetvar)) p<-p+theme(strip.placement = "outside")
+    if (polar == TRUE)
+        p <- p + coord_polar()
+    tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
+    hover_css = "fill-opacity=.3;cursor:pointer;stroke:gold;"
 
 
-        if (interactive)
-                p <- ggiraph(code = print(p), tooltip_extra_css = tooltip_css,
-                             tooltip_opacity = 0.75, zoom_max = 10, hover_css = hover_css)
-        p
+    if (interactive)
+        p <- ggiraph(code = print(p), tooltip_extra_css = tooltip_css,
+                     tooltip_opacity = 0.75, zoom_max = 10, hover_css = hover_css)
+    p
 
 }
 
