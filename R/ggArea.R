@@ -32,6 +32,7 @@ ggArea=function(data,mapping,palette="Blues",reverse=TRUE,alpha=0.4,size=0.3,use
                 assign(labelsname,sjlabelled::get_labels(x))
         }
         direction=ifelse(reverse,-1,1)
+        if(is.factor(data[[xvar]])) data[[xvar]]=as.numeric(as.character(data[[xvar]]))
         p<-ggplot(data,aes_string(x=xvar,y=yvar,fill=fillvar))+
                 geom_area(alpha=alpha)+
                 geom_line(position="stack",size=size)+
