@@ -292,7 +292,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
     }
     if (is.numeric(df2[[fillvar]]))
         df2[[fillvar]] = factor(df2[[fillvar]])
-    print(df2)
+    df2
     p <- ggplot(mapping = aes_string(xmin = "xmin", xmax = "xmax",
                                      ymin = "ymin", ymax = "ymax", fill = fillvar), data = df2)
     p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
