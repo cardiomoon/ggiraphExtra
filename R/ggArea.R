@@ -31,21 +31,26 @@ ggArea=function(data,mapping,palette="Blues",reverse=TRUE,alpha=0.4,size=0.3,use
                 assign(labname,attr(x,"label",exact = TRUE))
                 assign(labelsname,sjlabelled::get_labels(x))
         }
+
         direction=ifelse(reverse,-1,1)
-        if(is.factor(data[[xvar]])) data[[xvar]]=as.numeric(as.character(data[[xvar]]))
         if(is.factor(data[[xvar]])){
                 temp=as.numeric(as.character(data[[xvar]]))
-                if(sum(is.na(temp))==0) data[[xvar]]=temp
+                if(sum(is.na(temp))==0) {
+                        data[[xvar]]=temp
+                        xlabels<-NULL
+                }
         }
+
+        str(data)
         p<-ggplot(data,aes_string(x=xvar,y=yvar,fill=fillvar))+
                 geom_area(alpha=alpha)+
                 geom_line(position="stack",size=size)+
-                scale_fill_brewer(palette=palette,direction=direction)
+                scale_fill_brewer(palette=palette,direction=direction,labels=filllabels)
         if(use.labels) {
                 if(!is.null(xlabels)) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
                 if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
-                if(!is.null(filllabels)) p=p+scale_fill_brewer(palette=palette,direction=direction,
-                                                               labels=filllabels)
+                # if(!is.null(filllabels)) p=p+scale_fill_brewer(palette=palette,direction=direction,
+                #                                                labels=filllabels)
                 if(!is.null(colourlabels)) p=p+scale_color_discrete(labels=colourlabels)
                 #p+scale_color_continuous(labels=colourlabels)
         }
