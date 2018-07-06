@@ -33,6 +33,10 @@ ggArea=function(data,mapping,palette="Blues",reverse=TRUE,alpha=0.4,size=0.3,use
         }
         direction=ifelse(reverse,-1,1)
         if(is.factor(data[[xvar]])) data[[xvar]]=as.numeric(as.character(data[[xvar]]))
+        if(is.factor(data[[xvar]])){
+                temp=as.numeric(as.character(data[[xvar]]))
+                if(sum(is.na(temp))==0) data[[xvar]]=temp
+        }
         p<-ggplot(data,aes_string(x=xvar,y=yvar,fill=fillvar))+
                 geom_area(alpha=alpha)+
                 geom_line(position="stack",size=size)+
