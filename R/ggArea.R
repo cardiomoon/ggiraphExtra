@@ -2,6 +2,7 @@
 #'
 #'@param data A data.frame
 #'@param mapping Set of aesthetic mappings created by aes or aes_.
+#'@param position Either "stack" or "fill"
 #'@param palette A character string indicating the color palette
 #'@param reverse If true, reverse palette colors
 #'@param alpha Transparency
@@ -15,10 +16,11 @@
 #'require(gcookbook)
 #'require(ggplot2)
 #'ggArea(uspopage,aes(x=Year,y=Thousands,fill=AgeGroup))
-ggArea=function(data,mapping,palette="Blues",reverse=TRUE,alpha=0.4,size=0.3,use.label=TRUE,use.labels=TRUE){
+#'ggArea(uspopage,aes(x=Year,y=Thousands,fill=AgeGroup),position="fill")
+ggArea=function(data,mapping,position="stack",palette="Blues",reverse=TRUE,alpha=0.4,size=0.3,use.label=TRUE,use.labels=TRUE){
 
-        # data=uspopage;mapping=aes(x=Year,y=Thousands,fill=AgeGroup)
-        # palette="Blues";reverse=TRUE;alpha=0.4;size=0.3;use.label=TRUE;use.labels=TRUE
+          # data=uspopage;mapping=aes(x=Year,y=Thousands,fill=AgeGroup)
+          # palette="Blues";reverse=TRUE;alpha=0.4;size=0.3;use.label=TRUE;use.labels=TRUE
         fillvar<-xvar<-yvar<-NULL
         name=names(mapping)
         xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
@@ -40,12 +42,22 @@ ggArea=function(data,mapping,palette="Blues",reverse=TRUE,alpha=0.4,size=0.3,use
                         xlabels<-NULL
                 }
         }
+        data
 
-        str(data)
+        if(position=="stack"){
         p<-ggplot(data,aes_string(x=xvar,y=yvar,fill=fillvar))+
                 geom_area(alpha=alpha)+
                 geom_line(position="stack",size=size)+
                 scale_fill_brewer(palette=palette,direction=direction,labels=filllabels)
+        } else if(position=="fill"){
+                df<-data %>% group_by(!!mapping$x) %>% dplyr::mutate(ratio=!!mapping$y/sum(!!mapping$y))
+
+                p<-ggplot(df,aes_string(x=xvar,y="ratio",fill=fillvar))+
+                        geom_area(alpha=alpha)+
+                        geom_line(position="stack",size=size)+
+                        scale_fill_brewer(palette=palette,direction=direction,labels=filllabels)
+                p
+        }
         if(use.labels) {
                 if(!is.null(xlabels)) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
                 if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)

@@ -4,13 +4,16 @@
 \alias{ggArea}
 \title{Draw an interactive area plot}
 \usage{
-ggArea(data, mapping, palette = "Blues", reverse = TRUE, alpha = 0.4,
-  size = 0.3, use.label = TRUE, use.labels = TRUE)
+ggArea(data, mapping, position = "stack", palette = "Blues",
+  reverse = TRUE, alpha = 0.4, size = 0.3, use.label = TRUE,
+  use.labels = TRUE)
 }
 \arguments{
 \item{data}{A data.frame}
 
 \item{mapping}{Set of aesthetic mappings created by aes or aes_.}
+
+\item{position}{Either "stack" or "fill"}
 
 \item{palette}{A character string indicating the color palette}
 
@@ -34,4 +37,5 @@ Draw an interactive area plot
 require(gcookbook)
 require(ggplot2)
 ggArea(uspopage,aes(x=Year,y=Thousands,fill=AgeGroup))
+ggArea(uspopage,aes(x=Year,y=Thousands,fill=AgeGroup),position="fill")
 }
