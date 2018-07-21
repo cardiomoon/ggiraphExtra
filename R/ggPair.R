@@ -10,7 +10,7 @@ myscale=function(x){
 
 #' Rescale a vector with which minimum value 0 and maximum value 1
 #' @param x A numeric vector
-#' @param minx The minimun value
+#' @param minx The minimum value
 #' @param maxx The maximum value
 #' @export
 myscale2=function(x,minx=0,maxx=1){
@@ -26,13 +26,13 @@ myscale2=function(x,minx=0,maxx=1){
 #' @param data a data.frame
 #' @param mapping Set of aesthetic mappings created by aes or aes_.
 #' @param rescale if true, rescale the data.frame
-#' @param idcolor Logical cvalue. If TRUE, row numbers uses as a color variable
-#' @param horizontal Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot
+#' @param idcolor Logical. If TRUE, row numbers uses as a color variable
+#' @param horizontal Logical. If TRUE, coord_flip() function is used to make a horizontal plot
 #' @param use.label Logical. Whether or not use column label in case of labelled data
 #' @param use.labels Logical. Whether or not use value labels in case of labelled data
 #' @param includeFactor Logical. Whether or not include factor variables
 #' @param includeAll Logical. Whether or not include all variables
-#' @param interactive Logical cvalue. If TRUE, an interactive plot using ggiraph() function will be returned
+#' @param interactive Logical. If TRUE, an interactive plot using ggiraph() function will be returned
 #' @importFrom ggplot2 guides coord_flip geom_boxplot
 #' @export
 #' @examples

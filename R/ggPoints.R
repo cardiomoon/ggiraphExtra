@@ -2,7 +2,7 @@
 #'
 #' @param data a data.frame
 #' @param colnames Column names to be converted
-#' @param maxfactorno maximun unique value of column
+#' @param maxfactorno maximum unique value of column
 #' @export
 num2factorDf=function(data,colnames,maxfactorno=6){
     if(!is.null(colnames)){

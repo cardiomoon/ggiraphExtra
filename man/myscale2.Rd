@@ -9,7 +9,7 @@ myscale2(x, minx = 0, maxx = 1)
 \arguments{
 \item{x}{A numeric vector}
 
-\item{minx}{The minimun value}
+\item{minx}{The minimum value}
 
 \item{maxx}{The maximum value}
 }

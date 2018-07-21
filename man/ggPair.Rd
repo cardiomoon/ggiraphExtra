@@ -15,9 +15,9 @@ ggPair(data, mapping = NULL, rescale = FALSE, idcolor = TRUE,
 
 \item{rescale}{if true, rescale the data.frame}
 
-\item{idcolor}{Logical cvalue. If TRUE, row numbers uses as a color variable}
+\item{idcolor}{Logical. If TRUE, row numbers uses as a color variable}
 
-\item{horizontal}{Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot}
+\item{horizontal}{Logical. If TRUE, coord_flip() function is used to make a horizontal plot}
 
 \item{use.label}{Logical. Whether or not use column label in case of labelled data}
 
@@ -27,7 +27,7 @@ ggPair(data, mapping = NULL, rescale = FALSE, idcolor = TRUE,
 
 \item{includeAll}{Logical. Whether or not include all variables}
 
-\item{interactive}{Logical cvalue. If TRUE, an interactive plot using ggiraph() function will be returned}
+\item{interactive}{Logical. If TRUE, an interactive plot using ggiraph() function will be returned}
 }
 \description{
 Make an interactive scatter and line plot
