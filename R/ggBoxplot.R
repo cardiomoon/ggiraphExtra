@@ -6,7 +6,7 @@
 #'@param horizontal if true, horizontal boxplots will be made
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
 #'@param addMean Whether add mean point on the plot
-#'@param position An integer. Uses as argumant of position_dodge()
+#'@param position An integer. Uses as argument of position_dodge()
 #'@param use.label Logical. Whether or not use column label in case of labelled data
 #'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@param ... other arguments passed on to geom_boxplot_interactive

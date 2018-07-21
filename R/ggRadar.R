@@ -1,4 +1,4 @@
-#'The radar coordinate system is a modification of polar coordinate system, commly used for radar chart
+#'The radar coordinate system is a modification of polar coordinate system, commonly used for radar chart
 #'
 #'@param theta variable to map angle to (x or y)
 #'@param start offset of starting point from 12 o'clock in radians

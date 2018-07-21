@@ -2,7 +2,7 @@
 % Please edit documentation in R/ggPoints.R
 \name{model2df}
 \alias{model2df}
-\title{Make a data.fram of yhat with a model}
+\title{Make a data.frame of yhat with a model}
 \usage{
 model2df(model, x = NULL, n = 100)
 }
@@ -14,5 +14,5 @@ model2df(model, x = NULL, n = 100)
 \item{n}{number of observations.}
 }
 \description{
-Make a data.fram of yhat with a model
+Make a data.frame of yhat with a model
 }

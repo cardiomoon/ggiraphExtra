@@ -18,7 +18,7 @@ ggCatepillar(data, mapping, errorbar = "se", interactive = FALSE,
 
 \item{digits}{An integer indicating the number of decimal places}
 
-\item{flip}{Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot}
+\item{flip}{Logical. If TRUE, coord_flip() function is used to make a horizontal plot}
 
 \item{use.label}{Logical. Whether or not use column label in case of labelled data}
 

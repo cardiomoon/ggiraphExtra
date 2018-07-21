@@ -13,15 +13,15 @@ ggPredict(fit, colorn = 4, point = NULL, jitter = NULL, se = FALSE,
 
 \item{colorn}{Integer. Number of subgroups of color variables.}
 
-\item{point}{Logical. Whether ot not draw each point}
+\item{point}{Logical. Whether or not draw each point}
 
-\item{jitter}{Logical. Whether ot not jitter points}
+\item{jitter}{Logical. Whether or not jitter points}
 
-\item{se}{Logical. Whether ot not draw se}
+\item{se}{Logical. Whether or not draw se}
 
-\item{show.summary}{Logical. Whether ot not show summary}
+\item{show.summary}{Logical. Whether or not show summary}
 
-\item{colorAsFactor}{Logical. Whether ot not treat color variable as categorical variable}
+\item{colorAsFactor}{Logical. Whether or not treat color variable as categorical variable}
 
 \item{digits}{An integer indicating the number of decimal places}
 

@@ -21,7 +21,7 @@ ggBoxplot(data, mapping = NULL, rescale = FALSE, horizontal = FALSE,
 
 \item{addMean}{Whether add mean point on the plot}
 
-\item{position}{An integer. Uses as argumant of position_dodge()}
+\item{position}{An integer. Uses as argument of position_dodge()}
 
 \item{use.label}{Logical. Whether or not use column label in case of labelled data}
 

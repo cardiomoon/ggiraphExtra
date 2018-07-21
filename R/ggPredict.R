@@ -1,11 +1,11 @@
 #'Visualize predictions from the multiple regression models.
 #'@param fit a model object for which prediction is desired.
 #'@param colorn Integer. Number of subgroups of color variables.
-#'@param point Logical. Whether ot not draw each point
-#'@param jitter Logical. Whether ot not jitter points
-#'@param se Logical. Whether ot not draw se
-#'@param show.summary Logical. Whether ot not show summary
-#'@param colorAsFactor Logical. Whether ot not treat color variable as categorical variable
+#'@param point Logical. Whether or not draw each point
+#'@param jitter Logical. Whether or not jitter points
+#'@param se Logical. Whether or not draw se
+#'@param show.summary Logical. Whether or not show summary
+#'@param colorAsFactor Logical. Whether or not treat color variable as categorical variable
 #'@param digits An integer indicating the number of decimal places
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
 #'@param ... additional arguments affecting the predictions produced.

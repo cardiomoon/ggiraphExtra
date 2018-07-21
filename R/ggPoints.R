@@ -77,7 +77,7 @@ makeEq=function(model,digits=2) {
 
 }
 
-#'Make a data.fram of yhat with a model
+#'Make a data.frame of yhat with a model
 #'
 #'@param model A model of class "lm" or"glm" or"loess"
 #'@param x A optional vector of explanatory variable

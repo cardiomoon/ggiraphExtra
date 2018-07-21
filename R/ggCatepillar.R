@@ -13,7 +13,7 @@ pastecolon=function(...){
 #'@param interactive A logical value. If TRUE, an interactive plot will be returned
 #'@param digits An integer indicating the number of decimal places
 #'@param errorbar which value is displayed with errorbar :"se" or "sd"
-#'@param flip Logical cvalue. If TRUE, coord_flip() function is used to make a horizontal plot
+#'@param flip Logical. If TRUE, coord_flip() function is used to make a horizontal plot
 #'@param use.label Logical. Whether or not use column label in case of labelled data
 #'@param use.labels Logical. Whether or not use value labels in case of labelled data
 #'@importFrom ggplot2 geom_errorbar
