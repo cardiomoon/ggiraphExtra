@@ -31,7 +31,9 @@ require(ggiraphExtra)
 ggPoints(aes(x=wt,y=mpg,color=am),data=mtcars,method="lm")
 ```
 
-![](figures/README-unnamed-chunk-4-1.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-4-1.png?raw=true" title="plot of chunk unnamed-chunk-4-`" alt="plot of chunk unnamed-chunk-4-1" width="70%" style="display: block; margin: auto;" />
+
+
 
 You can draw scatter plot for binary dependent variable. The `GBSG2` data contains data of 686 observations from the German Breast Cancer Study Group 2(GBSG2) study. You can get logistic regression line with a jittered scatterplot by setting the parameter `method` `glm`.
 
@@ -41,7 +43,8 @@ data(GBSG2)
 ggPoints(aes(x=pnodes,y=cens),data=GBSG2,method="glm")
 ```
 
-![](figures/README-unnamed-chunk-5-1.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-5-1.png?raw=true" title="plot of chunk unnamed-chunk-5-1" alt="plot of chunk unnamed-chunk-5-1" width="70%" style="display: block; margin: auto;" />
+
 
 Please check the vignette for "ggPoints" at <http://rpubs.com/cardiomoon/231822>
 
@@ -54,13 +57,15 @@ You can explore a data.frame with ggRadar() or ggBoxplot().
 ggRadar(data=iris,aes(color=Species))
 ```
 
-![](figures/README-unnamed-chunk-6-1.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-6-1.png?raw=true" title="plot of chunk unnamed-chunk-6-1" alt="plot of chunk unnamed-chunk-6-1" width="70%" style="display: block; margin: auto;" />
+
 
 ``` r
 ggRadar(data=mtcars,aes(colour=am))
 ```
 
-![](figures/README-unnamed-chunk-6-2.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-6-2.png?raw=true" title="plot of chunk unnamed-chunk-6-2" alt="plot of chunk unnamed-chunk-6-2" width="70%" style="display: block; margin: auto;" />
+
 
 ggSpine() for an interactive spinogram
 --------------------------------------
@@ -72,13 +77,19 @@ require(moonBook)
 ggSpine(data=acs,aes(x=age,fill=smoking))
 ```
 
-![](figures/README-unnamed-chunk-7-1.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-7-1.png?raw=true" title="plot of chunk unnamed-chunk-7-1" alt="plot of chunk unnamed-chunk-7-1" width="70%" style="display: block; margin: auto;" />
+
 
 ``` r
 ggSpine(data=acs,aes(x=Dx,fill=smoking),addlabel=TRUE)
 ```
 
-![](figures/README-unnamed-chunk-7-2.png) \#\# ggBar() for an interactive barplot
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-7-2.png?raw=true" title="plot of chunk unnamed-chunk-7-2" alt="plot of chunk unnamed-chunk-7-2" width="70%" style="display: block; margin: auto;" />
+
+
+
+ggBar() for an interactive barplot
+--------------------------------------
 
 ggBar() draws interactive barplot. You can add labels, draw horizontal barplots or polar plots. You can draw histogram with ggBar()
 
@@ -86,20 +97,23 @@ ggBar() draws interactive barplot. You can add labels, draw horizontal barplots 
 ggBar(acs,aes(x=Dx,fill=smoking),addlabel=TRUE,horizontal=TRUE,width=0.5)
 ```
 
-![](figures/README-unnamed-chunk-8-1.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-8-1.png?raw=true" title="plot of chunk unnamed-chunk-8-1" alt="plot of chunk unnamed-chunk-8-1" width="70%" style="display: block; margin: auto;" />
+
 
 ``` r
 ggBar(rose,aes(x=Month,fill=group,y=value),stat="identity",polar=TRUE,palette="Reds",width=1,
        color="black",size=0.1)
 ```
 
-![](figures/README-unnamed-chunk-8-2.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-8-2.png?raw=true" title="plot of chunk unnamed-chunk-8-2" alt="plot of chunk unnamed-chunk-7-1" width="70%" style="display: block; margin: auto;" />
+
 
 ``` r
 ggBar(acs,aes(x=age,fill=smoking),addlabel=TRUE,horizontal=TRUE,width=0.5)
 ```
 
-![](figures/README-unnamed-chunk-8-3.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-8-3.png?raw=true" title="plot of chunk unnamed-chunk-8-3" alt="plot of chunk unnamed-chunk-8-3" width="70%" style="display: block; margin: auto;" />
+
 
 ggPair() for an interactive scatter plot with line plot
 -------------------------------------------------------
@@ -107,14 +121,14 @@ ggPair() for an interactive scatter plot with line plot
 ``` r
 ggPair(iris[3:5])
 ```
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-9-1.png?raw=true" title="plot of chunk unnamed-chunk-9-1" alt="plot of chunk unnamed-chunk-9-1" width="70%" style="display: block; margin: auto;" />
 
-![](figures/README-unnamed-chunk-9-1.png)
 
 ``` r
 ggPair(iris,aes(color=Species),horizontal=TRUE)
 ```
 
-![](figures/README-unnamed-chunk-9-2.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-9-2.png?raw=true" title="plot of chunk unnamed-chunk-9-2" alt="plot of chunk unnamed-chunk-9-2" width="70%" style="display: block; margin: auto;" />
 
 ggPieDonut() for a pie and donut plot
 -------------------------------------
@@ -125,19 +139,20 @@ You can draw a pie and donut plot with ggPieDonut().
 ggPieDonut(acs,aes(pies=Dx,donuts=smoking))
 ```
 
-![](figures/README-unnamed-chunk-10-1.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-10-1.png?raw=true" title="plot of chunk unnamed-chunk-10-1" alt="plot of chunk unnamed-chunk-10-1" width="70%" style="display: block; margin: auto;" />
+
 
 ``` r
 ggPieDonut(browsers,aes(pies=browser,donuts=version,count=share))
 ```
-
-![](figures/README-unnamed-chunk-10-2.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-10-2.png?raw=true" title="plot of chunk unnamed-chunk-10-2" alt="plot of chunk unnamed-chunk-10-2" width="70%" style="display: block; margin: auto;" />
 
 ``` r
 ggDonut(browsers,aes(donuts=version,count=share))
 ```
 
-![](figures/README-unnamed-chunk-10-3.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-10-3.png?raw=true" title="plot of chunk unnamed-chunk-10-3" alt="plot of chunk unnamed-chunk-10-3" width="70%" style="display: block; margin: auto;" />
+
 
 ggCLE() for a cleveland dot plot
 --------------------------------
@@ -148,13 +163,14 @@ mtcars$name=rownames(mtcars)
 ggCLE(data=mtcars,aes(x=mpg,y=name,color=am,facet=am))
 ```
 
-![](figures/README-unnamed-chunk-11-1.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-11-1.png?raw=true" title="plot of chunk unnamed-chunk-11-1" alt="plot of chunk unnamed-chunk-11-1" width="70%" style="display: block; margin: auto;" />
+
 
 ``` r
 ggCLE(data=tophitters2001,aes(x=avg,y=name,color=lg,facet=lg),no=20)
 ```
 
-![](figures/README-unnamed-chunk-11-2.png)
+<img src="https://github.com/cardiomoon/ggiraphExtra/blob/master/figures/README-unnamed-chunk-11-2.png?raw=true" title="plot of chunk unnamed-chunk-11-2" alt="plot of chunk unnamed-chunk-11-2" width="70%" style="display: block; margin: auto;" />
 
 Full version of this vignette
 -----------------------------

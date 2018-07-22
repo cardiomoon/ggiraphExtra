@@ -40,16 +40,12 @@ myscale2=function(x,minx=0,maxx=1){
 #' require(ggiraph)
 #' require(sjmisc)
 #' require(moonBook)
-#' ggPair(iris,rescale=TRUE)
 #' ggPair(iris,rescale=TRUE,horizontal=TRUE)
 #' ggPair(acs,aes(colour=smoking),horizontal=TRUE,rescale=TRUE)
 #' ggPair(radial,aes(color=male),horizontal=TRUE,rescale=TRUE)
 #' ggPair(mtcars,horizontal=TRUE,rescale=TRUE)
 #' ggPair(iris,rescale=TRUE,horizontal=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(color=Species),rescale=TRUE,interactive=TRUE)
-#' ggPair(iris,aes(colour=Species),horizontal=TRUE,rescale=TRUE)
-#' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width,Petal.Length),color=Species),horizontal=TRUE)
-#' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width)),horizontal=TRUE,interactive=TRUE)
 #' ggPair(iris,aes(x=c(Sepal.Length,Sepal.Width),color=Species),horizontal=TRUE,interactive=TRUE)
 ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,use.label=FALSE,
                 use.labels=TRUE,includeFactor=TRUE,includeAll=FALSE,interactive=FALSE) {
