@@ -56,9 +56,18 @@ getMapping=function(mapping,varname) {
 
         # mapping=aes(colour=sex)
         # varname="x"
+             # mapping=aes(colour=am,facet=cyl);varname=c("colour","facet")
+
         if(is.null(mapping)) return(NULL)
         result=paste(mapping[varname])
+        result
+        if(length(result)==1){
         if(result=="NULL") result<-NULL
+        } else{
+        for(i in 1:length(result)){
+                if(result[i]=="NULL") result[i]<-NULL
+        }
+        }
         if(!is.null(result)){
                 if(packageVersion("ggplot2") > "2.2.1") {
                         result=stringr::str_replace_all(result,"~","")
@@ -66,9 +75,10 @@ getMapping=function(mapping,varname) {
                         result=stringr::str_replace_all(result,stringr::fixed("c("),"")
                         result=stringr::str_replace_all(result,stringr::fixed(")"),"")
                         result=stringr::str_replace_all(result," ","")
-                        if(stringr::str_detect(result,",")) {
+                        # res=c()
+                        # if(stringr::str_detect(result,",")) {
                                 result=unlist(stringr::str_split(result,","))
-                        }
+                        # }
 
         }
         result
@@ -94,6 +104,7 @@ getMapping=function(mapping,varname) {
 #'@importFrom ggiraph geom_polygon_interactive geom_point_interactive
 #'@importFrom ggplot2 expand_limits theme xlab ylab
 #'@importFrom stringr str_replace
+#'@importFrom sjlabelled get_label
 #'@return An interactive radar plot
 #'@export
 #'@examples
@@ -119,16 +130,29 @@ ggRadar=function(data,mapping=NULL,
                  use.label=FALSE,
                  interactive=FALSE,...){
 
+        # data=iris;mapping=aes(group=Species);interactive=TRUE
+        # rescale=TRUE;
+        # legend.position="top";
+        # colour="red";
+        # alpha=0.3;
+        # size=3;
+        # ylim=NULL;
+        # scales="fixed";
+        # use.label=FALSE;
 
 
         data=as.data.frame(data)
         (groupname=setdiff(names(mapping),c("x","y")))
-        #length(groupname)
+        # length(groupname)
+        groupname
+        mapping
+        length(groupname)
         if(length(groupname)==0) {
                 groupvar<-NULL
         } else {
                 groupvar=getMapping(mapping,groupname)
         }
+        groupvar
         facetname<-colorname<-NULL
         if ("facet" %in% names(mapping)){
                 facetname <- getMapping(mapping,"facet")
@@ -155,7 +179,7 @@ ggRadar=function(data,mapping=NULL,
 
 if(rescale) data=rescale_df(data,groupvar)
 
-        temp=get_label(data)
+        temp=sjlabelled::get_label(data)
         cols=ifelse(temp=="",colnames(data),temp)
 
         if(is.null(groupvar)) {
@@ -185,7 +209,8 @@ if(rescale) data=rescale_df(data,groupvar)
                 #str(df)
                 p<-ggplot(data=df,aes_string(x="variable",y="value",group=1))+
                         geom_polygon_interactive(aes_string(tooltip="tooltip2"),colour=colour,fill=colour,alpha=alpha)+
-                        geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),colour=colour,size=size,...)
+                        geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),colour=colour,size=size)
+                        # geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),colour=colour,size=size,...)
         } else{
 
                 if(!is.null(colorname)){
@@ -199,7 +224,8 @@ if(rescale) data=rescale_df(data,groupvar)
                 #str(df)
                 p<-ggplot(data=df,aes_string(x="variable",y="value",colour=colorname,fill=colorname,group=colorname))+
                         geom_polygon_interactive(aes_string(tooltip="tooltip2"),alpha=alpha)+
-                        geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size,...)
+                        geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size)
+                        # geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size,...)
                 # p<-ggplot(data=df,aes_string(x="variable",y="value",colour=colorname,fill=colorname,group=colorname))+
                 #         geom_polygon_interactive(aes_string(tooltip="tooltip2"),alpha=alpha)+
                 #         geom_point_interactive(aes_string(data_id=id3,tooltip="tooltip"),size=size)

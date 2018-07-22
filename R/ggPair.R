@@ -69,6 +69,7 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         select=sapply(df,is.numeric)
         minx=min(df[select],na.rm=T)
         maxx=max(df[select],na.rm=T)
+
         (xvars=getMapping(mapping,"x"))
 
         if(is.null(xvars)) {
