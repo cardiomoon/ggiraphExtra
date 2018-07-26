@@ -29,6 +29,8 @@
 #'@param yangle angle of axis label
 #'@param xreverse Logical. Whether or not reverse x-axis
 #'@param yreverse Logical. Whether or not reverse y-axis
+#'@param xlab Label for x-axis
+#'@param filllab Label for fill aes
 #'@param ... other arguments passed on to geom_rect_interactive.
 #'@importFrom ggplot2 coord_polar scale_y_continuous guide_legend sec_axis scale_x_reverse scale_y_reverse
 #'@importFrom ggiraph geom_rect_interactive
@@ -63,7 +65,8 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                   minlabelgroup=0.04,minlabel=2,
                   hide.legend=TRUE,ylabelMean=FALSE,sec.y.axis=FALSE,
                   use.label=TRUE,use.labels=TRUE,labeller=NULL,facetbycol=TRUE,
-                  xangle=NULL,yangle=NULL, xreverse=FALSE, yreverse=FALSE,...)
+                  xangle=NULL,yangle=NULL, xreverse=FALSE, yreverse=FALSE,
+                  xlab=NULL,filllab=NULL,...)
 {
 
     # data=mtcars;mapping=aes(x=gear,fill=carb,facet=am)
@@ -84,7 +87,8 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
     #  xangle=NULL;yangle=NULL;minlabelgroup=0.04;minlabel=2;labelsize=5;ylabelMean=FALSE
     #  df=mtcars %>% group_by(gear,carb,am) %>% summarize(n=n())
     #  ggSpine(df,aes(x=gear,fill=carb,y=n,facet=am),stat="identity")
-    #  data=df;mapping=aes(x=gear,fill=carb,y=n,facet=am);stat="identity"
+    #  data=df;mapping=aes(x=name,fill=group,y=rate);stat="identity"
+    # xreverse=FALSE;yreverse=FALSE
     # data
     # require(scales)
     # require(purrr)
@@ -102,13 +106,16 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
         facetvar <- getMapping(mapping,"facet")
     contmode = 0
 
-
+    if(is.null(xlab)){
     (xlab=attr(data[[xvar]],"label"))
     if(is.null(xlab)) xlab=xvar
     if(!use.label) xlab=xvar
+    }
+    if(is.null(filllab)){
     (filllab=attr(data[[fillvar]],"label"))
     if(is.null(filllab)) filllab=fillvar
     if(!use.label) filllab=fillvar
+    }
     if(use.labels) data=addLabelDf(data,mapping=mapping)
 
 
@@ -297,9 +304,9 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                                      ymin = "ymin", ymax = "ymax", fill = fillvar), data = df2)
     p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
                                              data_id = "data_id"), size = size, colour = colour,...)
-    # p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
-    #                                          data_id = "data_id"), size = size, colour = colour)
-    # p
+      # p <- p +geom_rect_interactive(aes_string(tooltip = "tooltip",
+      #                                          data_id = "data_id"), size = size, colour = colour)
+     # p
     if(!is.null(facetvar)) {
 
         addNumber<-function(string){
@@ -384,6 +391,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
 
 
     p<-p+theme(axis.text.x=element_text(angle=xangle,vjust = 0.5))
+    p
     if(is.null(yangle)) yangle=90
     p <- p  + theme(axis.text.y = element_text(angle = yangle),
                     axis.text.y.right = element_text(angle = -yangle),
@@ -437,7 +445,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
 
         }
     }
-    p
+
 
     if(facetbycol==FALSE){
         if(yreverse){

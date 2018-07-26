@@ -11,7 +11,8 @@ ggSpine(data, mapping, stat = "count", position = "fill",
   minlabelgroup = 0.04, minlabel = 2, hide.legend = TRUE,
   ylabelMean = FALSE, sec.y.axis = FALSE, use.label = TRUE,
   use.labels = TRUE, labeller = NULL, facetbycol = TRUE, xangle = NULL,
-  yangle = NULL, xreverse = FALSE, yreverse = FALSE, ...)
+  yangle = NULL, xreverse = FALSE, yreverse = FALSE, xlab = NULL,
+  filllab = NULL, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -70,6 +71,10 @@ c("count","identity")}
 \item{xreverse}{Logical. Whether or not reverse x-axis}
 
 \item{yreverse}{Logical. Whether or not reverse y-axis}
+
+\item{xlab}{Label for x-axis}
+
+\item{filllab}{Label for fill aes}
 
 \item{...}{other arguments passed on to geom_rect_interactive.}
 }

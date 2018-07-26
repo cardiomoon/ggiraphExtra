@@ -1,3 +1,9 @@
+# ggiraphExtra 0.2.9.1
+======================
+(2018-7-26)
+
+* ggSpine function support xlab and filllab arguments
+
 # ggiraphExtra 0.2.9
 ====================
 (2018-7-6)
