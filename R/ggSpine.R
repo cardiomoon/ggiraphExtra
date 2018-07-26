@@ -31,6 +31,7 @@
 #'@param yreverse Logical. Whether or not reverse y-axis
 #'@param xlab Label for x-axis
 #'@param filllab Label for fill aes
+#'@param family font family
 #'@param ... other arguments passed on to geom_rect_interactive.
 #'@importFrom ggplot2 coord_polar scale_y_continuous guide_legend sec_axis scale_x_reverse scale_y_reverse
 #'@importFrom ggiraph geom_rect_interactive
@@ -66,7 +67,7 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
                   hide.legend=TRUE,ylabelMean=FALSE,sec.y.axis=FALSE,
                   use.label=TRUE,use.labels=TRUE,labeller=NULL,facetbycol=TRUE,
                   xangle=NULL,yangle=NULL, xreverse=FALSE, yreverse=FALSE,
-                  xlab=NULL,filllab=NULL,...)
+                  xlab=NULL,filllab=NULL,family=NULL,...)
 {
 
     # data=mtcars;mapping=aes(x=gear,fill=carb,facet=am)
@@ -439,13 +440,17 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
 
             if(!is.factor(df3[[xvar]])) df3[[xvar]]=factor(df3[[xvar]])
             df3$label2=ifelse(df3$ratio>=0,levels(df3[[xvar]]),"")
-
+            if(is.null(family)){
             p<-p + geom_text(aes_string(x = "x", y = ifelse(yreverse,"100","0"), label = "label2"),
                              data=df3,vjust=vjust)
+            } else{
+              p<-p + geom_text(aes_string(x = "x", y = ifelse(yreverse,"100","0"), label = "label2"),
+                               data=df3,vjust=vjust,family=family)
+            }
 
         }
     }
-
+    if(!is.null(family)) p<-p+theme(text= element_text(family=family))
 
     if(facetbycol==FALSE){
         if(yreverse){

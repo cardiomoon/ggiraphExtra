@@ -2,7 +2,7 @@
 ======================
 (2018-7-26)
 
-* ggSpine function support xlab and filllab arguments
+* ggSpine function support xlab, filllab and family arguments
 
 # ggiraphExtra 0.2.9
 ====================

@@ -12,7 +12,7 @@ ggSpine(data, mapping, stat = "count", position = "fill",
   ylabelMean = FALSE, sec.y.axis = FALSE, use.label = TRUE,
   use.labels = TRUE, labeller = NULL, facetbycol = TRUE, xangle = NULL,
   yangle = NULL, xreverse = FALSE, yreverse = FALSE, xlab = NULL,
-  filllab = NULL, ...)
+  filllab = NULL, family = NULL, ...)
 }
 \arguments{
 \item{data}{A data.frame}
@@ -75,6 +75,8 @@ c("count","identity")}
 \item{xlab}{Label for x-axis}
 
 \item{filllab}{Label for fill aes}
+
+\item{family}{font family}
 
 \item{...}{other arguments passed on to geom_rect_interactive.}
 }
