@@ -4,8 +4,16 @@
 \alias{ggErrorBar}
 \title{Make an interactive bar plot with error bar}
 \usage{
-ggErrorBar(data, mapping, interactive = FALSE, digits = 1, mode = 2,
-  errorbar = "se", use.label = TRUE, use.labels = TRUE)
+ggErrorBar(
+  data,
+  mapping,
+  interactive = FALSE,
+  digits = 1,
+  mode = 2,
+  errorbar = "se",
+  use.label = TRUE,
+  use.labels = TRUE
+)
 }
 \arguments{
 \item{data}{A data.frame}

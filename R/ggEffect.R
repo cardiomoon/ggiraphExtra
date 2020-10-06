@@ -18,21 +18,26 @@ ggEffect <- function(x,...) UseMethod("ggEffect")
 #'require(ggplot2)
 #'require(ggiraph)
 #'ggEffect(mtcars,aes(x=wt,y=mpg,color=hp))
+#'ggEffect(mtcars,aes(x=wt,y=mpg,color=hp),interactive=TRUE)
 #'require(moonBook)
 #'ggEffect(acs,aes(x=height,y=weight,color=smoking))
+#'ggEffect(acs,aes(x=height,y=weight,color=smoking),interactive=TRUE)
 ggEffect.default <-function(x,mapping,use.label=TRUE,use.labels=TRUE,...) {
 
-        # maping=aes(x=q33a01w1,y=q33a02w1,color=sexw1)
-        # x=spssdata
-        # use.label=TRUE;use.labels=TRUE
+          # mapping=aes(x=height,y=weight,color=smoking)
+          # x=acs
+          # use.label=TRUE;use.labels=TRUE
         x=as.data.frame(x)
         xvar<-yvar<-groupvar<-NULL
         (xvar=getMapping(mapping,"x"))
         yvar=getMapping(mapping,"y")
         if(is.null(xvar)|is.null(yvar)) warning("Both x and y aesthetics are should be mapped")
         (groupname=setdiff(names(mapping),c("x","y")))
-        if(length(groupname)==1) (groupvar=getMapping(mapping,groupname))
-        else warning("Only one grouping variable is required")
+        if(length(groupname)==1) {
+            (groupvar=getMapping(mapping,groupname))
+        }  else {
+            warning("Only one grouping variable is required")
+        }
 
         name=names(mapping)
         xlabels<-ylabels<-filllabels<-colourlabels<-xlab<-ylab<-colourlab<-filllab<-NULL
@@ -49,21 +54,23 @@ ggEffect.default <-function(x,mapping,use.label=TRUE,use.labels=TRUE,...) {
         }
 
     formula=as.formula(paste(yvar,"~",xvar,"*",groupvar))
+      # p<-ggEffect(formula,x,interactive=TRUE)
     p<-ggEffect.formula(formula,x,...)
 
-    if(use.labels) {
-            if(!is.null(xlabels)) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
-            if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
-            if(!is.null(filllabels)) p=p+scale_fill_discrete(labels=filllabels)
-            if(!is.null(colourlabels)) p=p+scale_color_discrete(labels=colourlabels)
-            #p+scale_color_continuous(labels=colourlabels)
-    }
-    if(use.label){
-            if(!is.null(xlab)) p<-p+labs(x=xlab)
-            if(!is.null(ylab)) p<-p+labs(y=ylab)
-            if(!is.null(colourlab)) p<-p+labs(colour=colourlab)
-            if(!is.null(filllab)) p<-p+labs(fill=filllab)
-    }
+    # if(use.labels) {
+    #         if(!is.null(xlabels)) p<-p+scale_x_continuous(breaks=1:length(xlabels),labels=xlabels)
+    #         if(!is.null(ylabels))  p<-p+scale_y_continuous(breaks=1:length(ylabels),labels=ylabels)
+    #         if(!is.null(filllabels)) p=p+scale_fill_discrete(labels=filllabels)
+    #         if(!is.null(colourlabels)) p=p+scale_color_discrete(labels=colourlabels)
+    #         #p+scale_color_continuous(labels=colourlabels)
+    # }
+    # if(use.label){
+    #         if(!is.null(xlab)) p<-p+labs(x=xlab)
+    #         if(!is.null(ylab)) p<-p+labs(y=ylab)
+    #         if(!is.null(colourlab)) p<-p+labs(colour=colourlab)
+    #         if(!is.null(filllab)) p<-p+labs(fill=filllab)
+    # }
+
     p
 
 }
@@ -87,7 +94,7 @@ ggEffect.formula <-function(x,data,...){
     fit=lm(formula,data=data)
     if(length(names(fit$model))!=3) {
         print("two independent variables are allowed")
-        return
+        return()
     }
     ggEffect.lm(fit,...)
 
@@ -113,7 +120,8 @@ ggEffect.formula <-function(x,data,...){
 #'require(ggiraph)
 #'fit=lm(age~sex*smoking,data=acs)
 #'ggEffect(fit,interactive=TRUE)
-#'ggEffect(radial,aes(x=age,y=NTAV,group=smoking))
+#'ggEffect(radial,aes(x=age,y=NTAV,color=smoking))
+#'ggEffect(radial,aes(x=age,y=NTAV,color=smoking),interactive=TRUE)
 ggEffect.lm=function(x,
                      no=1,
                      probs=c(0.10,0.5,0.90),
@@ -261,8 +269,12 @@ ggEffect.lm=function(x,
                 tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
                 #hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
                 hover_css="r:4px;cursor:pointer;stroke-width:6px;"
-                if(interactive) p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
-                                           zoom_max=10,hover_css=hover_css)
+                p<-girafe(ggobj=p)
+                p<-girafe_options(p,
+                                  opts_hover(css=hover_css),
+                                  opts_tooltip(css=tooltip_css,opacity=.75),
+                                  opts_zoom(min=1,max=10))
+
         }
         p
 }

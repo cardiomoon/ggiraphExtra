@@ -12,6 +12,7 @@
 #'result=TukeyHSD(fm1, "tension", ordered = TRUE)
 #'str(result)
 #'ggHSD(result)
+#'ggHSD(result,interactive=TRUE)
 ggHSD=function(tukey,no=1,digits=2,interactive=FALSE){
     #result=TukeyHSD(fit)
     result=tukey[[no]]
@@ -51,8 +52,14 @@ ggHSD=function(tukey,no=1,digits=2,interactive=FALSE){
               axis.text.x=element_text(size=rel(1.5)),
               axis.title.x=element_text(size=rel(1.5)))+
         theme(legend.position="none")
-    if(interactive) p<-ggiraph(code=print(p),hover_css="r:7px;cursor:pointer;stroke-width:6px;",
-                               zoom_max=10)
+    if(interactive) {
+        hover_css="r:7px;cursor:pointer;stroke-width:6px;"
+        p<-girafe(ggobj=p)
+        p<-girafe_options(p,
+                          opts_hover(css=hover_css),
+                          opts_zoom(min=1,max=10))
+
+    }
     p
 }
 

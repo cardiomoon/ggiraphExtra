@@ -4,9 +4,20 @@
 \alias{ggRadar}
 \title{Draw a radar chart}
 \usage{
-ggRadar(data, mapping = NULL, rescale = TRUE, legend.position = "top",
-  colour = "red", alpha = 0.3, size = 3, ylim = NULL,
-  scales = "fixed", use.label = FALSE, interactive = FALSE, ...)
+ggRadar(
+  data,
+  mapping = NULL,
+  rescale = TRUE,
+  legend.position = "top",
+  colour = "red",
+  alpha = 0.3,
+  size = 3,
+  ylim = NULL,
+  scales = "fixed",
+  use.label = FALSE,
+  interactive = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{A data.frame}

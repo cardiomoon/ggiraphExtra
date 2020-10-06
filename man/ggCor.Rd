@@ -4,9 +4,21 @@
 \alias{ggCor}
 \title{Draw a heatmap of correlation test}
 \usage{
-ggCor(data, what = 1, label = 0, colors = NULL, title = TRUE,
-  mode = 2, digits = 2, interactive = FALSE, yreverse = TRUE,
-  xangle = 45, yangle = 0, use.label = FALSE, ...)
+ggCor(
+  data,
+  what = 1,
+  label = 0,
+  colors = NULL,
+  title = TRUE,
+  mode = 2,
+  digits = 2,
+  interactive = FALSE,
+  yreverse = TRUE,
+  xangle = 45,
+  yangle = 0,
+  use.label = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{A data.frame}

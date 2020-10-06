@@ -4,9 +4,17 @@
 \alias{ggArea}
 \title{Draw an interactive area plot}
 \usage{
-ggArea(data, mapping, position = "stack", palette = "Blues",
-  reverse = TRUE, alpha = 0.4, size = 0.3, use.label = TRUE,
-  use.labels = TRUE)
+ggArea(
+  data,
+  mapping,
+  position = "stack",
+  palette = "Blues",
+  reverse = TRUE,
+  alpha = 0.4,
+  size = 0.3,
+  use.label = TRUE,
+  use.labels = TRUE
+)
 }
 \arguments{
 \item{data}{A data.frame}

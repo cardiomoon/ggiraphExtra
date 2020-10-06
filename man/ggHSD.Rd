@@ -27,4 +27,5 @@ fm1 <- aov(breaks ~ wool + tension, data = warpbreaks)
 result=TukeyHSD(fm1, "tension", ordered = TRUE)
 str(result)
 ggHSD(result)
+ggHSD(result,interactive=TRUE)
 }

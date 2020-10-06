@@ -1,7 +1,7 @@
 Package: ggiraphExtra
 Type: Package
 Title: Make Interactive 'ggplot2'. Extension to 'ggplot2' and 'ggiraph'
-Version: 0.2.9.1
+Version: 0.3.0
 Authors@R: person("Keon-Woong", "Moon", email = "cardiomoon@gmail.com",
                   role = c("aut", "cre"))
 Maintainer: Keon-Woong Moon <cardiomoon@gmail.com>
@@ -20,16 +20,16 @@ Imports:
     sjlabelled,
     sjmisc,
     stringr,
-    webshot,
     tidyr,
     purrr,
     dplyr,
     magrittr,
-    ggforce,
-    ztable,
     RColorBrewer
 Suggests: 
     TH.data,
+    ggforce,
+    webshot,
+    ztable,
     moonBook,
     maps,
     gcookbook,
@@ -41,5 +41,5 @@ Description: Collection of functions to enhance 'ggplot2' and 'ggiraph'. Provide
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr

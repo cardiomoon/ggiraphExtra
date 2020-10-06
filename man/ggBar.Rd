@@ -4,10 +4,25 @@
 \alias{ggBar}
 \title{Draw an interactive barplot}
 \usage{
-ggBar(data, mapping, stat = "count", position = "stack", palette = NULL,
-  horizontal = FALSE, yangle = 0, xangle = 0, maxylev = 6,
-  addlabel = FALSE, labelsize = 5, polar = FALSE, reverse = FALSE,
-  use.label = TRUE, use.labels = TRUE, interactive = FALSE, ...)
+ggBar(
+  data,
+  mapping,
+  stat = "count",
+  position = "stack",
+  palette = NULL,
+  horizontal = FALSE,
+  yangle = 0,
+  xangle = 0,
+  maxylev = 6,
+  addlabel = FALSE,
+  labelsize = 5,
+  polar = FALSE,
+  reverse = FALSE,
+  use.label = TRUE,
+  use.labels = TRUE,
+  interactive = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{A data.frame}

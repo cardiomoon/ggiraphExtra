@@ -9,13 +9,11 @@
 \usage{
 ggAncova(x, ...)
 
-\method{ggAncova}{default}(x, mapping, use.label = TRUE, use.labels = TRUE,
-  ...)
+\method{ggAncova}{default}(x, mapping, use.label = TRUE, use.labels = TRUE, ...)
 
 \method{ggAncova}{formula}(x, data, ...)
 
-\method{ggAncova}{lm}(x, label = NULL, digits = 1, interactive = FALSE,
-  ...)
+\method{ggAncova}{lm}(x, label = NULL, digits = 1, interactive = FALSE, ...)
 }
 \arguments{
 \item{x}{an object}

@@ -4,7 +4,9 @@
 \name{rose}
 \alias{rose}
 \title{Rose sales among 7 groups in a year}
-\format{An object of class \code{data.frame} with 84 rows and 3 columns.}
+\format{
+An object of class \code{data.frame} with 84 rows and 3 columns.
+}
 \usage{
 rose
 }

@@ -4,8 +4,14 @@
 \alias{ggDensity}
 \title{Make a density plot with histogram}
 \usage{
-ggDensity(data, mapping, linecolor = "red", addhist = TRUE,
-  use.label = TRUE, use.labels = TRUE)
+ggDensity(
+  data,
+  mapping,
+  linecolor = "red",
+  addhist = TRUE,
+  use.label = TRUE,
+  use.labels = TRUE
+)
 }
 \arguments{
 \item{data}{a data.frame}

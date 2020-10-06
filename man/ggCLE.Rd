@@ -4,9 +4,18 @@
 \alias{ggCLE}
 \title{Draw a cleveland dot plot}
 \usage{
-ggCLE(data, mapping, reorderByX = TRUE, no = NULL, start = 0.99,
-  interactive = FALSE, decreasing = TRUE, use.label = TRUE,
-  use.labels = TRUE, ...)
+ggCLE(
+  data,
+  mapping,
+  reorderByX = TRUE,
+  no = NULL,
+  start = 0.99,
+  interactive = FALSE,
+  decreasing = TRUE,
+  use.label = TRUE,
+  use.labels = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{a data.frame}

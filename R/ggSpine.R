@@ -56,7 +56,7 @@
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking,facet=sex),palette="Reds")
 #'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),sec.y.axis=TRUE)
 #'ggSpine(data=acs,aes(x=DM,facet=smoking,fill=Dx),facetbycol=FALSE)
-#'ggSpine(mtcars,aes(x=gear,fill=carb))
+#'ggSpine(mtcars,aes(x=gear,fill=carb),interactive=TRUE)
 #'ggSpine(mtcars,aes(x=gear,fill=carb,facet=am))
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="dodge")
 #'ggSpine(data=acs,aes(x=Dx,fill=smoking),position="stack")
@@ -465,13 +465,19 @@ ggSpine=function (data, mapping, stat = "count", position = "fill", palette = "B
     if(!is.null(facetvar)) p<-p+theme(strip.placement = "outside")
     if (polar == TRUE)
         p <- p + coord_polar()
-    tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
-    hover_css = "fill-opacity=.3;cursor:pointer;stroke:gold;"
 
 
-    if (interactive)
-        p <- ggiraph(code = print(p), tooltip_extra_css = tooltip_css,
-                     tooltip_opacity = 0.75, zoom_max = 10, hover_css = hover_css)
+
+    if (interactive){
+        tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
+        hover_css = "fill-opacity=.3;cursor:pointer;stroke:gold;"
+
+        p<-girafe(ggobj=p)
+        p<-girafe_options(p,
+                          opts_hover(css=hover_css),
+                          opts_tooltip(css=tooltip_css,opacity=.75),
+                          opts_zoom(min=1,max=10))
+    }
     p
 
 }

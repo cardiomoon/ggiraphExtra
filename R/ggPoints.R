@@ -143,7 +143,7 @@ model2df=function(model,x=NULL,n=100){
 #'@export
 #'@importFrom ggplot2 ggplot geom_point stat_smooth aes aes_string position_jitter facet_wrap labs geom_count scale_color_discrete scale_fill_discrete
 #'
-#'@importFrom ggiraph ggiraph geom_point_interactive geom_path_interactive
+#'@importFrom ggiraph girafe opts_hover opts_tooltip opts_selection opts_zoom girafe_options geom_point_interactive geom_path_interactive
 #'@importFrom mgcv gam
 #'@importFrom plyr dlply splat
 #'@importFrom stats as.formula predict
@@ -406,12 +406,16 @@ ggPoints=function(data,mapping, smooth=TRUE,
     if(interactive){
         tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
         #hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
-        hover_css="r:4px;cursor:pointer;stroke-width:6px;"
+        hover_css="r:4px;cursor:pointer;stroke-width:2px;"
         selected_css = "fill:#FF3333;stroke:black;"
-        p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
-                   zoom_max=10,hover_css=hover_css,selected_css=selected_css)
+        p<-girafe(ggobj=p)
+        p<-girafe_options(p,
+                          opts_hover(css=hover_css),
+                          opts_tooltip(css=tooltip_css,opacity=.75),
+                          opts_selection(css=selected_css),
+                          opts_zoom(min=1,max=10))
     }
-   p
+    p
 
 }
 

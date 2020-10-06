@@ -4,10 +4,21 @@
 \alias{ggPieDonut}
 \title{Draw a Pie and Donut plot}
 \usage{
-ggPieDonut(data, mapping, addPieLabel = TRUE, addDonutLabel = TRUE,
-  showRatioDonut = TRUE, showRatioPie = TRUE, showRatioPieAbove10 = TRUE,
-  title = "", labelposition = 1, polar = TRUE, use.label = TRUE,
-  use.labels = TRUE, interactive = FALSE)
+ggPieDonut(
+  data,
+  mapping,
+  addPieLabel = TRUE,
+  addDonutLabel = TRUE,
+  showRatioDonut = TRUE,
+  showRatioPie = TRUE,
+  showRatioPieAbove10 = TRUE,
+  title = "",
+  labelposition = 1,
+  polar = TRUE,
+  use.label = TRUE,
+  use.labels = TRUE,
+  interactive = FALSE
+)
 }
 \arguments{
 \item{data}{A data.frame}

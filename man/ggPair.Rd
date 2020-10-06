@@ -4,9 +4,18 @@
 \alias{ggPair}
 \title{Make an interactive scatter and line plot}
 \usage{
-ggPair(data, mapping = NULL, rescale = FALSE, idcolor = TRUE,
-  horizontal = FALSE, use.label = FALSE, use.labels = TRUE,
-  includeFactor = TRUE, includeAll = FALSE, interactive = FALSE)
+ggPair(
+  data,
+  mapping = NULL,
+  rescale = FALSE,
+  idcolor = TRUE,
+  horizontal = FALSE,
+  use.label = FALSE,
+  use.labels = TRUE,
+  includeFactor = TRUE,
+  includeAll = FALSE,
+  interactive = FALSE
+)
 }
 \arguments{
 \item{data}{a data.frame}

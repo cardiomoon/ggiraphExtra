@@ -4,7 +4,9 @@
 \name{taco}
 \alias{taco}
 \title{Taco ratings by age group}
-\format{An object of class \code{data.frame} with 136 rows and 4 columns.}
+\format{
+An object of class \code{data.frame} with 136 rows and 4 columns.
+}
 \usage{
 taco
 }

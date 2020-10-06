@@ -4,10 +4,22 @@
 \alias{ggHeatmap}
 \title{Make an interactive Heatmap}
 \usage{
-ggHeatmap(data, mapping, stat = "count", palette = "Blues",
-  reverse = FALSE, addlabel = FALSE, polar = FALSE, interactive = FALSE,
-  yangle = 0, color = "grey50", size = 0.1, use.label = TRUE,
-  use.labels = TRUE, ...)
+ggHeatmap(
+  data,
+  mapping,
+  stat = "count",
+  palette = "Blues",
+  reverse = FALSE,
+  addlabel = FALSE,
+  polar = FALSE,
+  interactive = FALSE,
+  yangle = 0,
+  color = "grey50",
+  size = 0.1,
+  use.label = TRUE,
+  use.labels = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{A data.frame}

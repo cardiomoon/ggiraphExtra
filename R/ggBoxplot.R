@@ -86,12 +86,12 @@ ggBoxplot=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,interactive=
         geom_boxplot_interactive(position=position_dodge(position),alpha=0.1,...)
         #geom_boxplot_interactive(position=position_dodge(position),alpha=0.1)
     if(is.null(groupvar)){
-            if(addMean) p<-p+ stat_summary(fill="white",geom='point',fun.y=mean,shape=23,size=3)
+            if(addMean) p<-p+ stat_summary(fill="white",geom='point',fun=mean,shape=23,size=3)
         p<-p+theme(axis.title.x = element_blank(),
               axis.title.y = element_blank(),
               legend.position="none")
     } else{
-            if(addMean) p<-p+ stat_summary(fill="white",geom='point',fun.y=mean,shape=23,size=3,position=position_dodge(position))
+            if(addMean) p<-p+ stat_summary(fill="white",geom='point',fun=mean,shape=23,size=3,position=position_dodge(position))
             p<-p+theme(axis.title.x = element_blank(),
                        axis.title.y = element_blank(),
                        legend.position="top")
@@ -119,8 +119,14 @@ ggBoxplot=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,interactive=
         #hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
         hover_css="r:4px;cursor:pointer;stroke-width:6px;"
         selected_css = "fill:#FF3333;stroke:black;"
-        p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
-                   zoom_max=10,hover_css=hover_css,selected_css=selected_css)
+        # p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
+        #            zoom_max=10,hover_css=hover_css,selected_css=selected_css)
+        p<-girafe(ggobj=p)
+        p<-girafe_options(p,
+                          opts_hover(css=hover_css),
+                          opts_tooltip(css=tooltip_css,opacity=.75),
+                          opts_selection(css=selected_css),
+                          opts_zoom(min=1,max=10))
     }
     p
 }

@@ -9,14 +9,21 @@
 \usage{
 ggEffect(x, ...)
 
-\method{ggEffect}{default}(x, mapping, use.label = TRUE, use.labels = TRUE,
-  ...)
+\method{ggEffect}{default}(x, mapping, use.label = TRUE, use.labels = TRUE, ...)
 
 \method{ggEffect}{formula}(x, data, ...)
 
-\method{ggEffect}{lm}(x, no = 1, probs = c(0.1, 0.5, 0.9), point = TRUE,
-  xvalue = NULL, digits = 2, use.rownames = FALSE, interactive = FALSE,
-  ...)
+\method{ggEffect}{lm}(
+  x,
+  no = 1,
+  probs = c(0.1, 0.5, 0.9),
+  point = TRUE,
+  xvalue = NULL,
+  digits = 2,
+  use.rownames = FALSE,
+  interactive = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{Object to ggEffect}
@@ -64,8 +71,10 @@ Visualize the effect of interaction between two continuous independent variables
 require(ggplot2)
 require(ggiraph)
 ggEffect(mtcars,aes(x=wt,y=mpg,color=hp))
+ggEffect(mtcars,aes(x=wt,y=mpg,color=hp),interactive=TRUE)
 require(moonBook)
 ggEffect(acs,aes(x=height,y=weight,color=smoking))
+ggEffect(acs,aes(x=height,y=weight,color=smoking),interactive=TRUE)
 require(ggplot2)
 require(ggiraph)
 require(moonBook)
@@ -75,5 +84,6 @@ require(ggplot2)
 require(ggiraph)
 fit=lm(age~sex*smoking,data=acs)
 ggEffect(fit,interactive=TRUE)
-ggEffect(radial,aes(x=age,y=NTAV,group=smoking))
+ggEffect(radial,aes(x=age,y=NTAV,color=smoking))
+ggEffect(radial,aes(x=age,y=NTAV,color=smoking),interactive=TRUE)
 }

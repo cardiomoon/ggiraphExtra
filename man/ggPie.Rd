@@ -4,10 +4,19 @@
 \alias{ggPie}
 \title{Draw a pie plot}
 \usage{
-ggPie(data, mapping, addPieLabel = TRUE, showRatioPie = TRUE,
-  showRatioPieAbove10 = TRUE, title = "", labelposition = 1,
-  polar = TRUE, use.label = TRUE, use.labels = TRUE,
-  interactive = FALSE)
+ggPie(
+  data,
+  mapping,
+  addPieLabel = TRUE,
+  showRatioPie = TRUE,
+  showRatioPieAbove10 = TRUE,
+  title = "",
+  labelposition = 1,
+  polar = TRUE,
+  use.label = TRUE,
+  use.labels = TRUE,
+  interactive = FALSE
+)
 }
 \arguments{
 \item{data}{A data.frame}

@@ -4,9 +4,18 @@
 \alias{ggBoxplot}
 \title{Draw boxplots of a data.frame}
 \usage{
-ggBoxplot(data, mapping = NULL, rescale = FALSE, horizontal = FALSE,
-  interactive = FALSE, addMean = TRUE, position = 0.9, use.label = TRUE,
-  use.labels = TRUE, ...)
+ggBoxplot(
+  data,
+  mapping = NULL,
+  rescale = FALSE,
+  horizontal = FALSE,
+  interactive = FALSE,
+  addMean = TRUE,
+  position = 0.9,
+  use.label = TRUE,
+  use.labels = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{a data.frame}

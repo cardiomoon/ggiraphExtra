@@ -4,9 +4,18 @@
 \alias{ggViolin}
 \title{Draw violin plots of a data.frame}
 \usage{
-ggViolin(data, mapping = NULL, rescale = FALSE, horizontal = FALSE,
-  alpha = 0.1, addBoxplot = TRUE, addMean = TRUE, use.label = TRUE,
-  use.labels = TRUE, ...)
+ggViolin(
+  data,
+  mapping = NULL,
+  rescale = FALSE,
+  horizontal = FALSE,
+  alpha = 0.1,
+  addBoxplot = TRUE,
+  addMean = TRUE,
+  use.label = TRUE,
+  use.labels = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{a data.frame}

@@ -4,11 +4,27 @@
 \alias{ggPoints}
 \title{Make an interactive scatterplot with regression line(s)}
 \usage{
-ggPoints(data, mapping, smooth = TRUE, se = TRUE, method = "auto",
-  formula = y ~ x, fullrange = FALSE, level = 0.95, use.count = FALSE,
-  maxfactorno = 6, digits = 2, title = NULL, subtitle = NULL,
-  caption = NULL, use.label = TRUE, use.labels = TRUE, tooltip = NULL,
-  interactive = FALSE, ...)
+ggPoints(
+  data,
+  mapping,
+  smooth = TRUE,
+  se = TRUE,
+  method = "auto",
+  formula = y ~ x,
+  fullrange = FALSE,
+  level = 0.95,
+  use.count = FALSE,
+  maxfactorno = 6,
+  digits = 2,
+  title = NULL,
+  subtitle = NULL,
+  caption = NULL,
+  use.label = TRUE,
+  use.labels = TRUE,
+  tooltip = NULL,
+  interactive = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{a data.frame}

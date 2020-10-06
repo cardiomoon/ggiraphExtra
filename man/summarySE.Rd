@@ -4,8 +4,14 @@
 \alias{summarySE}
 \title{Summarize a continuous variable by groups with mean, sd and SE}
 \usage{
-summarySE(data = NULL, measurevar, groupvars = NULL, conf.interval = 0.95,
-  na.rm = TRUE, .drop = TRUE)
+summarySE(
+  data = NULL,
+  measurevar,
+  groupvars = NULL,
+  conf.interval = 0.95,
+  na.rm = TRUE,
+  .drop = TRUE
+)
 }
 \arguments{
 \item{data}{A data.frame}

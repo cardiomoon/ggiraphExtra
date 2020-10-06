@@ -86,13 +86,13 @@ ggViolin=function(data,mapping=NULL,rescale=FALSE,horizontal=FALSE,alpha=0.1,add
 
     if(is.null(groupvar)){
             if(addBoxplot) p<-p+ geom_boxplot(fill="darkred",width=0.1,alpha=0.3)
-            if(addMean) p<-p+ stat_summary(fill="white",geom='point',fun.y=mean,shape=23,size=3)
+            if(addMean) p<-p+ stat_summary(fill="white",geom='point',fun=mean,shape=23,size=3)
         p<-p+theme(axis.title.x = element_blank(),
               axis.title.y = element_blank(),
               legend.position="none")
     } else{
             if(addBoxplot) p<-p+ geom_boxplot(fill="darkred",width=0.1,alpha=0.3,position=position_dodge(0.9))
-            if(addMean) p<-p+ stat_summary(fill="white",geom='point',fun.y=mean,shape=23,size=3,position=position_dodge(0.9))
+            if(addMean) p<-p+ stat_summary(fill="white",geom='point',fun=mean,shape=23,size=3,position=position_dodge(0.9))
             p<-p+theme(axis.title.x = element_blank(),
                        axis.title.y = element_blank(),
                        legend.position="top")

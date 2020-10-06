@@ -192,10 +192,17 @@ ggPair=function(data,mapping=NULL,rescale=FALSE,idcolor=TRUE,horizontal=FALSE,us
         if(rescale) p<-p+scale_y_continuous(breaks=c(0,1),labels=c("Min","Max"))
         p<-p+theme_bw()
         p
-        tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
-        hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
-        if(interactive) p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
-                                   zoom_max=10,hover_css=hover_css)
+
+        if(interactive) {
+                tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
+                hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
+                p<-girafe(ggobj=p)
+                p<-girafe_options(p,
+                                  opts_hover(css=hover_css),
+                                  opts_tooltip(css=tooltip_css,opacity=.75),
+                                  opts_zoom(min=1,max=10))
+
+        }
         p
 }
 

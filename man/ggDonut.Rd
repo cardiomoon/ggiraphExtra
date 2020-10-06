@@ -4,12 +4,30 @@
 \alias{ggDonut}
 \title{Draw a Donut plot}
 \usage{
-ggDonut(data, mapping, addDonutLabel = TRUE, showRatio = TRUE,
-  polar = TRUE, labelposition = 1, labelsize = 3, title = "",
-  use.label = TRUE, use.labels = TRUE, alpha = 0.7, interactive = FALSE,
-  palette = NULL, reverse = FALSE, xmin = 3, xmax = 4, start = 3 *
-  pi/2, direction = 1, colour = "white", explode = NULL,
-  explodePos = 0.5, ...)
+ggDonut(
+  data,
+  mapping,
+  addDonutLabel = TRUE,
+  showRatio = TRUE,
+  polar = TRUE,
+  labelposition = 1,
+  labelsize = 3,
+  title = "",
+  use.label = TRUE,
+  use.labels = TRUE,
+  alpha = 0.7,
+  interactive = FALSE,
+  palette = NULL,
+  reverse = FALSE,
+  xmin = 3,
+  xmax = 4,
+  start = 3 * pi/2,
+  direction = 1,
+  colour = "white",
+  explode = NULL,
+  explodePos = 0.5,
+  ...
+)
 }
 \arguments{
 \item{data}{A data.frame}

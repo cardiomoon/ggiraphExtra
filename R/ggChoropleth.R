@@ -93,7 +93,7 @@ ggChoropleth=function(data,mapping,map,
             }
     }
     if(!is.null(palette)) mycolors=palette2colors(palette,reverse=reverse)
-    tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:20px 20px 20px 20px;"
+
 
     if(longdata) {
             p<-ggplot(data=data,aes_string(map_id=mapidvar,fill="value"))
@@ -119,7 +119,14 @@ ggChoropleth=function(data,mapping,map,
     if(!is.null(facetvar)) p<-p+facet_wrap(facetvar)
     if(title!="") p<-p+ ggtitle(title)
 
-    if(interactive) p<-ggiraph(code=print(p),tooltip_extra_css = tooltip_css,zoom_max=10)
+    if(interactive) {
+        tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:20px 20px 20px 20px;"
+        # p<-ggiraph(code=print(p),tooltip_extra_css = tooltip_css,zoom_max=10)
+        p<-girafe(ggobj=p)
+        p<-girafe_options(p,
+                          opts_tooltip(css=tooltip_css,opacity=.75),
+                          opts_zoom(min=1,max=10))
+    }
     p
 }
 

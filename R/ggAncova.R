@@ -81,7 +81,7 @@ ggAncova.formula=function(x,data,...){
     #summary(fit)
     if(length(names(fit$model))!=3) {
         print("only one independent variable and one covariate are allowed")
-        return
+        return()
     }
     (y=names(fit$model)[1])
     (x=names(fit$model)[2])
@@ -95,7 +95,7 @@ ggAncova.formula=function(x,data,...){
         return(ggAncova.formula(formula,df,...))
     } else if((!is.numeric(df[[x]])) &(!is.numeric(df[[A]]))){
         print("only one independent variable and one covariate are allowed")
-        return
+        return()
     }
     ggAncova.lm(fit,...)
 
@@ -116,7 +116,7 @@ ggAncova.lm=function(x,label=NULL,digits=1,interactive=FALSE,...){
     #summary(fit)
     if(length(names(fit$model))!=3) {
         print("only one independent variable and one covariate are allowed")
-        return
+        return()
     }
     (y=names(fit$model)[1])
     (x=names(fit$model)[2])
@@ -132,7 +132,7 @@ ggAncova.lm=function(x,label=NULL,digits=1,interactive=FALSE,...){
         return(ggAncova.lm(fit,label=label,digits=digits,interactive=interactive))
     } else if((!is.numeric(df[[x]])) &(!is.numeric(df[[A]]))){
         print("only one independent variable and one covariate are allowed")
-        return
+        return()
     }
     df$all=rep("all",nrow(df))
     df$colour=factor(df[[A]])
@@ -177,11 +177,16 @@ ggAncova.lm=function(x,label=NULL,digits=1,interactive=FALSE,...){
                                                   linetype="color"))
     if(interactive){
             tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
-            #hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
+
             hover_css="r:4px;cursor:pointer;stroke-width:6px;"
             selected_css = "fill:#FF3333;stroke:black;"
-            p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
-                       zoom_max=10,hover_css=hover_css,selected_css=selected_css)
+
+            p<-girafe(ggobj=p)
+            p<-girafe_options(p,
+                              opts_hover(css=hover_css),
+                              opts_tooltip(css=tooltip_css),
+                              opts_selection(css=selected_css),
+                              opts_zoom(min=1,max=10))
     }
     p
 

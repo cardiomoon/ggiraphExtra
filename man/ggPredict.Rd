@@ -4,9 +4,18 @@
 \alias{ggPredict}
 \title{Visualize predictions from the multiple regression models.}
 \usage{
-ggPredict(fit, colorn = 4, point = NULL, jitter = NULL, se = FALSE,
-  show.summary = FALSE, colorAsFactor = FALSE, digits = 2,
-  interactive = FALSE, ...)
+ggPredict(
+  fit,
+  colorn = 4,
+  point = NULL,
+  jitter = NULL,
+  se = FALSE,
+  show.summary = FALSE,
+  colorAsFactor = FALSE,
+  digits = 2,
+  interactive = FALSE,
+  ...
+)
 }
 \arguments{
 \item{fit}{a model object for which prediction is desired.}

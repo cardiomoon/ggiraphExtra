@@ -4,8 +4,16 @@
 \alias{ggCatepillar}
 \title{Make an interactive catepillar plot}
 \usage{
-ggCatepillar(data, mapping, errorbar = "se", interactive = FALSE,
-  digits = 1, flip = FALSE, use.label = TRUE, use.labels = TRUE)
+ggCatepillar(
+  data,
+  mapping,
+  errorbar = "se",
+  interactive = FALSE,
+  digits = 1,
+  flip = FALSE,
+  use.label = TRUE,
+  use.labels = TRUE
+)
 }
 \arguments{
 \item{data}{a data.frame}

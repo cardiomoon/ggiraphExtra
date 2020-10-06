@@ -125,7 +125,13 @@ ggHeatmap=function(data,mapping,
             if(!is.null(filllab)) p<-p+labs(fill=filllab)
     }
 
-    if(interactive) p<-ggiraph(code=print(p),zoom_max = 10)
+    if(interactive) {
+        tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
+        p<-girafe(ggobj=p)
+        p<-girafe_options(p,
+                          opts_tooltip(css=tooltip_css,opacity=.75),
+                          opts_zoom(min=1,max=10))
+    }
     p
 }
 

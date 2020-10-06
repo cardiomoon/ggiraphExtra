@@ -4,8 +4,18 @@
 \alias{ggChoropleth}
 \title{Draw an interactive choropleth map}
 \usage{
-ggChoropleth(data, mapping, map, palette = "OrRd", reverse = FALSE,
-  color = "grey50", title = "", digits = 1, interactive = FALSE, ...)
+ggChoropleth(
+  data,
+  mapping,
+  map,
+  palette = "OrRd",
+  reverse = FALSE,
+  color = "grey50",
+  title = "",
+  digits = 1,
+  interactive = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{a data.frame}

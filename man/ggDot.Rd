@@ -4,9 +4,20 @@
 \alias{ggDot}
 \title{Draw a Wilkinson dot plot}
 \usage{
-ggDot(data, mapping, stackdir = "center", binaxis = "y", binwidth = 0.5,
-  method = "dotdensity", position = 0.2, boxwidth = 0.25,
-  boxfill = NULL, use.label = TRUE, use.labels = TRUE, ...)
+ggDot(
+  data,
+  mapping,
+  stackdir = "center",
+  binaxis = "y",
+  binwidth = 0.5,
+  method = "dotdensity",
+  position = 0.2,
+  boxwidth = 0.25,
+  boxfill = NULL,
+  use.label = TRUE,
+  use.labels = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{a data.frame}
