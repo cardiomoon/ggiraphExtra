@@ -19,7 +19,7 @@ devtools::install_github("cardiomoon/ggiraphExtra")
 
 ## Simple linear regression model
 
-In univariate regression model, you can use scatter plot to visualize model. For example, you can make simple linear regression model with data `radial` included in package moonBook. The radial data contains demographic data and laboratory data of 115 pateints performing IVUS(intravascular ultrasound) examination of a radial artery after tansradial coronary angiography. The NTAV(normalized total atheroma volume measured by intravascular ultrasound(IVUS) in cubic mm) is a quantitative measurement of atherosclerosis. Suppose you want to predict the amount of atherosclerosis(NTAV) from age.
+In univariate regression model, you can use scatter plot to visualize model. For example, you can make simple linear regression model with data `radial` included in package moonBook. The radial data contains demographic data and laboratory data of 115 patients performing IVUS(intravascular ultrasound) examination of a radial artery after tansradial coronary angiography. The NTAV(normalized total atheroma volume measured by intravascular ultrasound(IVUS) in cubic mm) is a quantitative measurement of atherosclerosis. Suppose you want to predict the amount of atherosclerosis(NTAV) from age.
 
 ```{r,comment=NA}
 require(moonBook)   # for use of data radial
@@ -33,7 +33,7 @@ You can get the regression equation from summary of regression model:
 y=`r round(coef(fit)[2],2)`*x+`r round(coef(fit)[1],2)`
 ```
 
-You can visualize this model easly with ggplot2 package.
+You can visualize this model easily with ggplot2 package.
 ```{r,comment=NA,message=FALSE,fig.width=5,fig.height=5}
 require(ggplot2)
 ggplot(radial,aes(y=NTAV,x=age))+geom_point()+geom_smooth(method="lm")
@@ -52,7 +52,7 @@ With this plot, you can identify the points and see the regression equation with
 
 ## Multiple regression model without interaction
 
-You can make a regession model with two predictor variables. Now you can use age and sex as predcitor variables.
+You can make a regression model with two predictor variables. Now you can use age and sex as predictor variables.
 
 
 ```{r,comment=NA}
@@ -173,10 +173,11 @@ fit5=glm(cens~pnodes*horTh,data=GBSG2,family=binomial)
 summary(fit5)
 ```
 
-You can easily visualize this modelwith ggPredict funition().
+You can easily visualize this model with ggPredict() function.
 ```{r}
 ggPredict(fit5,se=TRUE,interactive=TRUE,digits=3)
 ```
+
 ### Model without interaction
 
 You can make multiple logistic regression model with no interaction between predictor variables.
@@ -204,7 +205,7 @@ summary(fit7)
 ggPredict(fit7,interactive=TRUE)
 ```
 
-You can adjust the number of regression lines with parameter colorn. for eample you can draw 100 regression lines with following R command.
+You can adjust the number of regression lines with parameter colorn. For example you can draw 100 regression lines with following R command.
 
 ```{r,warning=FALSE}
 ggPredict(fit7,interactive=TRUE,colorn=100,jitter=FALSE)

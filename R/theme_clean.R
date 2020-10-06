@@ -1,5 +1,5 @@
 #'Clean theme for PieDonut plot
-#'@param base_size An interger, default 12.
+#'@param base_size An integer, default 12.
 #'@importFrom ggplot2 theme_grey %+replace%
 #'@importFrom grid unit
 #'@export

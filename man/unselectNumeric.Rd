@@ -11,7 +11,7 @@ unselectNumeric(data, colnames, maxfactorno = 6)
 
 \item{colnames}{Column names to be converted}
 
-\item{maxfactorno}{maximun unique value of column}
+\item{maxfactorno}{maximum unique value of column}
 }
 \description{
 Unselect numeric column of a data.frame

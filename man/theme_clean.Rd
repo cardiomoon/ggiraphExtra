@@ -7,7 +7,7 @@
 theme_clean(base_size = 12)
 }
 \arguments{
-\item{base_size}{An interger, default 12.}
+\item{base_size}{An integer, default 12.}
 }
 \description{
 Clean theme for PieDonut plot

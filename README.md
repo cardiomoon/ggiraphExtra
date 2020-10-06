@@ -6,7 +6,7 @@ output: github_document
 
 
 
-Package ggiraphExtra contains many useful functions for exploratoty plots. These functions are made by both 'ggplot2' and 'ggiraph' packages. You can make a static ggplot or an interactive ggplot by setting the parameter interactive=TRUE.
+Package ggiraphExtra contains many useful functions for exploratory plots. These functions are made by both 'ggplot2' and 'ggiraph' packages. You can make a static ggplot or an interactive ggplot by setting the parameter interactive=TRUE.
 
 ## Package installation
 
