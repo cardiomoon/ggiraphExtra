@@ -26,7 +26,7 @@
 #' Taco ratings by age group
 #'
 #' Taco ratings by ShellType, AgeGroup and Filling
-#' source: \href{http://rikturr.com/blog/communicating-experimental-results-with-r/}{Communicating experiment results with R}
+#' source: \href{https://rpubs.com/rikturr/communicating-experimental-results-with-r}{Communicating experiment results with R}
 #'
 #'  @format A data.frame with 136 rows and 4 columns
 #'  \describe{

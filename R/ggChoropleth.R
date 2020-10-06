@@ -121,7 +121,7 @@ ggChoropleth=function(data,mapping,map,
 
     if(interactive) {
         tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:20px 20px 20px 20px;"
-        # p<-ggiraph(code=print(p),tooltip_extra_css = tooltip_css,zoom_max=10)
+
         p<-girafe(ggobj=p)
         p<-girafe_options(p,
                           opts_tooltip(css=tooltip_css,opacity=.75),

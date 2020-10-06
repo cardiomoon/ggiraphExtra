@@ -36,7 +36,7 @@ ggPair(
 
 \item{includeAll}{Logical. Whether or not include all variables}
 
-\item{interactive}{Logical. If TRUE, an interactive plot using ggiraph() function will be returned}
+\item{interactive}{Logical. If TRUE, an interactive plot using girafe() function will be returned}
 }
 \description{
 Make an interactive scatter and line plot

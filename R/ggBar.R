@@ -147,8 +147,7 @@ ggBar=function(data,mapping,
 
         tooltip_css <- "background-color:white;font-style:italic;padding:10px;border-radius:10px 20px 10px 20px;"
         hover_css="fill-opacity=.3;cursor:pointer;stroke:gold;"
-        # if(interactive) p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
-        #                            zoom_max=10,hover_css=hover_css)
+
         p<-girafe(ggobj=p)
         p<-girafe_options(p,
                           opts_hover(css=hover_css),

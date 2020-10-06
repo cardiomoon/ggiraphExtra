@@ -255,8 +255,7 @@ if(rescale) data=rescale_df(data,groupvar)
                                   opts_tooltip(css=tooltip_css,opacity=.75),
                                   opts_selection(css=selected_css),
                                   opts_zoom(min=1,max=10))
-                # p<-ggiraph(code=print(p),tooltip_extra_css=tooltip_css,tooltip_opacity=.75,
-                #            zoom_max=10,hover_css=hover_css,selected_css=selected_css)
+
         }
         p
 }

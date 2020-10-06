@@ -32,7 +32,7 @@ myscale2=function(x,minx=0,maxx=1){
 #' @param use.labels Logical. Whether or not use value labels in case of labelled data
 #' @param includeFactor Logical. Whether or not include factor variables
 #' @param includeAll Logical. Whether or not include all variables
-#' @param interactive Logical. If TRUE, an interactive plot using ggiraph() function will be returned
+#' @param interactive Logical. If TRUE, an interactive plot using girafe() function will be returned
 #' @importFrom ggplot2 guides coord_flip geom_boxplot
 #' @export
 #' @examples
